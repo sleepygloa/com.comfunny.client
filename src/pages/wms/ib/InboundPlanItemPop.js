@@ -3,6 +3,7 @@ import React, { useCallback, useState, useEffect } from 'react';
 import { useModal } from "../../../context/ModalContext.js";
 import { DataGrid } from "@mui/x-data-grid";
 import SearchBar from "../../../components/SearchBar/SearchBar.js";
+import { ComDeGrid } from "../../../components/Grid/ComDeGrid.js";
 
 // context
 import { useCommonData } from "../../../context/CommonDataContext.js";
@@ -34,7 +35,7 @@ export default function InboundPlanItemPop(props) {
   const getRowId = "";
   const [selRowId, setSelRowId] = useState(); //그리드 선택된 행
   const [dataList, setDataList] = useState([]); //메뉴 데이터 변수
-  var chkRows = [];
+  var dtlChkRows = [];
 
   const [clientCdCmb, setClientCdCmb] = useState([]); //고객사
   const [keepTempeGbnCdCmb, setKeepTempeGbnCdCmb] = useState([]); //보관온도구분
@@ -56,6 +57,7 @@ export default function InboundPlanItemPop(props) {
       align:"center", type: "singleSelect", valueFormatter: gvGridDropdownDisLabel,
       valueOptions: itemGbnCdCmb,
     },
+    { field: "pkqty",               headerName: "입수",             editable: false, align:"center", width:100,},
     { field: "ibCost",             headerName: "입고단가",            editable: false, align:"right", width:100,
       valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
     },
@@ -100,25 +102,25 @@ export default function InboundPlanItemPop(props) {
     }else{
 
       //콤보박스 데이터 조회
-      setClientCdCmb(getCmbOfGlobalData("CLIENT_CD", ''))
+      if(clientCdCmb.length == 0) setClientCdCmb(getCmbOfGlobalData("CLIENT_CD", ''))
   
       //콤보박스 데이터 조회
-      setKeepTempeGbnCdCmb(getCmbOfGlobalData('CMMN_CD', 'KEEP_TEMPE_GBN_CD'));
-      setMinUomCdCmb(getCmbOfGlobalData('CMMN_CD', 'UOM_CD'));
-      setSetItemYnCmb(getCmbOfGlobalData('CMMN_CD', 'YN'));
-      setVatYnCmb(getCmbOfGlobalData('CMMN_CD', 'YN'));
-      setUseYnCmb(getCmbOfGlobalData('CMMN_CD', 'USE_YN'));
-      setItemGbnCdCmb(getCmbOfGlobalData('CMMN_CD', 'ITEM_GBN_CD'));
+      if(keepTempeGbnCdCmb.length == 0) setKeepTempeGbnCdCmb(getCmbOfGlobalData('CMMN_CD', 'KEEP_TEMPE_GBN_CD'));
+      if(minUomCdCmb.length == 0) setMinUomCdCmb(getCmbOfGlobalData('CMMN_CD', 'UOM_CD'));
+      if(setItemGbnCdCmb.length == 0) setSetItemYnCmb(getCmbOfGlobalData('CMMN_CD', 'YN'));
+      if(vatYnCmb.length == 0) setVatYnCmb(getCmbOfGlobalData('CMMN_CD', 'YN'));
+      if(useYnCmb.length == 0) setUseYnCmb(getCmbOfGlobalData('CMMN_CD', 'USE_YN'));
+      if(itemGbnCdCmb.length == 0) setItemGbnCdCmb(getCmbOfGlobalData('CMMN_CD', 'ITEM_GBN_CD'));
 
     }
-  }, [selRowId, clientCdCmb, keepTempeGbnCdCmb, minUomCdCmb, setItemYnCmb, vatYnCmb, useYnCmb, largeClassCdCmb, largeMiddleClassCdCmb, largeMiddleSmallClassCdCmb, itemGbnCdCmb]);
+  }, [selRowId, clientCdCmb, keepTempeGbnCdCmb, minUomCdCmb, setItemYnCmb, vatYnCmb, useYnCmb, largeClassCdCmb, largeMiddleClassCdCmb, largeMiddleSmallClassCdCmb, itemGbnCdCmb, dataList]);
 
 
   const handleSubmit = () => {
     const modalInfo = modals[key];
-    console.log('111', getModalData(key).data)
     if (modalInfo.callback && modalInfo.callback instanceof Function) {
         const result = modalInfo.callback(getModalData(key).data);
+        console.log('result = ',result)
         if (result == false) return;
     }
     closeModal(key);
@@ -143,41 +145,31 @@ export default function InboundPlanItemPop(props) {
 
   //그리드 체크박스 선택
   function handleSelectionChange(ids) {
-    chkRows = gvGetRowDataListOfChk(dataList, ids)
-    updateModalData(key, { ...getModalData(key), 'data':chkRows });
+    // dtlChkRows = gvGetRowDataListOfChk(dataList, ids)
+    updateModalData(key, { ...getModalData(key), 'data':dtlChkRows });
   }
 
   return (
     <>
       <DialogContent>
-        <SearchBar
+        <ComDeGrid
           onClickSelect={onClickSelect} 
-          // onClickAdd={onClickAdd} 
-          // onClickSave={onClickSave}
-          // onClickDel={onClickDel}
-          >
-        </SearchBar>
-        <Grid item style={{ height: '500px', width: '100%' }}>
-            <DataGrid
-              title={"Inbound Detail Item List"} //제목
-              rows={dataList} //dataList
-              columns={columns} //컬럼 정의
-              headerHeight={30} //헤더 높이
-              rowHeight={28} //행 높이
-              // onCellClick={handleGridCellClick}
-              footerHeight={30}
-              selectionModel={selRowId} //쎌선택 변수지정
-              onCellEditCommit={React.useCallback((params) => {
-                  dataList[params.id-1][params.field] = params.value;
-                },[dataList] //쎌변경시 데이터변경
-              )}
-              //체크박스
-              checkboxSelection
-              disableSelectionOnClick
-              onSelectionModelChange={handleSelectionChange}
 
-            />
-        </Grid>
+          title={"Inbound Detail List"} //제목
+          dataList={dataList} //dataList
+          columns={columns} //컬럼 정의
+          //Event
+          onRowClick={(params)=>{setSelRowId(params.id)}}
+          onCellEditCommit={React.useCallback((params) => {dataList[params.id-1][params.field] = params.value;},[dataList])} //쎌변경시 데이터변경
+          
+          //Multi
+          type={"multi"}
+          onChangeChks={(chkRows)=>{
+            if(chkRows.length == 0) return;
+            dtlChkRows = chkRows;
+            handleSelectionChange(chkRows);
+          }}
+        />
       </DialogContent>
       <DialogActions>
           <Button onClick={() => handleSubmit()}>확인</Button>

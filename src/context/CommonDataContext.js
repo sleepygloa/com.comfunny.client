@@ -6,11 +6,13 @@ export const CommonDataContext = createContext();
 export const useCommonData = () => useContext(CommonDataContext);
 
 export const CmmnCdProvider = ({ children }) => {
+    const [isLoadingComplFlag, setIsLoadingComplFlag] = useState(false); //로딩완료여부
     const [cmmnCdData, setCmmnCdData] = useState([]); //공통코드 전체 조회
     const [gbClientCdCmb, setGbClientCdCmb] = useState([]); //고객사코드 콤보
     const [gbDcCdCmb, setGbDcCdCmb] = useState([]); //물류센터코드 콤보
 
     useEffect(() => {
+        if(isLoadingComplFlag) return;
         // 이미 데이터가 존재하면 API 호출을 하지 않음
         if(cmmnCdData.length == 0) {
             const func = async () => {
@@ -50,7 +52,8 @@ export const CmmnCdProvider = ({ children }) => {
             funcFnSearchClient();
         }
 
-    }, [cmmnCdData, gbDcCdCmb, gbClientCdCmb]);
+        setIsLoadingComplFlag(true);
+    }, [cmmnCdData, gbDcCdCmb, gbClientCdCmb, isLoadingComplFlag]);
 
     // 특정 그룹 코드에 해당하는 데이터만 반환하는 함수
     const getCodesByGroupCode = (groupCode) => {

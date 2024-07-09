@@ -103,13 +103,18 @@ export default function InboundPlanPop(props) {
       align:"center", type: "singleSelect", valueFormatter: gvGridDropdownDisLabel,
       valueOptions: ibProgStCdCmb,
     },
-    { field: "itemCd",            headerName: "상품코드",   editable: false, align:"left", width:100},
-    { field: "itemNm",            headerName: "상품명",   editable: false, align:"left", width:300},
+    { field: "itemCd",            headerName: "상품코드",   editable: false,  align:"left", width:100},
+    { field: "itemNm",            headerName: "상품명",   editable: false,    align:"left", width:300},
     { field: "itemStCd",          headerName: "상품상태코드",   editable: false, 
       align:"center", type: "singleSelect", valueFormatter: gvGridDropdownDisLabel,
       valueOptions: itemStCdCmb,
     },
-    { field: "planQty",           headerName: "예정수량",   editable: true, align:"left", width:100},
+    { field: "pkqty",             headerName: "입수",      editable: false,  align:"center", width:100,},
+    { field: "planQty",           headerName: "예정수량",   editable: true,   align:"left",   width:100,
+      preProcessEditCellProps: (params) => gvGridFieldNumberPreEdit(params),
+      valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
+      valueParser: (value) => gvGridFieldNumberParser(value)
+    },
     { field: "ibCost",            headerName: "입고단가",   editable: false, align:"left", width:100,
       // preProcessEditCellProps: (params) => gvGridFieldNumberPreEdit(params),
       valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
@@ -500,9 +505,8 @@ export default function InboundPlanPop(props) {
           dataList={dataList}
           columns={columns}
           //Event
-          selRowId={selRowId}
-          setSelRowId={setSelRowId}
-          // onCellEditCommit={React.useCallback((params) => {dataList[params.id-1][params.field] = params.value;},[dataList])} //쎌변경시 데이터변경
+          onRowClick={(params)=>{setSelRowId(params.id)}}
+          onCellEditCommit={React.useCallback((params) => {dataList[params.id-1][params.field] = params.value;},[dataList])} //쎌변경시 데이터변경
 
           //Multi
           type={"multi"}

@@ -88,12 +88,15 @@ export default function InboundPlan() {
     { field: "itemStNm",          headerName: "상품상태",   editable: false, align:"left", width:100},
     // { field: "poUomCd",           headerName: "발주단위코드",   editable: false, align:"left", width:100},
     // { field: "poQty",             headerName: "발주수량",   editable: false, align:"left", width:100},
-    { field: "planQty",           headerName: "예정",   editable: false, align:"right", width:60},
-    { field: "confQty",           headerName: "확정",   editable: false, align:"right", width:60},
-    { field: "apprQty",           headerName: "승인",   editable: false, align:"right", width:60},
-    { field: "examQty",           headerName: "검수",   editable: false, align:"right", width:60},
-    { field: "instQty",           headerName: "지시",   editable: false, align:"right", width:60},
-    { field: "putwQty",           headerName: "적치",   editable: false, align:"right", width:60},
+    { field: "pkqty",             headerName: "입수",      editable: false,  align:"center", width:100,},
+    { field: "planTotQty",           headerName: "예정(총)",   editable: false, align:"right", width:100},
+    { field: "planBoxQty",           headerName: "예정(박스)",   editable: false, align:"right", width:100},
+    { field: "planEaQty",           headerName: "예정(낱개)",   editable: false, align:"right", width:100},
+    // { field: "confQty",           headerName: "확정",   editable: false, align:"right", width:60},
+    // { field: "apprQty",           headerName: "승인",   editable: false, align:"right", width:60},
+    // { field: "examQty",           headerName: "검수",   editable: false, align:"right", width:60},
+    // { field: "instQty",           headerName: "지시",   editable: false, align:"right", width:60},
+    // { field: "putwQty",           headerName: "적치",   editable: false, align:"right", width:60},
 
     // { field: "noIbRsnCd",         headerName: "미입고사유코드",   editable: false, align:"left", width:100},
     { field: "ibCost",            headerName: "입고단가",   editable: false, align:"right", width:100,
@@ -129,7 +132,7 @@ export default function InboundPlan() {
   //조회조건
   const [schValues, setSchValues] = useState({ 
     ibNo: "", 
-    ibPlanYmd : ""
+    ibPlanYmd : gvGetToday()
   });
   //조회조건
   const onChangeSearch = (event, id) => {

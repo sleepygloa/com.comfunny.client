@@ -92,15 +92,22 @@ export default function InboundExam() {
     // { field: "poUomCd",           headerName: "발주단위코드",   editable: false, align:"left", width:100},
     // { field: "poQty",             headerName: "발주수량",   editable: false, align:"left", width:100},
     { field: "planQty",           headerName: "예정",   editable: false, align:"right", width:60},
-    { field: "confQty",           headerName: "확정",   editable: false, align:"right", width:60},
+    // { field: "confQty",           headerName: "확정",   editable: false, align:"right", width:60},
     // { field: "apprQty",           headerName: "승인",   editable: false, align:"right", width:60},
-    { field: "examQty",           headerName: "검수",   editable: true, align:"right", width:60,
+
+    { field: "pkqty",             headerName: "입수",      editable: false,  align:"center", width:100,},
+    { field: "planTotQty",           headerName: "예정(총)",   editable: false, align:"right", width:100},
+    { field: "planBoxQty",           headerName: "예정(박스)",   editable: false, align:"right", width:100},
+    { field: "planEaQty",           headerName: "예정(낱개)",   editable: false, align:"right", width:100},
+    { field: "examTotQty",           headerName: "검수(총)",   editable: false, align:"right", width:100},
+    { field: "examBoxQty",           headerName: "검수(박스)",   editable: true, align:"right", width:100,
       preProcessEditCellProps: (params) => gvGridFieldNumberPreEdit(params),
       valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
       valueParser: (value) => gvGridFieldNumberParser(value)
     },
-    { field: "instQty",           headerName: "지시",   editable: false, align:"right", width:60},
-    { field: "putwQty",           headerName: "적치",   editable: false, align:"right", width:60},
+    { field: "examEaQty",           headerName: "검수(낱개)",   editable: false, align:"right", width:100},
+    // { field: "instQty",           headerName: "지시",   editable: false, align:"right", width:60},
+    // { field: "putwQty",           headerName: "적치",   editable: false, align:"right", width:60},
 
     // { field: "noIbRsnCd",         headerName: "미입고사유코드",   editable: false, align:"left", width:100},
     { field: "ibCost",            headerName: "입고단가",   editable: false, align:"right", width:100,
@@ -136,7 +143,7 @@ export default function InboundExam() {
   //조회조건
   const [schValues, setSchValues] = useState({ 
     ibNo: "", 
-    ibPlanYmd : ""
+    ibPlanYmd : gvGetToday()
   });
   //조회조건
   const onChangeSearch = (event, id) => {
@@ -311,12 +318,13 @@ export default function InboundExam() {
           </>
         }
 
-        title={"Inbound Detail List"} //제목
+        title={"Inbound List"} //제목
         dataList={dataList} //dataList
         columns={columns} //컬럼 정의
         //Event
-        selRowId={selRowId} //쎌선택 변수지정
-        setSelRowId={setSelRowId}
+        // selRowId={selRowId} //쎌선택 변수지정
+        // setSelRowId={setSelRowId}
+        onRowClick={(params)=>{setSelRowId(params.id); fnSearchDtl(params.row)}}
         
         //Multi
         type={"single"}
@@ -332,8 +340,7 @@ export default function InboundExam() {
         dataList={dataDtlList} //dataList
         columns={columnsDtl} //컬럼 정의
         //Event
-        selRowId={selDtlRowId} //쎌선택 변수지정
-        setSelRowId={setSelDtlRowId}
+        onRowClick={(params)=>{setSelDtlRowId(params.id)}}
         onCellEditCommit={React.useCallback((params) => {dataDtlList[params.id-1][params.field] = params.value;},[dataDtlList])} //쎌변경시 데이터변경
         
         //Multi
@@ -341,7 +348,7 @@ export default function InboundExam() {
         onChangeChks={(chkRows)=>{
           if(chkRows.length == 0) return;
           dtlChkRows = chkRows;
-          console.log(chkRows)
+          // console.log(chkRows)
         }}
       />
     </>

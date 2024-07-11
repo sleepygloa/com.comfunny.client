@@ -105,7 +105,11 @@ export default function InboundExam() {
       valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
       valueParser: (value) => gvGridFieldNumberParser(value)
     },
-    { field: "examEaQty",           headerName: "검수(낱개)",   editable: false, align:"right", width:100},
+    { field: "examEaQty",           headerName: "검수(낱개)",   editable: true, align:"right", width:100,
+      preProcessEditCellProps: (params) => gvGridFieldNumberPreEdit(params),
+      valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
+      valueParser: (value) => gvGridFieldNumberParser(value)
+    },
     // { field: "instQty",           headerName: "지시",   editable: false, align:"right", width:60},
     // { field: "putwQty",           headerName: "적치",   editable: false, align:"right", width:60},
 
@@ -123,18 +127,18 @@ export default function InboundExam() {
     { field: "makeYmd",           headerName: "제조일자",   editable: false, align:"left", width:100},
     { field: "distExpiryYmd",     headerName: "유통기한일자",   editable: false, align:"left", width:100},
     { field: "lotId",             headerName: "LOT_ID",   editable: false, align:"left", width:100},
-    { field: "lotAttr1",          headerName: "LOT속성1",   editable: false, align:"left", width:100},
-    { field: "lotAttr2",          headerName: "LOT속성2",   editable: false, align:"left", width:100},
-    { field: "lotAttr3",          headerName: "LOT속성3",   editable: false, align:"left", width:100},
-    { field: "lotAttr4",          headerName: "LOT속성4",   editable: false, align:"left", width:100},
-    { field: "lotAttr5",          headerName: "LOT속성5",   editable: false, align:"left", width:100},
+    // { field: "lotAttr1",          headerName: "LOT속성1",   editable: false, align:"left", width:100},
+    // { field: "lotAttr2",          headerName: "LOT속성2",   editable: false, align:"left", width:100},
+    // { field: "lotAttr3",          headerName: "LOT속성3",   editable: false, align:"left", width:100},
+    // { field: "lotAttr4",          headerName: "LOT속성4",   editable: false, align:"left", width:100},
+    // { field: "lotAttr5",          headerName: "LOT속성5",   editable: false, align:"left", width:100},
 
     // { field: "tcObDetailSeq",     headerName: "이고출고상세순번",     editable: false, align:"left", width:100},
-    { field: "userCol1",          headerName: "사용자컬럼1",      editable: false, align:"left", width:100},
-    { field: "userCol2",          headerName: "사용자컬럼2",      editable: false, align:"left", width:100},
-    { field: "userCol3",          headerName: "사용자컬럼3",      editable: false, align:"left", width:100},
-    { field: "userCol4",          headerName: "사용자컬럼4",      editable: false, align:"left", width:100},
-    { field: "userCol5",          headerName: "사용자컬럼5",       editable: false, align:"left", width:100},
+    // { field: "userCol1",          headerName: "사용자컬럼1",      editable: false, align:"left", width:100},
+    // { field: "userCol2",          headerName: "사용자컬럼2",      editable: false, align:"left", width:100},
+    // { field: "userCol3",          headerName: "사용자컬럼3",      editable: false, align:"left", width:100},
+    // { field: "userCol4",          headerName: "사용자컬럼4",      editable: false, align:"left", width:100},
+    // { field: "userCol5",          headerName: "사용자컬럼5",       editable: false, align:"left", width:100},
     // { field: "useYn",             headerName: "사용여부",         editable: false, align:"left", width:100},
     { field: "useYnNm",             headerName: "사용여부",         editable: false, align:"left", width:100},
     { field: "remark",            headerName: "비고",               editable: false, align:"left", width:300},
@@ -295,6 +299,32 @@ export default function InboundExam() {
     fnSearch();
   };
 
+    //쎌변경시 데이터 변경
+    const handleEditCellChangeCommitted = React.useCallback(
+
+      //가로, 세로, 높이 수정시 체적 계산
+      ({ id, field, value }) => {
+        if (['examBoxQty', 'examEaQty'].includes(field)) {
+          const updatedRows = dataDtlList.map((row) => {
+            if (row.id === id) {
+              const newFieldValues = {
+                ...row,
+                [field]: Number(value),
+              };
+              // Calculate new volume
+              newFieldValues.examTotQty = newFieldValues.examBoxQty * newFieldValues.pkqty + newFieldValues.examEaQty;
+              return newFieldValues;
+            }
+            return row;
+          });
+          setDataDtlList(updatedRows);
+        }
+  
+        dataDtlList[id-1][field] = value
+      },
+      [dataDtlList],
+    );
+
   return (
     <>
 
@@ -341,7 +371,7 @@ export default function InboundExam() {
         columns={columnsDtl} //컬럼 정의
         //Event
         onRowClick={(params)=>{setSelDtlRowId(params.id)}}
-        onCellEditCommit={React.useCallback((params) => {dataDtlList[params.id-1][params.field] = params.value;},[dataDtlList])} //쎌변경시 데이터변경
+        onCellEditCommit={handleEditCellChangeCommitted} //쎌변경시 데이터변경
         
         //Multi
         type={"multi"}

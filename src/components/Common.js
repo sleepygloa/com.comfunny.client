@@ -406,7 +406,7 @@ export const gvGridFieldEmailInput = ({ api, value, id, field }) => {
 
 //그리드 숫자(가로, 세로, 높이 등) 포켓
 // 사용 예: 1000 -> 1,000
-export const gvGridFieldNumberPreEdit = (params) => {
+export const gvGridFieldNumberPreEdit = (params, func) => {
     const hasError = isNaN(Number(params.props.value));
     return { ...params.props, error: hasError };
 }

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const API_URL = process.env.NODE_ENV === 'production' ? 'http://www.comfunnydevelopers.com:8090' : "http://localhost:8090";
+export const API_URL = process.env.NODE_ENV === 'production' ? 'http://www.comfunnydevelopers.com:8080' : "http://localhost:8080";
 export const CLINET_URL = process.env.NODE_ENV === 'production' ? 'http://sleepygloa.github.io' : "http://localhost:3000";
 export const KAKAO_API_KEY =  process.env.NODE_ENV === 'production' ? '2aff35e452cab69b072002d4f3b9b99e' : "2aff35e452cab69b072002d4f3b9b99e";
 export const blogMenu = [
@@ -39,6 +39,11 @@ export const blogMenu = [
             {menuCd: 1050, label: "입고관리", link: "/wms/ib/", thumbnail:"", blog:"",
                 children:[
                     {menuCd: 1051, label: "입고", link: "/wms/ib/inbound", thumbnail:"", blog:"",},
+                    ]
+            },
+            {menuCd: 1070, label: "재고관리", link: "/wms/st/", thumbnail:"", blog:"",
+                children:[
+                    {menuCd: 1071, label: "재고이동", link: "/wms/st/stockMove", thumbnail:"", blog:"",},
                     ]
             },
         ]

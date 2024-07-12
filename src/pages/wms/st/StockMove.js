@@ -73,65 +73,25 @@ export default function StockMove() {
   //재고이동상세
   const columnsDtl = [
     { field: "id",                headerName: "ID",             editable:false, align:"center", width:20},
-    { field: "ibDetailSeq",       headerName: "순번",       editable: false, align:"right", width:60},
+    { field: "moveDetailSeq",       headerName: "순번",       editable: false, align:"right", width:60},
     // { field: "ibProgStCd",        headerName: "입고진행상태코드",   editable: false, align:"left", width:100},
-    { field: "ibProgStNm",        headerName: "진행상태",   editable: false, align:"left", width:100},
-    { field: "itemCd",            headerName: "상품코드",   editable: false, align:"left", width:100},
-    { field: "itemNm",            headerName: "상품명",     editable: false, align:"left", width:300},
-    // { field: "itemStCd",          headerName: "상품상태코드",   editable: false, align:"left", width:100},
-    { field: "itemStNm",          headerName: "상품상태",   editable: false, align:"left", width:100},
-    // { field: "poUomCd",           headerName: "발주단위코드",   editable: false, align:"left", width:100},
-    // { field: "poQty",             headerName: "발주수량",   editable: false, align:"left", width:100},
-    { field: "planQty",           headerName: "예정",     editable: false, align:"right", width:60},
-    // { field: "confQty",           headerName: "확정",   editable: false, align:"right", width:60},
-    // { field: "apprQty",           headerName: "승인",   editable: false, align:"right", width:60},
+  { field: "workStNm",            headerName: "작업상태",       editable: false, align:"left", width:100},
+    { field: "frLocCd",            headerName: "FR로케이션",    editable: false, align:"left", width:100},
+    { field: "toLocCd",            headerName: "TO로케이션",     editable: false, align:"left", width:100},
+    { field: "itemCd",            headerName: "상품코드",       editable: false, align:"left", width:100},
+    { field: "itemNm",            headerName: "상품명",         editable: false, align:"left", width:200},
+    { field: "itemStNm",          headerName: "상품상태",       editable: false, align:"left", width:100},
+    { field: "instQty",           headerName: "지시수량",       editable: false, align:"left", width:80},
+    { field: "confQty",           headerName: "확정수량",       editable: false, align:"right", width:80},
 
-    { field: "pkqty",             headerName: "입수",      editable: false,  align:"center", width:100,},
-    { field: "planTotQty",           headerName: "예정(총)",   editable: false, align:"right", width:100},
-    { field: "planBoxQty",           headerName: "예정(박스)",   editable: false, align:"right", width:100},
-    { field: "planEaQty",           headerName: "예정(낱개)",   editable: false, align:"right", width:100},
-    { field: "examTotQty",           headerName: "검수(총)",   editable: false, align:"right", width:100},
-    { field: "examBoxQty",           headerName: "검수(박스)",   editable: true, align:"right", width:100,
-      preProcessEditCellProps: (params) => gvGridFieldNumberPreEdit(params),
-      valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
-      valueParser: (value) => gvGridFieldNumberParser(value)
-    },
-    { field: "examEaQty",           headerName: "검수(낱개)",   editable: true, align:"right", width:100,
-      preProcessEditCellProps: (params) => gvGridFieldNumberPreEdit(params),
-      valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
-      valueParser: (value) => gvGridFieldNumberParser(value)
-    },
-    // { field: "instQty",           headerName: "지시",   editable: false, align:"right", width:60},
-    // { field: "putwQty",           headerName: "적치",   editable: false, align:"right", width:60},
+    { field: "lotId",             headerName: "LOT_ID",       editable: false, align:"right", width:150},
+    { field: "moveRsNm",          headerName: "이동",           editable: false, align:"right", width:60},
 
-    // { field: "noIbRsnCd",         headerName: "미입고사유코드",   editable: false, align:"left", width:100},
-    { field: "ibCost",            headerName: "입고단가",   editable: false, align:"right", width:100,
-      valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
-    },
-    { field: "ibVat",             headerName: "입고VAT",   editable: false, align:"right", width:100,
-      valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
-    },
-    { field: "ibAmt",             headerName: "입고금액",   editable: false, align:"right", width:100,
-      valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
-    },
-    { field: "makeLot",           headerName: "제조LOT",   editable: false, align:"left", width:100},
-    { field: "makeYmd",           headerName: "제조일자",   editable: false, align:"left", width:100},
-    { field: "distExpiryYmd",     headerName: "유통기한일자",   editable: false, align:"left", width:100},
-    { field: "lotId",             headerName: "LOT_ID",   editable: false, align:"left", width:100},
-    // { field: "lotAttr1",          headerName: "LOT속성1",   editable: false, align:"left", width:100},
-    // { field: "lotAttr2",          headerName: "LOT속성2",   editable: false, align:"left", width:100},
-    // { field: "lotAttr3",          headerName: "LOT속성3",   editable: false, align:"left", width:100},
-    // { field: "lotAttr4",          headerName: "LOT속성4",   editable: false, align:"left", width:100},
-    // { field: "lotAttr5",          headerName: "LOT속성5",   editable: false, align:"left", width:100},
-
-    // { field: "tcObDetailSeq",     headerName: "이고출고상세순번",     editable: false, align:"left", width:100},
-    // { field: "userCol1",          headerName: "사용자컬럼1",      editable: false, align:"left", width:100},
-    // { field: "userCol2",          headerName: "사용자컬럼2",      editable: false, align:"left", width:100},
-    // { field: "userCol3",          headerName: "사용자컬럼3",      editable: false, align:"left", width:100},
-    // { field: "userCol4",          headerName: "사용자컬럼4",      editable: false, align:"left", width:100},
-    // { field: "userCol5",          headerName: "사용자컬럼5",       editable: false, align:"left", width:100},
-    // { field: "useYn",             headerName: "사용여부",         editable: false, align:"left", width:100},
-    { field: "useYnNm",             headerName: "사용여부",         editable: false, align:"left", width:100},
+    { field: "workDt",            headerName: "작업일시",      editable: false,  align:"center", width:100,},
+    { field: "workUserId",        headerName: "작업자",       editable: false, align:"right", width:100},
+    { field: "refVal1",           headerName: "참조값1",      editable: false, align:"right", width:100},
+    { field: "refVal2",           headerName: "참조값2",      editable: false, align:"right", width:100},
+    { field: "refVal3",           headerName: "참조값3",      editable: false, align:"right", width:100},
     { field: "remark",            headerName: "비고",               editable: false, align:"left", width:300},
   ];
 
@@ -176,7 +136,7 @@ export default function StockMove() {
   const fnSearch = () => {
     var data = {
       moveNo : schValues.moveNo,
-      moveYmd : schValues.moveYmd,
+      workYmd : schValues.workYmd,
     };
     client.post(`${PRO_URL}/selectStockMoveList`, data, {})
       .then(res => {
@@ -226,7 +186,7 @@ export default function StockMove() {
       () => {
         var rowData = gvGetRowData(dataList, selRowId);
         //로케이션 저장
-        client.post(`${PRO_URL}/saveInboundExam`,rowData, {})
+        client.post(`${PRO_URL}/saveStockMoveConfirm`,rowData, {})
           .then(res => {
             openModal('', 'I', '검수완료 되었습니다.');
             fnSearch();

@@ -79,7 +79,7 @@ export default function InboundPlanPop(props) {
     useYn: 'Y',
   });
 
-  // var chkRows = [];
+  var gChkRows = [];
   
   const [selRowId, setSelRowId] = useState(); //그리드 선택된 행
   const [dataList, setDataList] = useState([]); //그리드 데이터셋
@@ -110,7 +110,13 @@ export default function InboundPlanPop(props) {
       valueOptions: itemStCdCmb,
     },
     { field: "pkqty",             headerName: "입수",      editable: false,  align:"center", width:100,},
-    { field: "planQty",           headerName: "예정수량",   editable: true,   align:"left",   width:100,
+    { field: "planTotQty",           headerName: "입수(총)",   editable: false, align:"right", width:100},
+    { field: "planBoxQty",           headerName: "입수(박스)",   editable: true, align:"right", width:100,
+      preProcessEditCellProps: (params) => gvGridFieldNumberPreEdit(params),
+      valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
+      valueParser: (value) => gvGridFieldNumberParser(value)
+    },
+    { field: "planEaQty",           headerName: "입수(낱개)",   editable: true, align:"right", width:100,
       preProcessEditCellProps: (params) => gvGridFieldNumberPreEdit(params),
       valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
       valueParser: (value) => gvGridFieldNumberParser(value)
@@ -245,6 +251,13 @@ export default function InboundPlanPop(props) {
       () => {
 
         formData.data = getModalData(key).data;
+        // console.log(formData.data, dataList)
+        // var rowss = dataList.filter(row => {return formData.data.includes(row.id)});
+        // console.log(rowss);
+        if(formData.data.length == 0){
+          openModal('', 'I', '상품을 선택해주세요');
+          return;
+        }
 
         //로케이션 저장
         client.post(`${PRO_URL}/saveInboundPlan`,formData, {})
@@ -283,7 +296,10 @@ export default function InboundPlanPop(props) {
       const newDataList = gvDataGridAddRowAndStatus(dataList, data, {
         ibProgStCd: '10',
         itemStCd: '10',
-        planQty: 1,
+        planQty: 0,
+        planTotQty: 0,
+        planBoxQty: 0,
+        planEaQty: 0,
         useYn: 'Y'
       });
 
@@ -300,9 +316,35 @@ export default function InboundPlanPop(props) {
 
   //그리드 체크박스 선택
   function onChangeChks(chkRows) {
-    if(chkRows.length == 0) return;
     updateModalData(key, { ...getModalData(key), 'data':chkRows });
   }
+
+
+  const handleEditCellChangeCommitted = React.useCallback(
+
+    //가로, 세로, 높이 수정시 체적 계산
+    ({ id, field, value }) => {
+      if (['planBoxQty', 'planEaQty'].includes(field)) {
+        const updatedRows = dataList.map((row) => {
+          if (row.id === id) {
+            const newFieldValues = {
+              ...row,
+              [field]: Number(value),
+            };
+            // Calculate new volume
+            newFieldValues.planTotQty = newFieldValues.planBoxQty * newFieldValues.pkqty + newFieldValues.planEaQty;
+            return newFieldValues;
+          }
+          return row;
+        });
+        setDataList(updatedRows);
+      }
+
+      dataList[id-1][field] = value
+    },
+    [dataList],
+  );
+
   return (
     <>
       <DialogContent>
@@ -368,7 +410,7 @@ export default function InboundPlanPop(props) {
               onChange={handleChange}
             />
           </Grid>
-          <Grid item xs={12} sm={3}>
+          {/* <Grid item xs={12} sm={3}>
             <FrmDate 
               id="ibYmd"
               name={fieldLabels["ibYmd"]}
@@ -376,8 +418,8 @@ export default function InboundPlanPop(props) {
               onChange={handleChange}
               readonly
             />
-          </Grid>
-          <Grid item xs={12} sm={3}>
+          </Grid> */}
+          {/* <Grid item xs={12} sm={3}>
             <FrmTextField 
               id="poNo"
               name={fieldLabels["poNo"]}
@@ -396,7 +438,7 @@ export default function InboundPlanPop(props) {
               selected={formData.poYmd}
               onChange={handleChange}
             />
-          </Grid>
+          </Grid> */}
           <Grid item xs={12} sm={3}>
             <FrmSelect 
               id="supplierCd"
@@ -417,7 +459,7 @@ export default function InboundPlanPop(props) {
               onChange={handleChange}
             />
           </Grid>
-          <Grid item xs={12} sm={3}>
+          {/* <Grid item xs={12} sm={3}>
             <FrmTextField 
               id="tcObNo"
               name={fieldLabels["tcObNo"]}
@@ -426,8 +468,8 @@ export default function InboundPlanPop(props) {
               errors={errors}
               onChange={handleChange}
             />
-          </Grid>
-          <Grid item xs={12} sm={3}>
+          </Grid> */}
+          {/* <Grid item xs={12} sm={3}>
             <FrmTextField 
               id="userCol1"
               name={fieldLabels["userCol1"]}
@@ -476,7 +518,7 @@ export default function InboundPlanPop(props) {
               errors={errors}
               onChange={handleChange}
             />
-          </Grid>
+          </Grid> */}
           <Grid item xs={12} sm={3}>
             <FrmTextField 
               id="remark"
@@ -506,7 +548,7 @@ export default function InboundPlanPop(props) {
           columns={columns}
           //Event
           onRowClick={(params)=>{setSelRowId(params.id)}}
-          onCellEditCommit={React.useCallback((params) => {dataList[params.id-1][params.field] = params.value;},[dataList])} //쎌변경시 데이터변경
+          onCellEditCommit={handleEditCellChangeCommitted} //쎌변경시 데이터변경
 
           //Multi
           type={"multi"}

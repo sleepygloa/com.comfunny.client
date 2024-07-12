@@ -100,7 +100,13 @@ const columns = [
   { field: "userCol3",         headerName: "사용자컬럼3",               editable: true, align:"left", width:100},
   { field: "userCol4",         headerName: "사용자컬럼4",               editable: true, align:"left", width:100},
   { field: "userCol5",         headerName: "사용자컬럼5",               editable: true, align:"left", width:100},
-  { field: "remark",            headerName: "비고",               editable: true, align:"left", width:300},
+
+  { field: "stdWidth",          headerName: "기준X",                editable: true, align:"center", width:100},
+  { field: "stdLength",         headerName: "기준Y",                editable: true, align:"center", width:100},
+  { field: "width",             headerName: "가로",                 editable: true, align:"center", width:100},
+  { field: "length",            headerName: "세로",                 editable: true, align:"center", width:100},
+  { field: "height",            headerName: "높이",                 editable: true, align:"center", width:100},
+  { field: "remark",            headerName: "비고",                 editable: true, align:"left", width:300},
 ];
 
   //조회조건

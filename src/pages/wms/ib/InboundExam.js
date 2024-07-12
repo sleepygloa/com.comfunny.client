@@ -299,31 +299,31 @@ export default function InboundExam() {
     fnSearch();
   };
 
-    //쎌변경시 데이터 변경
-    const handleEditCellChangeCommitted = React.useCallback(
+  //쎌변경시 데이터 변경
+  const handleEditCellChangeCommitted = React.useCallback(
 
-      //가로, 세로, 높이 수정시 체적 계산
-      ({ id, field, value }) => {
-        if (['examBoxQty', 'examEaQty'].includes(field)) {
-          const updatedRows = dataDtlList.map((row) => {
-            if (row.id === id) {
-              const newFieldValues = {
-                ...row,
-                [field]: Number(value),
-              };
-              // Calculate new volume
-              newFieldValues.examTotQty = newFieldValues.examBoxQty * newFieldValues.pkqty + newFieldValues.examEaQty;
-              return newFieldValues;
-            }
-            return row;
-          });
-          setDataDtlList(updatedRows);
-        }
-  
-        dataDtlList[id-1][field] = value
-      },
-      [dataDtlList],
-    );
+    //가로, 세로, 높이 수정시 체적 계산
+    ({ id, field, value }) => {
+      if (['examBoxQty', 'examEaQty'].includes(field)) {
+        const updatedRows = dataDtlList.map((row) => {
+          if (row.id === id) {
+            const newFieldValues = {
+              ...row,
+              [field]: Number(value),
+            };
+            // Calculate new volume
+            newFieldValues.examTotQty = newFieldValues.examBoxQty * newFieldValues.pkqty + newFieldValues.examEaQty;
+            return newFieldValues;
+          }
+          return row;
+        });
+        setDataDtlList(updatedRows);
+      }
+
+      dataDtlList[id-1][field] = value
+    },
+    [dataDtlList],
+  );
 
   return (
     <>

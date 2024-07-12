@@ -36,7 +36,6 @@ export default function Inbound() {
     { label: '입고현황', badgeContent: 0 },
     { label: '입고예정', badgeContent: 0 },
     { label: '입고검수', badgeContent: 0 },
-    { label: '입고적치', badgeContent: 0 }
   ];
 
   const handleTabChange = (event, newValue) => {
@@ -65,7 +64,6 @@ export default function Inbound() {
       {activeTab === 0 && <InboundInq />}
       {activeTab === 1 && <InboundPlan />}
       {activeTab === 2 && <InboundExam />}
-      {activeTab === 3 && <InboundPutw />}
     </>
   );
 }

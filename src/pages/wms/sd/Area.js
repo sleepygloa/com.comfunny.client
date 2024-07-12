@@ -56,6 +56,13 @@ export default function Biz(props) {
       align:"center", type: "singleSelect", valueFormatter: gvGridDropdownDisLabel,  
       valueOptions: keepTempGbnCmb,
     },
+
+    { field: "stdWidth",          headerName: "기준X",                editable: true, align:"center", width:100},
+    { field: "stdLength",         headerName: "기준Y",                editable: true, align:"center", width:100},
+    { field: "width",             headerName: "가로",                 editable: true, align:"center", width:100},
+    { field: "length",            headerName: "세로",                 editable: true, align:"center", width:100},
+    { field: "height",            headerName: "높이",                 editable: true, align:"center", width:100},
+    
     { field: "useYn",             headerName: "사용여부",             editable: true, 
         align:"center", type: "singleSelect", valueFormatter: gvGridDropdownDisLabel, 
         valueOptions: useYnCmb,

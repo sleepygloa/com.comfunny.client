@@ -68,16 +68,6 @@ export const ComDeGrid = (props) =>{
               //     dataList[params.id-1][params.field] = params.value;
               //   },[dataList] //쎌변경시 데이터변경
               // )}
-              //체크박스
-              // {props.type == "multi" ?
-              //   checkboxSelection disableSelectionOnClick
-              //   onSelectionModelChange={handleSelectionChange}
-              //   :
-              //   ''
-              // }
-              // checkboxSelection
-              // disableSelectionOnClick
-              // onSelectionModelChange={handleSelectionChange}
             />
           : ''
         }
@@ -95,6 +85,7 @@ export const ComDeGrid = (props) =>{
               columns={props.columns} //컬럼 정의
     
               // onCellClick={handleGridCellClick}
+              onCellClick={props.onCellClick ? props.onCellClick : null}
               // selectionModel={props.selRowId} //쎌선택 변수지정
               onRowClick={props.onRowClick ? props.onRowClick : null}
               onCellEditCommit={props.onCellEditCommit ? props.onCellEditCommit : null} //쎌변경시 데이터변경

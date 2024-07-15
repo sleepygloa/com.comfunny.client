@@ -7,7 +7,7 @@ import {SchTextField, SchDateField} from "../../../components/SearchBar/Componen
 
 import { DataGrid } from "@mui/x-data-grid";
 import { ComDeGrid } from "../../../components/Grid/ComDeGrid.js";
-import { Box, Tabs, Tab, Badge, Grid } from '@mui/material';
+import { Box, Tabs, Tab, Badge, Grid, Typography } from '@mui/material';
 
 //Common
 import {client} from '../../../contraints.js';
@@ -32,6 +32,12 @@ import { useCommonData } from "../../../context/CommonDataContext.js";
 //Modal
 import {useModal} from "../../../context/ModalContext.js";
 
+// DataGrid Css
+import IconButton from '@mui/material/IconButton';
+import SearchIcon from '@mui/icons-material/Search';
+
+import StockMoveLocPop from "./StockMoveLocPop.js";
+
 export default function StockMove() {
   //초기변수 세팅
   const {menuTitle} = '재고이동';
@@ -44,7 +50,8 @@ export default function StockMove() {
 
   //그리드 선택된 행
   const [selRowId, setSelRowId] = useState();
-  const [selDtlRowId, setSelDtlRowId] = useState();
+  // const [selDtlRowId, setSelDtlRowId] = useState();
+  var selDtlRowId = -1;
   //메뉴 데이터 변수
   const [dataList, setDataList] = useState([]); //
   const [dataDtlList, setDataDtlList] = useState([]); //
@@ -75,22 +82,32 @@ export default function StockMove() {
     { field: "id",                headerName: "ID",             editable:false, align:"center", width:20},
     { field: "moveDetailSeq",       headerName: "순번",       editable: false, align:"right", width:60},
     // { field: "ibProgStCd",        headerName: "입고진행상태코드",   editable: false, align:"left", width:100},
-  { field: "workStNm",            headerName: "작업상태",       editable: false, align:"left", width:100},
+    { field: "workStNm",            headerName: "작업상태",       editable: false, align:"left", width:100},
     { field: "frLocCd",            headerName: "FR로케이션",    editable: false, align:"left", width:100},
-    { field: "toLocCd",            headerName: "TO로케이션",     editable: false, align:"left", width:100},
+    { field: "toLocCd",            headerName: "TO로케이션",     editable: false, align:"left", width:150,
+      renderCell: (params) => (
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: 1, alignItems:'center' }}>
+          <Typography variant="body2">{params.value}</Typography>
+          <IconButton><SearchIcon /></IconButton>
+        </Box>
+    ),},
     { field: "itemCd",            headerName: "상품코드",       editable: false, align:"left", width:100},
     { field: "itemNm",            headerName: "상품명",         editable: false, align:"left", width:200},
     { field: "itemStNm",          headerName: "상품상태",       editable: false, align:"left", width:100},
-    { field: "instQty",           headerName: "지시수량",       editable: false, align:"left", width:80},
-    { field: "confQty",           headerName: "확정수량",       editable: false, align:"right", width:80},
+    { field: "instQty",           headerName: "지시수량",       editable: false, align:"right", width:80},
+    { field: "confQty",           headerName: "확정수량",       editable: true, align:"right", width:80,
+      preProcessEditCellProps: (params) => gvGridFieldNumberPreEdit(params),
+      valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
+      valueParser: (value) => gvGridFieldNumberParser(value)
+    },
 
-    { field: "lotId",             headerName: "LOT_ID",       editable: false, align:"right", width:150},
-    { field: "moveRsNm",          headerName: "이동",           editable: false, align:"right", width:60},
+    { field: "lotId",             headerName: "LOT_ID",       editable: false, align:"left", width:150},
+    { field: "moveRsNm",          headerName: "이동사유구분",           editable: false, align:"right", width:100},
 
     { field: "workDt",            headerName: "작업일시",      editable: false,  align:"center", width:100,},
     { field: "workUserId",        headerName: "작업자",       editable: false, align:"right", width:100},
     { field: "refVal1",           headerName: "참조값1",      editable: false, align:"right", width:100},
-    { field: "refVal2",           headerName: "참조값2",      editable: false, align:"right", width:100},
+    { field: "refVal2",           headerName: "참조값2",      editable: false, align:"right", width:150},
     { field: "refVal3",           headerName: "참조값3",      editable: false, align:"right", width:100},
     { field: "remark",            headerName: "비고",               editable: false, align:"left", width:300},
   ];
@@ -129,7 +146,7 @@ export default function StockMove() {
 
   //프로그램 로딩시 실행 및 상태관리
   useEffect(() => {
-  }, []);
+  }, [selRowId, dataList, dataDtlList]);
 
 
   //조회
@@ -204,7 +221,7 @@ export default function StockMove() {
         const formData = {}
         formData.data = dtlChkRows;
         //로케이션 저장
-        client.post(`${PRO_URL}/saveStockMoveDtlList`,formData, {})
+        client.post(`${PRO_URL}/saveStockMoveDetailWorkProcOfPc`,formData, {})
           .then(res => {
             openModal('', 'I', '재고이동 처리 되었습니다.');
             fnSearchDtl(gvGetRowData(dataList, selRowId));
@@ -216,14 +233,35 @@ export default function StockMove() {
   }
 
 
-    //쎌변경시 데이터 변경
-    const handleEditCellChangeCommitted = React.useCallback(
-      //가로, 세로, 높이 수정시 체적 계산
-      ({ id, field, value }) => {
-        dataDtlList[id-1][field] = value
-      },
-      [dataDtlList],
-    );
+  //쎌변경시 데이터 변경
+  const handleEditCellChangeCommitted = React.useCallback(
+    //가로, 세로, 높이 수정시 체적 계산
+    ({ id, field, value }) => {
+      dataDtlList[id-1][field] = value
+    },
+    [dataDtlList],
+  );
+
+  var rowddd = -1;
+  //쎌클릭 핸들링
+  const handleGridCellClick = React.useCallback((e) => {
+    selDtlRowId = e.id;
+    if (e.field === 'toLocCd') {
+      openPopupFindToLocCd();
+    }
+  }  ,[dataDtlList])
+
+  //로케이션찾기 팝업
+  const openPopupFindToLocCd = () => {
+    openModal('FIND_TO_LOC', '로케이션 찾기', <StockMoveLocPop />, handleAddressUpdate, '800px', '600px');
+  }
+
+  //로케이션찾기 팝업 콜백함수
+  const handleAddressUpdate = (data) => {
+    //현재 선택된 row 에 리턴된 locCd 를 toLocCd에 세팅
+    const rowData = gvGetRowData(dataDtlList, selDtlRowId);
+    rowData["toLocCd"] = data.locCd;
+  };
 
   return (
     <>
@@ -264,7 +302,8 @@ export default function StockMove() {
         dataList={dataDtlList} //dataList
         columns={columnsDtl} //컬럼 정의
         //Event
-        onRowClick={(params)=>{setSelDtlRowId(params.id)}}
+        onCellClick={handleGridCellClick}
+        onRowClick={(params)=>{selDtlRowId = params.id;}}
         onCellEditCommit={handleEditCellChangeCommitted} //쎌변경시 데이터변경
         
         //Multi

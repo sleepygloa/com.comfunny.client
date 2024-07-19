@@ -46,6 +46,11 @@ export const blogMenu = [
                     {menuCd: 1071, label: "재고이동", link: "/wms/st/stockMove", thumbnail:"", blog:"",},
                     ]
             },
+            {menuCd: 1090, label: "출고관리", link: "/wms/st/", thumbnail:"", blog:"",
+                children:[
+                    {menuCd: 1091, label: "출고", link: "/wms/ob/outbound", thumbnail:"", blog:"",},
+                    ]
+            },
         ]
     },
 ]

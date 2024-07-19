@@ -6,7 +6,6 @@ import SearchBar from "../../../components/SearchBar/SearchBar.js";
 import {SchTextField, SchDateField} from "../../../components/SearchBar/Components/TextFieldDefault.js"
 
 import { DataGrid } from "@mui/x-data-grid";
-import { ComDeGrid } from "../../../components/Grid/ComDeGrid.js";
 import { Box, Tabs, Tab, Badge, Grid } from '@mui/material';
 
 //Common
@@ -31,7 +30,7 @@ import { useCommonData } from "../../../context/CommonDataContext.js";
 
 //Modal
 import {useModal} from "../../../context/ModalContext.js";
-import InboundPlanPop from "./InboundPlanPop.js";
+import InboundPlanPop from "./OutboundPlanPop.js";
 
 export default function InboundPlan() {
   const {menuTitle} = '입고예정';
@@ -106,10 +105,10 @@ export default function InboundPlan() {
     { field: "ibAmt",             headerName: "입고금액",   editable: false, align:"right", width:100,
       valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
     },
-    { field: "makeLot",           headerName: "제조LOT",   editable: false, align:"left", width:150},
+    { field: "makeLot",           headerName: "제조LOT",   editable: false, align:"left", width:100},
     { field: "makeYmd",           headerName: "제조일자",   editable: false, align:"left", width:100},
     { field: "distExpiryYmd",     headerName: "유통기한일자",   editable: false, align:"left", width:100},
-    { field: "lotId",             headerName: "LOT_ID",   editable: false, align:"left", width:150},
+    { field: "lotId",             headerName: "LOT_ID",   editable: false, align:"left", width:100},
     { field: "lotAttr1",          headerName: "LOT속성1",   editable: false, align:"left", width:100},
     { field: "lotAttr2",          headerName: "LOT속성2",   editable: false, align:"left", width:100},
     { field: "lotAttr3",          headerName: "LOT속성3",   editable: false, align:"left", width:100},
@@ -130,7 +129,7 @@ export default function InboundPlan() {
   //조회조건
   const [schValues, setSchValues] = useState({ 
     ibNo: "", 
-    ibPlanYmd : gvGetToday()
+    ibPlanYmd : ""
   });
   //조회조건
   const onChangeSearch = (event, id) => {
@@ -205,46 +204,51 @@ export default function InboundPlan() {
 
   return (
     <>
-      <ComDeGrid
+      <SearchBar
         onClickSelect={onClickSelect} 
-        searchBarChildren={
-          <>
-            <SchTextField id="ibNo" label='입고번호/명'
-              div={"4"}
-              onChange={onChangeSearch} 
-              onKeyDown={onKeyDown} />  
-            <SchDateField id="ibPlanYmd" label='입고예정일'
-              div={"4"}
-              selected={schValues.ibPlanYmd}
-              onChange={onChangeSearch} 
-              />    
-          </>
-        }
+        // onClickAdd={onClickAdd} 
+        // onClickSave={onClickSave}
+        // onClickDel={onClickDel}
+        >
+          <SchTextField id="ibNo" label='입고번호/명'
+            div={"4"}
+            onChange={onChangeSearch} 
+            onKeyDown={onKeyDown} />  
+          {/* <SchDateField id="ibPlanYmd" label='입고예정일'
+            div={"4"}
+            selected={schValues.ibPlanYmd}
+            onChange={onChangeSearch} 
+            />     */}
+      </SearchBar>
+      <Grid item xs={12} style={{ height: 350, width: '100%' }}>
+        <DataGrid
+          title={"Inbound List"} //제목
+          rows={dataList} //dataList
+          columns={columns} //컬럼 정의
+          headerHeight={30} //헤더 높이
+          rowHeight={28} //행 높이
+          onRowClick={(e)=>{setValues(e.row); fnSearchDtl(e.row)} }
+          footerHeight={30}
+          selectionModel={selRowId} //쎌선택 변수지정
+        />
+      </Grid>      
 
-        title={"Inbound List"} //제목
-        dataList={dataList} //dataList
-        columns={columns} //컬럼 정의
-        height={"250px"}
-        //Event
-        // selRowId={selRowId} //쎌선택 변수지정
-        // setSelRowId={setSelRowId}
-        onRowClick={(params)=>{setSelRowId(params.id); fnSearchDtl(params.row)}}
-        
-        //Multi
-        type={"single"}
-      />
-
-      <ComDeGrid
-
-        title={"Inbound Detail List"} //제목
-        dataList={dataDtlList} //dataList
-        columns={columnsDtl} //컬럼 정의
-        //Event
-        onRowClick={(params)=>{setSelDtlRowId(params.id)}}
-        // onCellEditCommit={handleEditCellChangeCommitted} //쎌변경시 데이터변경
-        
-        type={"single"}
-      />
+      <SearchBar
+        >
+      </SearchBar>
+      <Grid item xs={12} style={{ height: '500px', width: '100%' }}>
+        <DataGrid
+          title={"Inbound Detail List"} //제목
+          rows={dataDtlList} //dataList
+          columns={columnsDtl} //컬럼 정의
+          headerHeight={30} //헤더 높이
+          rowHeight={28} //행 높이
+          onRowClick={(e)=>{setValuesDtl(e.row); setSelDtlRowId(e.row.id);} }
+          footerHeight={30}
+          selectionModel={selDtlRowId} //쎌선택 변수지정
+          
+        />
+      </Grid>
     </>
   );
 }

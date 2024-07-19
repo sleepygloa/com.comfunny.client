@@ -31,6 +31,7 @@ export default function StockMoveLocPop(props) {
   const { modals, openModal, closeModal, updateModalData, getModalData } = useModal();
   const key = 'FIND_TO_LOC'; 
   const { getCmbOfGlobalData } = useCommonData();
+  const refVal1 = (props.refVal1 ? props.refVal1 : 'MV');
 
   const getRowId = "";
   const [selRowId, setSelRowId] = useState(); //그리드 선택된 행
@@ -71,7 +72,9 @@ export default function StockMoveLocPop(props) {
 
   //조회
   const fnSearch = () => {
-    var data = {};
+    var data = {
+      refVal1  : refVal1
+    };
     client.post(`${PRO_URL}/selectStockMoveLocPop`, data, {})
       .then(res => {
         var dataList = res.data;

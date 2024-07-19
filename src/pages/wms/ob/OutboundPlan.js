@@ -6,7 +6,6 @@ import SearchBar from "../../../components/SearchBar/SearchBar.js";
 import {SchTextField, SchDateField} from "../../../components/SearchBar/Components/TextFieldDefault.js"
 
 import { DataGrid } from "@mui/x-data-grid";
-import { ComDeGrid } from "../../../components/Grid/ComDeGrid.js";
 import { Box, Tabs, Tab, Badge, Grid } from '@mui/material';
 
 //Common
@@ -31,11 +30,11 @@ import { useCommonData } from "../../../context/CommonDataContext.js";
 
 //Modal
 import {useModal} from "../../../context/ModalContext.js";
-import InboundPlanPop from "./InboundPlanPop.js";
+import OutboundPlanPop from "./OutboundPlanPop.js";
 
-export default function InboundPlan() {
-  const {menuTitle} = '입고예정';
-  const PRO_URL = '/wms/ib/inboundInq';
+export default function OutboundPlan() {
+  const {menuTitle} = '출고예정';
+  const PRO_URL = '/wms/ob/outboundPlan';
   const {openModal} = useModal();
   const { cmmnCdData, getCodesCmbByGroupCode } = useCommonData();
 
@@ -48,20 +47,20 @@ export default function InboundPlan() {
   const [dataList, setDataList] = useState([]); //
   const [dataDtlList, setDataDtlList] = useState([]); //
 
-  //입고전표컬럼
+  //출고전표컬럼
   const columns = [
     { field: "id",                headerName: "ID",             editable:false, align:"center", width:20},
     // { field: "dcCd",              headerName: "물류창고",      editable: false, align:"left", width:120},
     { field: "dcNm",              headerName: "물류창고",      editable: false, align:"left", width:120},
-    { field: "ibNo",              headerName: "입고번호",         editable: false, align:"left", width:120},
+    { field: "obNo",              headerName: "출고번호",         editable: false, align:"left", width:120},
     // { field: "clientCd",          headerName: "고객사코드",       editable: false, align:"left", width:120},
     { field: "clientNm",          headerName: "고객사",       editable: false, align:"left", width:120},
-    // { field: "ibGbnCd",           headerName: "입고구분코드",     editable: false, align:"left", width:120},
-    { field: "ibGbnNm",           headerName: "입고구분",     editable: false, align:"left", width:120},
-    // { field: "ibProgStCd",        headerName: "입고진행상태코드",   editable: false, align:"left", width:100},
-    { field: "ibProgStNm",        headerName: "입고진행상태",   editable: false, align:"left", width:100},
-    { field: "ibPlanYmd",         headerName: "입고예정일자",     editable: false, align:"left", width:100},
-    { field: "ibYmd",             headerName: "입고일자",       editable: false, align:"left", width:100},
+    // { field: "obGbnCd",           headerName: "출고구분코드",     editable: false, align:"left", width:120},
+    { field: "obGbnNm",           headerName: "출고구분",     editable: false, align:"left", width:120},
+    // { field: "obProgStCd",        headerName: "출고진행상태코드",   editable: false, align:"left", width:100},
+    { field: "obProgStNm",        headerName: "출고진행상태",   editable: false, align:"left", width:100},
+    { field: "obPlanYmd",         headerName: "출고예정일자",     editable: false, align:"left", width:100},
+    { field: "obYmd",             headerName: "출고일자",       editable: false, align:"left", width:100},
     // { field: "poNo",              headerName: "발주번호",       editable: false, align:"left", width:100},
     // { field: "poYmd",             headerName: "발주일자",       editable: false, align:"left", width:100},
     // { field: "supplierCd",        headerName: "공급처코드",     editable: false, align:"left", width:100},
@@ -77,39 +76,42 @@ export default function InboundPlan() {
     { field: "useYnNm",             headerName: "사용여부",         editable: false, align:"left", width:100},
     { field: "remark",            headerName: "비고",               editable: false, align:"left", width:300},
   ];
-  //입고전표컬럼
+  //출고전표컬럼
   const columnsDtl = [
     { field: "id",                headerName: "ID",             editable:false, align:"center", width:20},
-    { field: "ibDetailSeq",       headerName: "순번",       editable: false, align:"right", width:60},
-    // { field: "ibProgStCd",        headerName: "입고진행상태코드",   editable: false, align:"left", width:100},
-    { field: "ibProgStNm",        headerName: "진행상태",   editable: false, align:"left", width:100},
+    { field: "obDetailSeq",       headerName: "순번",       editable: false, align:"right", width:60},
+    // { field: "obProgStCd",        headerName: "출고진행상태코드",   editable: false, align:"left", width:100},
+    { field: "obProgStNm",        headerName: "진행상태",   editable: false, align:"left", width:100},
     { field: "itemCd",            headerName: "상품코드",   editable: false, align:"left", width:100},
     { field: "itemNm",            headerName: "상품명",   editable: false, align:"left", width:300},
     // { field: "itemStCd",          headerName: "상품상태코드",   editable: false, align:"left", width:100},
     { field: "itemStNm",          headerName: "상품상태",   editable: false, align:"left", width:100},
     // { field: "poUomCd",           headerName: "발주단위코드",   editable: false, align:"left", width:100},
     // { field: "poQty",             headerName: "발주수량",   editable: false, align:"left", width:100},
-    { field: "planQty",           headerName: "예정",   editable: false, align:"right", width:60},
-    { field: "confQty",           headerName: "확정",   editable: false, align:"right", width:60},
-    { field: "apprQty",           headerName: "승인",   editable: false, align:"right", width:60},
-    { field: "examQty",           headerName: "검수",   editable: false, align:"right", width:60},
-    { field: "instQty",           headerName: "지시",   editable: false, align:"right", width:60},
-    { field: "putwQty",           headerName: "적치",   editable: false, align:"right", width:60},
+    { field: "pkqty",             headerName: "입수",      editable: false,  align:"center", width:100,},
+    { field: "planTotQty",           headerName: "예정(총)",   editable: false, align:"right", width:100},
+    { field: "planBoxQty",           headerName: "예정(박스)",   editable: false, align:"right", width:100},
+    { field: "planEaQty",           headerName: "예정(낱개)",   editable: false, align:"right", width:100},
+    // { field: "confQty",           headerName: "확정",   editable: false, align:"right", width:60},
+    // { field: "apprQty",           headerName: "승인",   editable: false, align:"right", width:60},
+    // { field: "examQty",           headerName: "검수",   editable: false, align:"right", width:60},
+    // { field: "instQty",           headerName: "지시",   editable: false, align:"right", width:60},
+    // { field: "putwQty",           headerName: "적치",   editable: false, align:"right", width:60},
 
-    // { field: "noIbRsnCd",         headerName: "미입고사유코드",   editable: false, align:"left", width:100},
-    { field: "ibCost",            headerName: "입고단가",   editable: false, align:"right", width:100,
+    // { field: "noobRsnCd",         headerName: "미출고사유코드",   editable: false, align:"left", width:100},
+    { field: "obCost",            headerName: "출고단가",   editable: false, align:"right", width:100,
       valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
     },
-    { field: "ibVat",             headerName: "입고VAT",   editable: false, align:"right", width:100,
+    { field: "obVat",             headerName: "출고VAT",   editable: false, align:"right", width:100,
       valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
     },
-    { field: "ibAmt",             headerName: "입고금액",   editable: false, align:"right", width:100,
+    { field: "obAmt",             headerName: "출고금액",   editable: false, align:"right", width:100,
       valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
     },
-    { field: "makeLot",           headerName: "제조LOT",   editable: false, align:"left", width:150},
+    { field: "makeLot",           headerName: "제조LOT",   editable: false, align:"left", width:100},
     { field: "makeYmd",           headerName: "제조일자",   editable: false, align:"left", width:100},
     { field: "distExpiryYmd",     headerName: "유통기한일자",   editable: false, align:"left", width:100},
-    { field: "lotId",             headerName: "LOT_ID",   editable: false, align:"left", width:150},
+    { field: "lotId",             headerName: "LOT_ID",   editable: false, align:"left", width:100},
     { field: "lotAttr1",          headerName: "LOT속성1",   editable: false, align:"left", width:100},
     { field: "lotAttr2",          headerName: "LOT속성2",   editable: false, align:"left", width:100},
     { field: "lotAttr3",          headerName: "LOT속성3",   editable: false, align:"left", width:100},
@@ -129,8 +131,8 @@ export default function InboundPlan() {
 
   //조회조건
   const [schValues, setSchValues] = useState({ 
-    ibNo: "", 
-    ibPlanYmd : gvGetToday()
+    obNo: "", 
+    obPlanYmd : gvGetToday()
   });
   //조회조건
   const onChangeSearch = (event, id) => {
@@ -163,10 +165,10 @@ export default function InboundPlan() {
   //조회
   const fnSearch = () => {
     var data = {
-      ibNo : schValues.ibNo,
-      ibPlanYmd : schValues.ibPlanYmd,
+      obNo : schValues.obNo,
+      obPlanYmd : schValues.obPlanYmd,
     };
-    client.post(`${PRO_URL}/selectInboundInqList`, data, {})
+    client.post(`${PRO_URL}/selectOutboundPlanList`, data, {})
       .then(res => {
         var list = res.data;
         setDataList(list);
@@ -184,7 +186,7 @@ export default function InboundPlan() {
   //상세조회
   const fnSearchDtl = (rowData) => {
     setSelRowId(rowData.id);
-    client.post(`${PRO_URL}/selectInboundInqDetailList`, rowData, {})
+    client.post(`${PRO_URL}/selectOutboundPlanDetailList`, rowData, {})
       .then(res => {
         var list = res.data;
         setDataDtlList(list);
@@ -203,48 +205,84 @@ export default function InboundPlan() {
     fnSearch();
   }
 
+  //신규클릭
+  //출고예정팝업
+  function onClickAdd(){
+    openModal('OUTBOUND_PLAN_POP', '출고예정 팝업', <OutboundPlanPop />, handleOutboundPlanUpdate, '1200px', '750px');
+  }
+
+  //조회 클릭(상세)
+  function onClickDtlSelect(){
+    fnSearchDtl(values);
+  }
+
+  //출고예정팝업 팝업 콜백함수
+  const handleOutboundPlanUpdate = (props) => {
+    fnSearch();
+  };
+
   return (
     <>
-      <ComDeGrid
+      <SearchBar
         onClickSelect={onClickSelect} 
-        searchBarChildren={
-          <>
-            <SchTextField id="ibNo" label='입고번호/명'
-              div={"4"}
-              onChange={onChangeSearch} 
-              onKeyDown={onKeyDown} />  
-            <SchDateField id="ibPlanYmd" label='입고예정일'
-              div={"4"}
-              selected={schValues.ibPlanYmd}
-              onChange={onChangeSearch} 
-              />    
-          </>
-        }
+        onClickAdd={onClickAdd} 
+        // onClickSave={onClickSave}
+        // onClickDel={onClickDel}
+        >
+          <SchTextField id="obNo" label='출고번호/명'
+            div={"4"}
+            onChange={onChangeSearch} 
+            onKeyDown={onKeyDown} />  
+          <SchDateField id="obPlanYmd" label='출고예정일'
+            div={"4"}
+            selected={schValues.obPlanYmd}
+            onChange={onChangeSearch} 
+            />    
+      </SearchBar>
+      <Grid item xs={12} style={{ height: 350, width: '100%' }}>
+        <DataGrid
+          title={"Outbound List"} //제목
+          rows={dataList} //dataList
+          columns={columns} //컬럼 정의
+          headerHeight={30} //헤더 높이
+          rowHeight={28} //행 높이
+          onRowClick={(e)=>{setValues(e.row); fnSearchDtl(e.row)} }
+          footerHeight={30}
+          selectionModel={selRowId} //쎌선택 변수지정
+          
+          onCellEditCommit={React.useCallback((params) => {
+            dataList[params.id-1][params.field] = params.value;
+            
+          },[dataList] //쎌변경시 데이터변경
+        )}
+        />
+      </Grid>      
 
-        title={"Inbound List"} //제목
-        dataList={dataList} //dataList
-        columns={columns} //컬럼 정의
-        height={"250px"}
-        //Event
-        // selRowId={selRowId} //쎌선택 변수지정
-        // setSelRowId={setSelRowId}
-        onRowClick={(params)=>{setSelRowId(params.id); fnSearchDtl(params.row)}}
-        
-        //Multi
-        type={"single"}
-      />
-
-      <ComDeGrid
-
-        title={"Inbound Detail List"} //제목
-        dataList={dataDtlList} //dataList
-        columns={columnsDtl} //컬럼 정의
-        //Event
-        onRowClick={(params)=>{setSelDtlRowId(params.id)}}
-        // onCellEditCommit={handleEditCellChangeCommitted} //쎌변경시 데이터변경
-        
-        type={"single"}
-      />
+      <SearchBar
+        // onClickSelect={onClickDtlSelect}
+        // onClickAdd={onClickDtlAdd}
+        // onClickSave={onClickDtlSave}
+        // onClickDel={onClickDtlDel}
+        >
+      </SearchBar>
+      <Grid item xs={12} style={{ height: '500px', width: '100%' }}>
+        <DataGrid
+          title={"Outbound Detail List"} //제목
+          rows={dataDtlList} //dataList
+          columns={columnsDtl} //컬럼 정의
+          headerHeight={30} //헤더 높이
+          rowHeight={28} //행 높이
+          onRowClick={(e)=>{setValuesDtl(e.row); setSelDtlRowId(e.row.id);} }
+          footerHeight={30}
+          selectionModel={selDtlRowId} //쎌선택 변수지정
+          
+          onCellEditCommit={React.useCallback((params) => {
+            dataDtlList[params.id-1][params.field] = params.value;
+            
+          },[dataDtlList] //쎌변경시 데이터변경
+        )}
+        />
+      </Grid>
     </>
   );
 }

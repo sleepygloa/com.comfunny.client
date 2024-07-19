@@ -25,20 +25,20 @@ import { ComDeGrid } from "../../../components/Grid/ComDeGrid.js";
 import { FrmSelect, FrmTextField, FrmDate, GridDateRenderField, GridDateSetField, GridNumberSetField } from '../../../components/SearchBar/Components/TextFieldDefault.js';
 
 //Popup
-import InboundPlanItemPop from "./InboundPlanItemPop.js";
+import OutboundPlanItemPop from "./OuboundPlanItemPop.js";
 
 // 필드 정보를 관리하는 객체
 const fieldLabels = {
-  ibNo: '입고번호',
+  obNo: '출고번호',
   dcCd: '물류창고',
   clientCd: '고객사',
-  ibGbnCd: '입고구분',
-  ibProgStCd: '입고진행상태',
-  ibPlanYmd: '입고예정일',
-  ibYmd: '입고일',
+  obGbnCd: '출고구분',
+  obProgStCd: '출고진행상태',
+  obPlanYmd: '출고예정일',
+  obYmd: '출고일',
   poNo: '발주번호',
   poYmd: '발주일자',
-  supplierCd: '공급처',
+  storeCd: '배송처',
   carNo: '차량번호',
   tcObNo: '이고출고번호',
   userCol1: '사용자컬럼1',
@@ -51,23 +51,23 @@ const fieldLabels = {
 };
 
 
-export default function InboundPlanPop(props) {
-  const key = 'INBOUND_PLAN_POP'
-  const PRO_URL = '/wms/ib/inboundPlan';
+export default function OutboundPlanPop(props) {
+  const key = 'OUTBOUND_PLAN_POP'
+  const PRO_URL = '/wms/ob/outboundPlan';
   const { modals, openModal, closeModal, updateModalData, getModalData } = useModal();
   const { cmmnCdData, getCodesCmbByGroupCode } = useCommonData();
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
-    ibNo: '',
+    obNo: '',
     dcCd: '',
     clientCd: '',
-    ibGbnCd: '12',
-    ibProgStCd: '10',
-    ibPlanYmd: gvGetToday(),
-    ibYmd: '',
+    obGbnCd: '12',
+    obProgStCd: '10',
+    obPlanYmd: gvGetToday(),
+    obYmd: '',
     poNo: '',
     poYmd: '',
-    supplierCd: '',
+    storeCd: '',
     carNo: '',
     tcObNo: '',
     userCol1: '',
@@ -86,22 +86,22 @@ export default function InboundPlanPop(props) {
 
   const [dcCmb, setDcCmb] = useState([]); //물류센터콤보
   const [clientCmb, setClientCmb] = useState([]); //구역콤보
-  const [supplierCmb, setSupplierCmb] = useState([]); //공급처콤보
-  const [ibGbnCdCmb, setIbGbnCdCmb] = useState([]); //입고구분코드콤보 
-  const [ibProgStCdCmb, setIbProgStCdCmb] = useState([]); //입고진행상태콤보
+  const [storeCmb, setStoreCmb] = useState([]); //배송처콤보
+  const [obGbnCdCmb, setobGbnCdCmb] = useState([]); //출고구분코드콤보 
+  const [obProgStCdCmb, setobProgStCdCmb] = useState([]); //출고진행상태콤보
   const [useYnCmb, setUseYnCmb] = useState([]); //사용여부콤보
   const [ynCmb, setYnCmb] = useState([]); //여부콤보
   const [itemStCdCmb, setItemStCdCmb] = useState([]); //상품상태콤보
-  //입고전표컬럼
+  //출고전표컬럼
   const columns = [
     // { field: "modFlag",           headerName: "",             editable:false, align:"center", width:20},
     { field: "id",                headerName: "ID",             editable:false, align:"center", width:20},
 
-    { field: "ibNo",              headerName: "입고번호",         editable: false, align:"left", width:120},
-    { field: "ibDetailSeq",       headerName: "입고상세순번",       editable: false, align:"left", width:120},
-    { field: "ibProgStCd",        headerName: "입고진행상태코드",   
+    { field: "obNo",              headerName: "출고번호",         editable: false, align:"left", width:120},
+    { field: "obDetailSeq",       headerName: "출고상세순번",       editable: false, align:"left", width:120},
+    { field: "obProgStCd",        headerName: "출고진행상태코드",   
       align:"center", type: "singleSelect", valueFormatter: gvGridDropdownDisLabel,
-      valueOptions: ibProgStCdCmb,
+      valueOptions: obProgStCdCmb,
     },
     { field: "itemCd",            headerName: "상품코드",   editable: false,  align:"left", width:100},
     { field: "itemNm",            headerName: "상품명",   editable: false,    align:"left", width:300},
@@ -121,15 +121,15 @@ export default function InboundPlanPop(props) {
       valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
       valueParser: (value) => gvGridFieldNumberParser(value)
     },
-    { field: "ibCost",            headerName: "입고단가",   editable: false, align:"left", width:100,
+    { field: "obCost",            headerName: "출고단가",   editable: false, align:"left", width:100,
       // preProcessEditCellProps: (params) => gvGridFieldNumberPreEdit(params),
       valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
       // valueParser: (value) => gvGridFieldNumberParser(value)
     },
-    { field: "ibVat",             headerName: "입고VAT",   editable: false, align:"left", width:100,
+    { field: "obVat",             headerName: "출고VAT",   editable: false, align:"left", width:100,
       valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
     },
-    { field: "ibAmt",             headerName: "입고금액",   editable: false, align:"left", width:100,
+    { field: "obAmt",             headerName: "출고금액",   editable: false, align:"left", width:100,
       // preProcessEditCellProps: (params) => gvGridFieldNumberPreEdit(params),
       valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
       // valueParser: (value) => gvGridFieldNumberParser(value)
@@ -160,24 +160,24 @@ export default function InboundPlanPop(props) {
     setFormData(prev => ({...prev,[id]: value}));
     setErrors(prev => ({...prev,[id]: error}));
 
-    //고객사 변경사 공급처 초기화
+    //고객사 변경사 배송처 초기화
     if(id == "clientCd"){
-      setFormData(prev => ({...prev,["supplierCd"]: ''}));
-      fnSearchSupplier({"clientCd" : value});
+      setFormData(prev => ({...prev,["storeCd"]: ''}));
+      fnSearchstore({"clientCd" : value});
     }
   };
 
   //화면 로드시 1번만 실행
   useEffect(() => {
     //초기로딩
-    if(props.ibNo != ''){
+    if(props.obNo != ''){
       formData.modFlag = "I";
     }else{
       formData.modFlag = "U";
     }
 
-    //공급처콤보가 있으면, 실행하지 않음
-    if(supplierCmb.length > 0) return;
+    //배송처콤보가 있으면, 실행하지 않음
+    if(storeCmb.length > 0) return;
 
     //초기설정들
     if(dcCmb.length == 0) fnSearchDc();
@@ -186,13 +186,13 @@ export default function InboundPlanPop(props) {
     //공통코드 콤보
     if(ynCmb.length == 0) setYnCmb(getCodesCmbByGroupCode('YN'));
     if(useYnCmb.length == 0) setUseYnCmb(getCodesCmbByGroupCode('USE_YN'));
-    if(ibGbnCdCmb.length == 0) setIbGbnCdCmb(getCodesCmbByGroupCode('IB_GBN_CD'));
-    if(ibProgStCdCmb.length == 0) setIbProgStCdCmb(getCodesCmbByGroupCode('IB_PROG_ST_CD'));
+    if(obGbnCdCmb.length == 0) setobGbnCdCmb(getCodesCmbByGroupCode('OB_GBN_CD'));
+    if(obProgStCdCmb.length == 0) setobProgStCdCmb(getCodesCmbByGroupCode('OB_PROG_ST_CD'));
     if(itemStCdCmb.length == 0) setItemStCdCmb(getCodesCmbByGroupCode('ITEM_ST_CD'));
 
-    //고객사선택시, 공급처 콤보 조회
-    if(clientCmb.length > 0 && formData.clientCd != '') fnSearchSupplier({"clientCd" : formData.clientCd});
-  }, [dcCmb, clientCmb, useYnCmb, ibGbnCdCmb, ibProgStCdCmb, supplierCmb, itemStCdCmb, dataList]);
+    //고객사선택시, 배송처 콤보 조회
+    if(clientCmb.length > 0 && formData.clientCd != '') fnSearchstore({"clientCd" : formData.clientCd});
+  }, [dcCmb, clientCmb, useYnCmb, obGbnCdCmb, obProgStCdCmb, storeCmb, itemStCdCmb, dataList]);
 
   //물류창고 조회
   const fnSearchDc = async () => {
@@ -212,12 +212,12 @@ export default function InboundPlanPop(props) {
         console.log('error = '+error); 
       })
   }
-  //공급처 콤보 조회
-  const fnSearchSupplier = async (data) => {
+  //배송처 콤보 조회
+  const fnSearchstore = async (data) => {
     console.log(data)
-    await client.post(`${PRO_URL}/selectSupplierCmbList`, data, {})
+    await client.post(`${PRO_URL}/selectStoreCmbList`, data, {})
       .then(res => {
-        setSupplierCmb(gvSetDropdownData(res.data));
+        setStoreCmb(gvSetDropdownData(res.data));
       }).catch(error => { 
         console.log('error = '+error); 
       })
@@ -238,12 +238,12 @@ export default function InboundPlanPop(props) {
       openModal('', 'I', '고객사 를 선택해주세요.');
       return;
     }
-    if(formData.supplierCd == ''){
-      openModal('', 'I', '공급처 를 선택해주세요.');
+    if(formData.storeCd == ''){
+      openModal('', 'I', '배송처 를 선택해주세요.');
       return;
     }
-    if(formData.ibPlanYmd == ''){
-      openModal('', 'I', '입고예정일 을 입력해주세요.');
+    if(formData.obPlanYmd == ''){
+      openModal('', 'I', '출고예정일 을 입력해주세요.');
       return;
     }
     
@@ -260,7 +260,7 @@ export default function InboundPlanPop(props) {
         }
 
         //로케이션 저장
-        client.post(`${PRO_URL}/saveInboundPlan`,formData, {})
+        client.post(`${PRO_URL}/saveOutboundPlan`,formData, {})
           .then(res => {
             openModal('', 'I', '저장 되었습니다.');
             closeModal(key);
@@ -280,21 +280,21 @@ export default function InboundPlanPop(props) {
   };
 
   //신규클릭
-  //입고예정팝업 상세추가
+  //출고예정팝업 상세추가
   function onClickAdd(){
     if(formData.clientCd == ''){
       openModal('', 'A', "고객사를 먼저 선택해주세요", );
       return;
     }
 
-    openModal('FIND_INBOUND_ITEM', '상품 찾기', <InboundPlanItemPop formData={formData}/>, handleItemUpdate, '1000px', '600px');
+    openModal('FIND_OUTBOUND_ITEM', '상품 찾기', <OutboundPlanItemPop formData={formData}/>, handleItemUpdate, '1000px', '600px');
   }
 
   //상품 찾기 팝업 콜백함수
   const handleItemUpdate = (data) => {
     if(data != undefined && data.length > 0){
       const newDataList = gvDataGridAddRowAndStatus(dataList, data, {
-        ibProgStCd: '10',
+        obProgStCd: '10',
         itemStCd: '10',
         planQty: 0,
         planTotQty: 0,
@@ -309,9 +309,9 @@ export default function InboundPlanPop(props) {
     }
   };
 
-  //입고예정팝업 삭제
+  //출고예정팝업 삭제
   function onClickDel(){
-    // openModal('INBOUND_PLAN_POP', '입고예정 팝업', <InboundPlanPop />, handleInboundPlanUpdate, '1200px', '750px');
+    // openModal('INBOUND_PLAN_POP', '출고예정 팝업', <InboundPlanPop />, handleInboundPlanUpdate, '1200px', '750px');
   }
 
   //그리드 체크박스 선택
@@ -340,8 +340,6 @@ export default function InboundPlanPop(props) {
         setDataList(updatedRows);
       }
 
-      console.log(id, field, value)
-      console.log(dataList, dataList[id-1])
       dataList[id-1][field] = value
     },
     [dataList],
@@ -353,9 +351,9 @@ export default function InboundPlanPop(props) {
         <Grid container spacing={2} sx={{marginBottom:'10px'}}>
           <Grid item xs={12} sm={3}>
             <FrmTextField 
-              id="ibNo"
-              name={fieldLabels["ibNo"]}
-              value={formData.ibNo}
+              id="obNo"
+              name={fieldLabels["obNo"]}
+              value={formData.obNo}
               formData={formData}
               errors={errors}
               onChange={handleChange}
@@ -385,38 +383,38 @@ export default function InboundPlanPop(props) {
           </Grid>
           <Grid item xs={12} sm={3}>
             <FrmSelect 
-              id="ibGbnCd"
-              name={fieldLabels["ibGbnCd"]}
+              id="obGbnCd"
+              name={fieldLabels["obGbnCd"]}
               formData={formData}
               errors={errors}
-              list={ibGbnCdCmb}
+              list={obGbnCdCmb}
               onChange={handleChange}
             />
           </Grid>
           <Grid item xs={12} sm={3}>
             <FrmSelect 
-              id="ibProgStCd"
-              name={fieldLabels["ibProgStCd"]}
+              id="obProgStCd"
+              name={fieldLabels["obProgStCd"]}
               formData={formData}
               errors={errors}
-              list={ibProgStCdCmb}
+              list={obProgStCdCmb}
               onChange={handleChange}
               readonly
             />
           </Grid>
           <Grid item xs={12} sm={3}>
             <FrmDate 
-              id="ibPlanYmd"
-              name={fieldLabels["ibPlanYmd"]}
-              selected={formData.ibPlanYmd}
+              id="obPlanYmd"
+              name={fieldLabels["obPlanYmd"]}
+              selected={formData.obPlanYmd}
               onChange={handleChange}
             />
           </Grid>
           {/* <Grid item xs={12} sm={3}>
             <FrmDate 
-              id="ibYmd"
-              name={fieldLabels["ibYmd"]}
-              selected={formData.ibYmd}
+              id="obYmd"
+              name={fieldLabels["obYmd"]}
+              selected={formData.obYmd}
               onChange={handleChange}
               readonly
             />
@@ -443,11 +441,11 @@ export default function InboundPlanPop(props) {
           </Grid> */}
           <Grid item xs={12} sm={3}>
             <FrmSelect 
-              id="supplierCd"
-              name={fieldLabels["supplierCd"]}
+              id="storeCd"
+              name={fieldLabels["storeCd"]}
               formData={formData}
               errors={errors}
-              list={supplierCmb}
+              list={storeCmb}
               onChange={handleChange}
             />
           </Grid>

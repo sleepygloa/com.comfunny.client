@@ -38,12 +38,13 @@ import SearchIcon from '@mui/icons-material/Search';
 
 import StockMoveLocPop from "./StockMoveLocPop.js";
 
-export default function StockMove() {
+export default function StockMove(props) {
   //초기변수 세팅
   const {menuTitle} = '재고이동';
   const PRO_URL = '/wms/st/stockMove';
   const {openModal} = useModal();
   const { cmmnCdData, getCodesCmbByGroupCode } = useCommonData();
+  const refVal1 = (props.refVal1 ? props.refVal1 : "MV");
 
   //프로그램내 처리변수 세팅
   const getRowId = "";
@@ -94,7 +95,9 @@ export default function StockMove() {
     { field: "itemCd",            headerName: "상품코드",       editable: false, align:"left", width:100},
     { field: "itemNm",            headerName: "상품명",         editable: false, align:"left", width:200},
     { field: "itemStNm",          headerName: "상품상태",       editable: false, align:"left", width:100},
-    { field: "instQty",           headerName: "지시수량",       editable: false, align:"right", width:80},
+    { field: "instQty",           headerName: "지시수량",       editable: false, align:"right", width:80,
+      valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
+    },
     { field: "confQty",           headerName: "확정수량",       editable: true, align:"right", width:80,
       preProcessEditCellProps: (params) => gvGridFieldNumberPreEdit(params),
       valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
@@ -154,6 +157,7 @@ export default function StockMove() {
     var data = {
       moveNo : schValues.moveNo,
       workYmd : schValues.workYmd,
+      refVal1 : refVal1,
     };
     client.post(`${PRO_URL}/selectStockMoveList`, data, {})
       .then(res => {
@@ -205,7 +209,7 @@ export default function StockMove() {
         //로케이션 저장
         client.post(`${PRO_URL}/saveStockMoveConfirm`,rowData, {})
           .then(res => {
-            openModal('', 'I', '검수완료 되었습니다.');
+            openModal('', 'I', '재고이동확정 되었습니다.');
             fnSearch();
           }).catch(error => { 
             console.log('error = '+error); 
@@ -253,7 +257,7 @@ export default function StockMove() {
 
   //로케이션찾기 팝업
   const openPopupFindToLocCd = () => {
-    openModal('FIND_TO_LOC', '로케이션 찾기', <StockMoveLocPop />, handleAddressUpdate, '800px', '600px');
+    openModal('FIND_TO_LOC', '로케이션 찾기', <StockMoveLocPop refVal1={"IB"} />, handleAddressUpdate, '800px', '600px');
   }
 
   //로케이션찾기 팝업 콜백함수
@@ -265,7 +269,7 @@ export default function StockMove() {
 
   return (
     <>
-      <PageTitle title={"재고이동"}  />
+      <PageTitle title={props.title || props.title == "" ? props.title : "재고이동"}  />
       <ComDeGrid
         height={"250px"}
         onClickSelect={onClickSelect} 

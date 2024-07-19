@@ -26,12 +26,13 @@ import SdItemClass from "../pages/wms/sd/ItemClass.js";
 import SdItemUom from "../pages/wms/sd/ItemUom.js";
 
 //입고
-
 import IbInbound from "../pages/wms/ib/Inbound.js";
 
 //재고
-
 import StStockMove from "../pages/wms/st/StockMove.js";
+
+//출고
+import ObOutbound from "../pages/wms/ob/Outbound.js";
 
 // context
 import { useUserState } from "../context/UserContext";
@@ -68,6 +69,8 @@ export default function App() {
         <Route exact path="/wms/ib/inbound" render={()=><BlogLayout props={<IbInbound />}></BlogLayout>} />
 
         <Route exact path="/wms/st/stockMove" render={()=><BlogLayout props={<StStockMove />}></BlogLayout>} />
+
+        <Route exact path="/wms/ob/outbound" render={()=><BlogLayout props={<ObOutbound />}></BlogLayout>} />
         {/* <Route
           exact
           path="/"

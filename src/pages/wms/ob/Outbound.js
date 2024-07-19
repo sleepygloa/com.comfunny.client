@@ -21,22 +21,25 @@ import { useCommonData } from "../../../context/CommonDataContext.js";
 import {useModal} from "../../../context/ModalContext.js";
 
 //Program
-import InboundInq from "./InboundInq.js";
-import InboundPlan from "./InboundPlan.js";
-import InboundExam from "./InboundExam.js";
-import InboundInst from "../st/StockMove.js";
+import OutboundInq from "./OutboundInq.js";
+import OutboundPlan from "./OutboundPlan.js";
+import OutboundAllot from "./OutboundAllot.js";
+import OutboundPicking from "./OutboundPicking.js";
 
 export default function Inbound() {
-  const {menuTitle} = '입고 관리';
+  const {menuTitle} = '출고 관리';
   const PRO_URL = '/wms/ib/inbound';
 
 
   const [activeTab, setActiveTab] = useState(0);
   const tabsData = [
-    { label: '입고현황', badgeContent: 0 },
-    { label: '입고예정', badgeContent: 0 },
-    { label: '입고검수', badgeContent: 0 },
-    { label: '입고지시', badgeContent: 0 },
+    { label: '출고현황', badgeContent: 0 },
+    { label: '출고예정', badgeContent: 0 },
+    { label: '출고할당', badgeContent: 0 },
+    { label: '출고지시', badgeContent: 0 },
+    { label: '출고피킹', badgeContent: 0 },
+    { label: '출고상차', badgeContent: 0 },
+    { label: '배송현황', badgeContent: 0 },
   ];
 
   const handleTabChange = (event, newValue) => {
@@ -53,8 +56,8 @@ export default function Inbound() {
 
   return (
     <>
-      <PageTitle title={'입고 관리'} />
-      <Tabs value={activeTab} onChange={handleTabChange} aria-label="inbound tabs" variant="fullWidth">
+      <PageTitle title={'출고 관리'} />
+      <Tabs value={activeTab} onChange={handleTabChange} aria-label="outbound tabs" variant="fullWidth">
         {tabsData.map((tab, index) => (
           <Tab 
             key={index} 
@@ -62,10 +65,10 @@ export default function Inbound() {
           />
         ))}
       </Tabs>
-      {activeTab === 0 && <InboundInq />}
-      {activeTab === 1 && <InboundPlan />}
-      {activeTab === 2 && <InboundExam />}
-      {activeTab === 3 && <InboundInst title={""} refVal1={"IB"}/>}
+      {activeTab === 0 && <OutboundInq />}
+      {activeTab === 1 && <OutboundPlan />}
+      {activeTab === 2 && <OutboundAllot />}
+      {activeTab === 3 && <OutboundPicking />}
     </>
   );
 }

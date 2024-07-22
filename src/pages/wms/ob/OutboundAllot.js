@@ -33,7 +33,7 @@ import { useCommonData } from "../../../context/CommonDataContext.js";
 import {useModal} from "../../../context/ModalContext.js";
 
 export default function OutboundAllot() {
-  const {menuTitle} = '출고할당';
+  const {menuTitle} = '출고지시';
   const PRO_URL = '/wms/ob/outboundAllot';
   const {openModal} = useModal();
   const { cmmnCdData, getCodesCmbByGroupCode } = useCommonData();
@@ -54,7 +54,7 @@ export default function OutboundAllot() {
   const columns = [
     { field: "id",                headerName: "ID",             editable:false, align:"center", width:20},
     { field: "dcNm",              headerName: "물류창고",      editable: false, align:"left", width:120},
-    { field: "obNo",              headerName: "입고번호",         editable: false, align:"left", width:120},
+    { field: "obNo",              headerName: "출고번호",         editable: false, align:"left", width:150},
     { field: "clientNm",          headerName: "고객사",       editable: false, align:"left", width:120},
     { field: "obGbnNm",           headerName: "출고구분",     editable: false, align:"left", width:120},
     { field: "obProgStNm",        headerName: "출고진행상태",   editable: false, align:"left", width:100},

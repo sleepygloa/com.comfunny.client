@@ -35,7 +35,6 @@ export default function Inbound() {
   const tabsData = [
     { label: '출고현황', badgeContent: 0 },
     { label: '출고예정', badgeContent: 0 },
-    { label: '출고할당', badgeContent: 0 },
     { label: '출고지시', badgeContent: 0 },
     { label: '출고피킹', badgeContent: 0 },
     { label: '출고상차', badgeContent: 0 },

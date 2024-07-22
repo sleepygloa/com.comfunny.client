@@ -172,7 +172,27 @@ export function SchTextField (props) {
   )
 }
 
-
+//폼 셀렉트 컴포넌트
+export function SchSelectField(props){
+  const readonly = (props.readonly ? true : false);
+  console.log(props)
+  return (
+    <DivDefault props={props}>
+      <InputLabel id={`${props.id}-label`}>{props.name}</InputLabel>
+      <Select
+        labelId={`${props.id}-label`}
+        label={props.name}
+        name={props.code}
+        value={props.formData[props.id]}
+        onChange={props.onChange ? (e)=>props.onChange(e.target.value, props.id) : false}
+        // error={!!props.errors[props.id]}
+        inputProps={{
+          readOnly: readonly,
+        }}
+      />
+    </DivDefault>
+  )
+}
 
 //그리드 텍스트 컴포넌트(set)
 //자리수제한

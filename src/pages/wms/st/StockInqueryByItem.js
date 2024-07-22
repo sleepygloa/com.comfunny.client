@@ -70,6 +70,9 @@ export default function InboundPlan() {
     { field: "holdQty",           headerName: "보류수량",       editable: false, align:"right", width:100,
       valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
     },
+    { field: "canStockQty",       headerName: "가용재고수량",       editable: false, align:"right", width:100,
+      valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
+    },
   ];
 
   //조회조건

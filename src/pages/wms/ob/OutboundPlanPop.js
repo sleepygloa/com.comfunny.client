@@ -36,11 +36,8 @@ const fieldLabels = {
   obProgStCd: '출고진행상태',
   obPlanYmd: '출고예정일',
   obYmd: '출고일',
-  poNo: '발주번호',
-  poYmd: '발주일자',
   storeCd: '배송처',
   carNo: '차량번호',
-  tcObNo: '이고출고번호',
   userCol1: '사용자컬럼1',
   userCol2: '사용자컬럼2',
   userCol3: '사용자컬럼3',
@@ -65,8 +62,6 @@ export default function OutboundPlanPop(props) {
     obProgStCd: '10',
     obPlanYmd: gvGetToday(),
     obYmd: '',
-    poNo: '',
-    poYmd: '',
     storeCd: '',
     carNo: '',
     tcObNo: '',
@@ -324,6 +319,7 @@ export default function OutboundPlanPop(props) {
 
     //가로, 세로, 높이 수정시 체적 계산
     ({ id, field, value }) => {
+      
       if (['planBoxQty', 'planEaQty'].includes(field)) {
         const updatedRows = dataList.map((row) => {
           if (row.id === id) {
@@ -340,7 +336,6 @@ export default function OutboundPlanPop(props) {
         setDataList(updatedRows);
       }
 
-      dataList[id-1][field] = value
     },
     [dataList],
   );

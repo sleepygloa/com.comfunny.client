@@ -85,14 +85,10 @@ export default function OutboundAllot() {
     { field: "planEaQty",           headerName: "예정(낱개)",   editable: false, align:"right", width:100},
     { field: "allotTotQty",           headerName: "할당(총)",   editable: false, align:"right", width:100},
     { field: "allotBoxQty",           headerName: "할당(박스)",   editable: true, align:"right", width:100,
-      preProcessEditCellProps: (params) => gvGridFieldNumberPreEdit(params),
       valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
-      valueParser: (value) => gvGridFieldNumberParser(value)
     },
     { field: "allotEaQty",           headerName: "할당(낱개)",   editable: true, align:"right", width:100,
-      preProcessEditCellProps: (params) => gvGridFieldNumberPreEdit(params),
       valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
-      valueParser: (value) => gvGridFieldNumberParser(value)
     },
     { field: "obCost",            headerName: "출고단가",   editable: false, align:"right", width:100,
       valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
@@ -247,14 +243,13 @@ export default function OutboundAllot() {
   function onClickAllotCompl(){
     openModal('', '',  '할당완료 하시겠습니까?', 
       () => {
-        const formData = {}
-        formData.data = dtlChkRows;
+        var rowData = gvGetRowData(dataList, selRowId);
 
         //로케이션 저장
-        client.post(`${PRO_URL}/saveAllotCompt`,formData, {})
+        client.post(`${PRO_URL}/saveAllotCompt`,rowData, {})
           .then(res => {
             openModal('', 'I', '할당완료 되었습니다.');
-            fnSearchDtl(gvGetRowData(dataList, selRowId));
+            fnSearch();
           }).catch(error => { 
             console.log('error = '+error); 
           })
@@ -266,14 +261,13 @@ export default function OutboundAllot() {
   function onClickAllotComplCncl(){
     openModal('', '',  '할당완료취소 하시겠습니까?', 
       () => {
-        const formData = {}
-        formData.data = dtlChkRows;
+        var rowData = gvGetRowData(dataList, selRowId);
 
         //로케이션 저장
-        client.post(`${PRO_URL}/saveAllotComptCncl`,formData, {})
+        client.post(`${PRO_URL}/saveAllotComptCncl`,rowData, {})
           .then(res => {
             openModal('', 'I', '할당완료취소 되었습니다.');
-            fnSearchDtl(gvGetRowData(dataList, selRowId));
+            fnSearch();
           }).catch(error => { 
             console.log('error = '+error); 
           })
@@ -344,8 +338,8 @@ export default function OutboundAllot() {
       />
 
       <ComDeGrid
-        onClickCustom1={onClickDtlAllotCompl}
-        onClickCustomNm1={'할당'}
+        // onClickCustom1={onClickDtlAllotCompl}
+        // onClickCustomNm1={'할당'}
 
         title={"Outbound Detail List"} //제목
         dataList={dataDtlList} //dataList

@@ -340,9 +340,7 @@ export default function InboundPlanPop(props) {
         setDataList(updatedRows);
       }
 
-      console.log(id, field, value)
-      console.log(dataList, dataList[id-1])
-      dataList[id-1][field] = value
+      // dataList[id-1][field] = value
     },
     [dataList],
   );

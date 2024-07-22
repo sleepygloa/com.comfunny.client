@@ -175,7 +175,6 @@ export function SchTextField (props) {
 //폼 셀렉트 컴포넌트
 export function SchSelectField(props){
   const readonly = (props.readonly ? true : false);
-  console.log(props)
   return (
     <DivDefault props={props}>
       <InputLabel id={`${props.id}-label`}>{props.name}</InputLabel>

@@ -15,8 +15,8 @@ export default function SearchBar(props) {
   var classes = useStyles();
   const {title, button, 
     onClickSelect, onClickAdd, onClickSave, onClickDel, onClickUpload, 
-    onClickCustom1, onClickCustom2, onClickCustom3,
-    onClickCustomNm1, onClickCustomNm2, onClickCustomNm3,
+    onClickCustom1, onClickCustom2, onClickCustom3, onClickCustom4,
+    onClickCustomNm1, onClickCustomNm2, onClickCustomNm3, onClickCustomNm4,
     children} = props;
   return (
     <Box
@@ -129,6 +129,19 @@ export default function SearchBar(props) {
           startIcon={<SaveIcon />}
         >
           {onClickCustomNm3 ? onClickCustomNm3 : '커스텀버튼3'}
+        </Button>
+        :
+        ''
+        }
+        {onClickCustom4 ? 
+        <Button
+          variant="outlined"
+          size="small"
+          className={classes.button}
+          onClick={onClickCustom4}
+          startIcon={<SaveIcon />}
+        >
+          {onClickCustomNm4 ? onClickCustomNm4 : '커스텀버튼4'}
         </Button>
         :
         ''

@@ -246,7 +246,6 @@ export default function StockMove(props) {
     [dataDtlList],
   );
 
-  var rowddd = -1;
   //쎌클릭 핸들링
   const handleGridCellClick = React.useCallback((e) => {
     selDtlRowId = e.id;

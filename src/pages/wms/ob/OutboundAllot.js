@@ -7,7 +7,10 @@ import {SchTextField, SchDateField} from "../../../components/SearchBar/Componen
 
 import { DataGrid } from "@mui/x-data-grid";
 import { ComDeGrid } from "../../../components/Grid/ComDeGrid.js";
-import { Box, Tabs, Tab, Badge, Grid } from '@mui/material';
+import { Box, Tabs, Tab, Badge, Grid, Typography } from '@mui/material';
+// DataGrid Css
+import IconButton from '@mui/material/IconButton';
+import SearchIcon from '@mui/icons-material/Search';
 
 //Common
 import {client} from '../../../contraints.js';
@@ -32,6 +35,7 @@ import { useCommonData } from "../../../context/CommonDataContext.js";
 //Modal
 import {useModal} from "../../../context/ModalContext.js";
 
+
 export default function OutboundAllot() {
   const {menuTitle} = '출고지시';
   const PRO_URL = '/wms/ob/outboundAllot';
@@ -42,7 +46,8 @@ export default function OutboundAllot() {
 
   //그리드 선택된 행
   const [selRowId, setSelRowId] = useState();
-  const [selDtlRowId, setSelDtlRowId] = useState();
+  //const [selDtlRowId, setSelDtlRowId] = useState();
+  var selDtlRowId = -1;
   //메뉴 데이터 변수
   const [dataList, setDataList] = useState([]); //
   const [dataDtlList, setDataDtlList] = useState([]); //
@@ -78,7 +83,7 @@ export default function OutboundAllot() {
     { field: "itemCd",            headerName: "상품코드",   editable: false, align:"left", width:100},
     { field: "itemNm",             headerName: "상품명",   editable: false, align:"left", width:300},
     { field: "itemStNm",          headerName: "상품상태",   editable: false, align:"left", width:100},
-    { field: "planQty",           headerName: "예정",   editable: false, align:"right", width:60},
+
     { field: "pkqty",             headerName: "입수",      editable: false,  align:"center", width:100,},
     { field: "planTotQty",           headerName: "예정(총)",   editable: false, align:"right", width:100},
     { field: "planBoxQty",           headerName: "예정(박스)",   editable: false, align:"right", width:100},
@@ -188,67 +193,18 @@ export default function OutboundAllot() {
   function onClickAdd(){
   }
 
-  //검수완료 클릭
-  function onClickExamCompl(){
-    openModal('', '',  '검수완료 하시겠습니까?', 
-      () => {
-        var rowData = gvGetRowData(dataList, selRowId);
-        //로케이션 저장
-        client.post(`${PRO_URL}/saveInboundExam`,rowData, {})
-          .then(res => {
-            openModal('', 'I', '검수완료 되었습니다.');
-            fnSearch();
-          }).catch(error => { 
-            console.log('error = '+error); 
-          })
-      }
-    );
-  }
-  //검수취소 클릭
-  function onClickExamComplCncl(){
-    openModal('', '',  '검수완료취소 하시겠습니까?', 
-      () => {
-        var rowData = gvGetRowData(dataList, selRowId);
-        //로케이션 저장
-        client.post(`${PRO_URL}/saveInboundExamCncl`,rowData, {})
-          .then(res => {
-            openModal('', 'I', '검수완료취소 되었습니다.');
-            fnSearch();
-          }).catch(error => { 
-            console.log('error = '+error); 
-          })
-      }
-    );
-  }
 
-  //할당 클릭(상세)
-  function onClickDtlAllotCompl(){
-    openModal('', '',  '할당 하시겠습니까?', 
-      () => {
-        const formData = {}
-        formData.data = dtlChkRows;
-        //로케이션 저장
-        client.post(`${PRO_URL}/saveOutboundAllotDetailCompl`,formData, {})
-          .then(res => {
-            openModal('', 'I', '할당 되었습니다.');
-            fnSearchDtl(gvGetRowData(dataList, selRowId));
-          }).catch(error => { 
-            console.log('error = '+error); 
-          })
-      }
-    );
-  }
 
-  //할당완료 클릭(상세)
+  //출고지시 클릭(상세)
   function onClickAllotCompl(){
-    openModal('', '',  '할당완료 하시겠습니까?', 
+    openModal('', '',  '출고지시 하시겠습니까?', 
       () => {
         var rowData = gvGetRowData(dataList, selRowId);
 
         //로케이션 저장
         client.post(`${PRO_URL}/saveAllotCompt`,rowData, {})
           .then(res => {
-            openModal('', 'I', '할당완료 되었습니다.');
+            openModal('', 'I', '출고지시 되었습니다.');
             fnSearch();
           }).catch(error => { 
             console.log('error = '+error); 
@@ -257,16 +213,16 @@ export default function OutboundAllot() {
     );
   }
 
-  //할당완료취소 클릭(상세)
+  //출고지시취소 클릭(상세)
   function onClickAllotComplCncl(){
-    openModal('', '',  '할당완료취소 하시겠습니까?', 
+    openModal('', '',  '출고지시취소 하시겠습니까?', 
       () => {
         var rowData = gvGetRowData(dataList, selRowId);
 
         //로케이션 저장
         client.post(`${PRO_URL}/saveAllotComptCncl`,rowData, {})
           .then(res => {
-            openModal('', 'I', '할당완료취소 되었습니다.');
+            openModal('', 'I', '출고지시취소 되었습니다.');
             fnSearch();
           }).catch(error => { 
             console.log('error = '+error); 
@@ -307,9 +263,9 @@ export default function OutboundAllot() {
       <ComDeGrid
         onClickSelect={onClickSelect} 
         onClickCustom1={onClickAllotCompl}
-        onClickCustomNm1={'할당완료'}
+        onClickCustomNm1={'지시완료'}
         onClickCustom2={onClickAllotComplCncl}
-        onClickCustomNm2={'할당완료취소'}
+        onClickCustomNm2={'지시완료취소'}
         searchBarChildren={
           <>
             <SchTextField id="obNo" label='출고번호/명'
@@ -338,14 +294,13 @@ export default function OutboundAllot() {
       />
 
       <ComDeGrid
-        // onClickCustom1={onClickDtlAllotCompl}
-        // onClickCustomNm1={'할당'}
 
         title={"Outbound Detail List"} //제목
         dataList={dataDtlList} //dataList
         columns={columnsDtl} //컬럼 정의
         //Event
-        onRowClick={(params)=>{setSelDtlRowId(params.id)}}
+        // onCellClick={handleGridCellClick}
+        onRowClick={(params)=>{selDtlRowId = params.id;}}
         onCellEditCommit={handleEditCellChangeCommitted} //쎌변경시 데이터변경
         
         //Multi

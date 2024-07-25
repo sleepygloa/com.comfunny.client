@@ -40,6 +40,8 @@ export const ComDeGrid = (props) =>{
         onClickCustomNm2={props.onClickCustomNm2 ? props.onClickCustomNm2 : null}
         onClickCustom3={props.onClickCustom3 ? props.onClickCustom3 : null}
         onClickCustomNm3={props.onClickCustomNm3 ? props.onClickCustomNm3 : null}
+        onClickCustom4={props.onClickCustom4 ? props.onClickCustom4 : null}
+        onClickCustomNm4={props.onClickCustomNm4 ? props.onClickCustomNm4 : null}
         >
           {props.searchBarChildren ? props.searchBarChildren : <></>}
       </SearchBar>

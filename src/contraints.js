@@ -34,6 +34,7 @@ export const blogMenu = [
                     {menuCd: 1029, label: "상품", link: "/wms/sd/item", thumbnail:"", blog:"",},
                     {menuCd: 1030, label: "상품분류", link: "/wms/sd/itemClass", thumbnail:"", blog:"",},
                     {menuCd: 1031, label: "상품단위", link: "/wms/sd/itemUom", thumbnail:"", blog:"",},
+                    {menuCd: 1032, label: "3D Loc", link: "/wms/vr/3dLoc", thumbnail:"", blog:"",},
                     ]
             },
             {menuCd: 1050, label: "입고관리", link: "/wms/ib/", thumbnail:"", blog:"",

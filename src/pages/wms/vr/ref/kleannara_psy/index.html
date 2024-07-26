@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <title>Warehouse 3D Monitor</title>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="index.css" />
+
+        <script src="js\lib\threejs\three.min.js"></script>
+        <script src="js\lib\threejs\OrbitControls.js"></script>
+        <script src="js\lib\threejs\OBJLoader.js"></script>
+        <script src="js\lib\threejs\dat.gui.min.js"></script>
+        <script src="js\lib\jquery-1.11.2.min.js"></script>
+        <script src="js\lib\common.js"></script>
+
+        <script src="js\module\psy\warehouse_klean.js"></script>
+        <script src="js\module\psy\gui_klean.js"></script>
+
+        <script src="js\module\psy\conveyor_klean.js"></script>
+        <script src="js\module\psy\etc_klean.js"></script>
+        <script src="js\module\psy\place_klean.js"></script>
+        <script src="js\module\psy\crane_klean.js"></script>
+        <script src="js\module\psy\stok_klean.js"></script>
+        <script src="db.js"></script>
+    </head>
+
+    <body>
+        <div id="main-div"></div>
+        <div id="test-div">
+            <button class="speed-button" type="button">1배속</button>
+            <button class="start-button">생성</button>
+            <button class="stop-button">중지</button>
+            <button class="a-button" type="button">A start</button>
+            <button class="b-button">B start</button>
+            <button class="c-button">C start</button>
+            <button class="d-button">D start</button>
+            <button class="e-button">E start</button>
+            <button class="f-button">F start</button>
+            <button class="g-button">G start</button>
+            <button class="h-button">H start</button>
+            <button class="i-button">I start</button>
+        </div>
+    </body>
+    <script>
+        /******************************************************************************************************
+         * conveyor 객체생성
+         ******************************************************************************************************/
+        //db
+        var biz = "NDS";
+        var dc = "DC01";
+        var client = "NONGSHIM";
+
+        var container = document.querySelector("#main-div");
+        var warehouse = new warehouse(container);
+        warehouse.animation();
+        warehouse.cameraControls();
+        //gui 생성
+        gui.createGui();
+
+        init();
+        var testg = new THREE.BoxBufferGeometry(100, 100, 100);
+        var testm = new THREE.MeshLambertMaterial({
+            color: 0xff0000,
+        });
+        var testStok = new THREE.Mesh(testg, testm);
+        console.log(testStok);
+        warehouse.scene.add(testStok);
+        function init(render_mode, sku) {
+            //Area생성
+            areaDB.forEach(function (areaData) {
+                placeGeo.drawArea(areaData);
+                var areaObj = placeGeo.getAreaData(areaData);
+
+                //Zone 생성
+                zoneDB.forEach(function (zoneData) {
+                    if (zoneData.slice(0, 1) == areaObj.area) {
+                        placeGeo.drawZone(zoneData);
+
+                        var drawZoneArr = placeGeo.getdrawZoneArr(zoneData);
+                        drawZoneArr.forEach(function (drawZoneData) {
+                            //Loc 생성
+                            locDB.forEach(function (locData, idx) {
+                                if (locData.loc.slice(0, 2) == drawZoneData.zone && locData.loc.slice(3, 5) == drawZoneData.zoneRow && locData.loc.slice(-2) >= drawZoneData.startCol && locData.loc.slice(-2) <= drawZoneData.finishCol) {
+                                    //Loc Wire 생성
+                                    //placeGeo.drawLocWire(drawZoneData, locData);
+                                    //Loc Floor 생성
+                                    var locObj = placeGeo.drawLocFloor(drawZoneData, locData);
+
+                                    //Loc Stok 생성
+                                    stokDB.forEach(function (stokData, idx) {
+                                        if (locData.loc == stokData.loc) {
+                                            placeGeo.drawLocStok(stokData, locObj);
+                                        }
+                                    });
+                                }
+                            });
+                        });
+                    }
+                });
+            });
+
+            //Conveyor 생성
+            conveyor.drawConveyorMap(conveyor_map1, 0, 2050);
+            // conveyor.drawConveyorMap(conveyor_map2, 0, 6200);
+
+            //crane 생성
+            var crane_left = new CraneGeometry({
+                init_position: crane_left_info.init_position,
+                rcpt_position: crane_left_info.rcpt_position,
+                craneName: crane_left_info.craneName,
+                speed: crane_left_info.speed,
+            });
+            crane_left.draw();
+            crane_left.run();
+
+            var crane_right = new CraneGeometry({
+                init_position: crane_right_info.init_position,
+                craneName: crane_right_info.craneName,
+                speed: crane_right_info.speed,
+                rcpt_position: crane_right_info.rcpt_position,
+            });
+            crane_right.draw();
+            crane_right.run();
+
+            console.log(crane_arr);
+            //테스트 div 이벤트부여
+            addEventTestDiv();
+            
+            function addEventTestDiv() {
+                var testInterval;
+                document.querySelector(".speed-button").addEventListener("click", function (event) {
+                    if (document.querySelector(".speed-button").innerHTML == "1배속") {
+                        warehouse.speed = 2;
+                        document.querySelector(".speed-button").innerHTML = "2배속";
+                    } else if (document.querySelector(".speed-button").innerHTML == "2배속") {
+                        warehouse.speed = 3;
+                        document.querySelector(".speed-button").innerHTML = "3배속";
+                    } else if (document.querySelector(".speed-button").innerHTML == "3배속") {
+                        warehouse.speed = 1;
+                        document.querySelector(".speed-button").innerHTML = "1배속";
+                    }
+                });
+                document.querySelector(".stop-button").addEventListener("click", function (event) {
+                    clearInterval(testInterval);
+                });
+                document.querySelector(".start-button").addEventListener("click", function (event) {
+                    lotNum++;
+                    pltNum = 1;
+                    testInterval = setInterval(function () {
+                        stokGeo.createStok();
+                    }, 5000 / warehouse.speed);
+                });
+                document.querySelector(".a-button").addEventListener("click", function (event) {
+                    if (document.querySelector(".a-button").innerHTML == "A start") {
+                        conveyor.offConveyor("rA");
+                        document.querySelector(".a-button").innerHTML = "A stop";
+                    } else if (document.querySelector(".a-button").innerHTML == "A stop") {
+                        conveyor.onConveyor("rA");
+                        document.querySelector(".a-button").innerHTML = "A start";
+                    }
+                });
+                document.querySelector(".b-button").addEventListener("click", function (event) {
+                    if (document.querySelector(".b-button").innerHTML == "B start") {
+                        conveyor.offConveyor("rB");
+                        document.querySelector(".b-button").innerHTML = "B stop";
+                    } else if (document.querySelector(".b-button").innerHTML == "B stop") {
+                        conveyor.onConveyor("rB");
+                        document.querySelector(".b-button").innerHTML = "B start";
+                    }
+                });
+                document.querySelector(".c-button").addEventListener("click", function (event) {
+                    if (document.querySelector(".c-button").innerHTML == "C start") {
+                        conveyor.offConveyor("rC");
+                        document.querySelector(".c-button").innerHTML = "C stop";
+                    } else if (document.querySelector(".c-button").innerHTML == "C stop") {
+                        conveyor.onConveyor("rC");
+                        document.querySelector(".c-button").innerHTML = "C start";
+                    }
+                });
+                document.querySelector(".d-button").addEventListener("click", function (event) {
+                    if (document.querySelector(".d-button").innerHTML == "D start") {
+                        conveyor.offConveyor("rD");
+                        document.querySelector(".d-button").innerHTML = "D stop";
+                    } else if (document.querySelector(".d-button").innerHTML == "D stop") {
+                        conveyor.onConveyor("rD");
+                        document.querySelector(".d-button").innerHTML = "D start";
+                    }
+                });
+                document.querySelector(".e-button").addEventListener("click", function (event) {
+                    if (document.querySelector(".e-button").innerHTML == "E start") {
+                        conveyor.offConveyor("rE");
+                        document.querySelector(".e-button").innerHTML = "E stop";
+                    } else if (document.querySelector(".e-button").innerHTML == "E stop") {
+                        conveyor.onConveyor("rE");
+                        document.querySelector(".e-button").innerHTML = "E start";
+                    }
+                });
+                document.querySelector(".f-button").addEventListener("click", function (event) {
+                    if (document.querySelector(".f-button").innerHTML == "F start") {
+                        conveyor.offConveyor("rF");
+                        document.querySelector(".f-button").innerHTML = "F stop";
+                    } else if (document.querySelector(".f-button").innerHTML == "F stop") {
+                        conveyor.onConveyor("rF");
+                        document.querySelector(".f-button").innerHTML = "F start";
+                    }
+                });
+                document.querySelector(".g-button").addEventListener("click", function (event) {
+                    if (document.querySelector(".g-button").innerHTML == "G start") {
+                        conveyor.offConveyor("rG");
+                        document.querySelector(".g-button").innerHTML = "G stop";
+                    } else if (document.querySelector(".g-button").innerHTML == "G stop") {
+                        conveyor.onConveyor("rG");
+                        document.querySelector(".g-button").innerHTML = "G start";
+                    }
+                });
+                document.querySelector(".h-button").addEventListener("click", function (event) {
+                    if (document.querySelector(".h-button").innerHTML == "H start") {
+                        conveyor.offConveyor("rH");
+                        document.querySelector(".h-button").innerHTML = "H stop";
+                    } else if (document.querySelector(".h-button").innerHTML == "H stop") {
+                        conveyor.onConveyor("rH");
+                        document.querySelector(".h-button").innerHTML = "H start";
+                    }
+                });
+                document.querySelector(".i-button").addEventListener("click", function (event) {
+                    if (document.querySelector(".i-button").innerHTML == "I start") {
+                        conveyor.offConveyor("rI");
+                        document.querySelector(".i-button").innerHTML = "I stop";
+                    } else if (document.querySelector(".i-button").innerHTML == "I stop") {
+                        conveyor.onConveyor("rI");
+                        document.querySelector(".i-button").innerHTML = "I start";
+                    }
+                });
+            }
+
+            //console 출력
+            {
+                //draw DB 출력
+                console.log("AreaDB↓ : " + areaDB.length);
+                console.log(areaDB);
+                console.log("ZoneDB↓ : " + zoneDB.length);
+                console.log(zoneDB);
+                console.log("LocDB↓ : " + locDB.length);
+                console.log(locDB);
+                console.log("StokDB↓ : " + stokDB.length);
+                console.log(stokDB);
+                console.log("conveyorObj_map1↓ : ");
+                console.log(conveyorObj_map1);
+                //생성된 sorter roller 출력
+                console.log("conveyorArr↓");
+                console.log(conveyorArr);
+                console.log("sorterArr↓");
+                console.log(sorterArr);
+                console.log("rollerArr↓");
+                console.log(rollerArr);
+            }
+        }
+    </script>
+</html>

@@ -20,6 +20,8 @@
     "@mui/x-data-grid": "^5.17.11",
     "@mui/x-date-pickers": "^7.7.0",
     "@react-spring/web": "^9.5.5",
+    "@react-three/drei": "^9.109.2",
+    "@react-three/fiber": "^8.16.8",
     "axios": "^0.27.2",
     "classnames": "^2.2.6",
     "date-fns": "^3.6.0",
@@ -52,6 +54,7 @@
     "react-toastify": "^7.0.3",
     "recharts": "^2.0.4",
     "styled-components": "^5.3.5",
+    "three": "^0.167.0",
     "tinycolor2": "^1.4.2",
     "utility-types": "^3.10.0"
   },

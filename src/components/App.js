@@ -25,6 +25,9 @@ import SdItem from "../pages/wms/sd/Item.js";
 import SdItemClass from "../pages/wms/sd/ItemClass.js";
 import SdItemUom from "../pages/wms/sd/ItemUom.js";
 
+
+import Sd3dLoc from "../pages/wms/vr/3dLoc/3dLoc.js";
+
 //입고
 import IbInbound from "../pages/wms/ib/Inbound.js";
 
@@ -66,6 +69,7 @@ export default function App() {
         <Route exact path="/wms/sd/item" render={()=><BlogLayout props={<SdItem />}></BlogLayout>} />
         <Route exact path="/wms/sd/itemClass" render={()=><BlogLayout props={<SdItemClass />}></BlogLayout>} />
         <Route exact path="/wms/sd/itemUom" render={()=><BlogLayout props={<SdItemUom />}></BlogLayout>} />
+        <Route exact path="/wms/vr/3dLoc" render={()=><BlogLayout props={<Sd3dLoc />}></BlogLayout>} />
 
         <Route exact path="/wms/ib/inbound" render={()=><BlogLayout props={<IbInbound />}></BlogLayout>} />
 

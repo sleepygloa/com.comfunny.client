@@ -25,6 +25,7 @@ export default function BlogLayout({props}) {
 
   useEffect(() => {
 
+    // 카카오맵 스크립트 로드
     const scriptId = 'kakao-maps-sdk';
     // 스크립트가 이미 존재하는지 확인
     if (document.getElementById(scriptId)) {

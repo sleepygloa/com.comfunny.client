@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<title>Warehouse 3D Monitor</title>
+<meta charset="utf-8">
+<style>
+	body {
+		margin: 0;
+		background-color: #fff;
+	}
+</style>
+<script src="../threejs/three.min.js"></script>
+<script src="../threejs/OrbitControls.js"></script>
+<script src="../kleannara/js/jquery-1.11.2.min.js"></script>
+<script src="../kleannara/js/warehouse_a.js"></script>
+<script>
+var warehouse = function( container ) {
+
+	(function( warehouse ) {
+
+		warehouse.INTERSECTED;	// 선택된 객체
+
+	    warehouse.mouse = new THREE.Vector2();
+	    warehouse.raycaster = new THREE.Raycaster();
+	    
+		// 장면 :  Document - https://threejs.org/docs/#api/en/scenes/Scene
+		warehouse.scene = new THREE.Scene();
+		warehouse.scene.background = new THREE.Color( 0xffffff );
+
+	    // 바닥그리드가이드 : Document - https://threejs.org/docs/#api/en/helpers/GridHelper
+	    var floor = new THREE.GridHelper( 100, 2 );
+		warehouse.scene.add( floor );
+
+		/* 카메라 : Document - https://threejs.org/docs/index.html#api/en/cameras/PerspectiveCamera
+		 * THREE.PerspectiveCamera(FIELD_OF_VIEW, ASPECT, NEAR, FAR)
+		 * FIELD_OF_VIEW: 카메라의 시야각을 의미한다. 커질 수록 카메라가 바라보는 시야각이 넓어짐을 의미한다. 단위는 degree.
+		 * ASPECT: 시야의 가로세로비를 의미한다. 컨테이너의 가로세로비와 동일한 값을 넣어주는게 좋다. 단위 없음.
+		 * NEAR: 렌더링 할 물체 거리의 하한값으로, 너무 가까이 있는 물체를 그리는 것을 막기 위해 사용한다. 카메라로부터의 거리가 이 값보다 작은 물체는 화면에 그리지 않는다. 0보다 크고 FAR 보다 작은 값을 가질 수 있다.
+		 * FAR: 렌더링 할 물체 거리의 상한값으로, 너무 멀리 있는 물체를 그리는 것을 막기 위해 사용한다. 카메라로부터의 거리가 이 값보다 큰 물체는 화면에 그리지 않는다. */
+	    warehouse.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
+	    warehouse.camera.position.set( 0, 250, 580 );
+	    warehouse.camera.lookAt(0, 100, -1800);	// 카메라초점
+	    
+		// Document - https://threejs.org/docs/index.html#api/en/renderers/WebGLRenderer
+	    warehouse.renderer = new THREE.WebGLRenderer();
+	    warehouse.renderer.setPixelRatio( window.devicePixelRatio );
+	    warehouse.renderer.setSize( window.innerWidth, window.innerHeight );
+
+		container.appendChild( warehouse.renderer.domElement );
+
+		// Renderer rendering ==========================================================================
+		warehouse.animation = function () {
+
+			warehouse.renderer.render( warehouse.scene, warehouse.camera );
+
+			requestAnimationFrame( warehouse.animation );
+		}
+
+		// MouseDown 이벤트 ==========================================================================
+		warehouse.onMouseDown = function ( e ) {
+
+			// 현재 카메라 위치 및 초점 확인
+			//console.log(warehouse.camera.position);
+			//console.log(warehouse.controls.target);
+			
+			// 객체를 클릭했을경우 반응
+			event.preventDefault();
+			warehouse.mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+			warehouse.mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+			warehouse.raycaster.setFromCamera( warehouse.mouse, warehouse.camera );
+
+			var intersects = warehouse.raycaster.intersectObjects( warehouse.scene.children );
+	
+			if( intersects.length > 0 ) {
+
+				// 마우스 오른쪽버튼
+				if( e.button == 2 ){
+
+				}
+				// 마우스 왼쪽버튼
+				else if( e.button == 0 ){
+	
+					if( warehouse.INTERSECTED != intersects[ 0 ].object ) {
+
+						if( intersects[ 0 ].object.type == 'stok' || intersects[ 0 ].object.type == 'stat' ){
+
+							// 이미 연동되어 있는 객체를 해제
+							if( warehouse.INTERSECTED && warehouse.INTERSECTED_COVER ) {
+								warehouse.scene.remove( warehouse.INTERSECTED_COVER );
+							}
+
+							// 새로운 객체를 연동
+							if( intersects[ 0 ].object.type == 'stok' ){
+								warehouse.INTERSECTED = intersects[ 0 ].object;
+								
+							} else if( intersects[ 0 ].object.type == 'stat' ){
+								warehouse.INTERSECTED = intersects[ 0 ].object.stok;
+							}
+
+							// callback 으로 정의된 함수 호출
+							warehouse.INTERSECTED.callback( intersects[0].object );
+							
+							//=============================================================
+							// 재고객체의 경우 material array 를 사용하면서 성능향상을 위해 전역변수로 설정하여 material 를 부분적으로 컨트롤 할 수 없다
+							// 그러기에 선택 객체와 동일한 cover 객체를 생성하여 선택효과를 준다.
+							var cover_geometry = new THREE.CylinderGeometry( warehouse.INTERSECTED.diameter, warehouse.INTERSECTED.diameter, warehouse.INTERSECTED.rlbt, 32 );
+							var cover_object = new THREE.Mesh( cover_geometry, new THREE.MeshBasicMaterial( { color: 0xff0000 } ) );
+							cover_object.position.x = warehouse.INTERSECTED.position.x;
+							cover_object.position.y = warehouse.INTERSECTED.position.y;
+							cover_object.position.z = warehouse.INTERSECTED.position.z;
+							cover_object.material.opacity = 0.5;			// 투명도
+							cover_object.material.transparent = true;		// transparent: 투명
+
+							warehouse.scene.add( cover_object );
+							
+							warehouse.INTERSECTED_COVER = cover_object;
+							//=============================================================
+						}
+					}
+				}
+			}
+		}
+
+		document.addEventListener( 'mousedown', warehouse.onMouseDown, false );
+
+		// WindowResize 이벤트 ==========================================================================
+		warehouse.onWindowResize = function () {
+
+			warehouse.camera.aspect = window.innerWidth / window.innerHeight;
+			warehouse.camera.updateProjectionMatrix();
+
+			warehouse.renderer.setSize( window.innerWidth, window.innerHeight );
+		}
+		
+		window.addEventListener( 'resize', warehouse.onWindowResize, false );
+	
+	})(this);
+}
+</script>
+</head>
+<body>
+	<div id="main-div" style="position:relative; height:100%; width: 100%;"></div>
+</body>
+<script>
+
+/******************************************************************************************************
+ * warehouse 객체생성
+ ******************************************************************************************************/
+var container = document.querySelector("#main-div");
+
+// Local 의 재정의한 warehouse 사용
+var warehouse = new warehouse( container );
+
+warehouse.animation();
+
+function load ( stok_arr ) {
+
+	drawStok(stok_arr, function () {
+
+		/******************************************************************************************************
+		 * loc, stok 객체생성
+		 ******************************************************************************************************/
+		for(var i=0 ; i<stok_arr.length ; i++){
+
+			var roll_Geometry = new rollGeometry ( {
+				position: [0, stok_arr[i].position.y, 0],
+				eaid: stok_arr[i].name,
+				rank: stok_arr[i].rank,
+				sku: stok_arr[i].sku,
+				loc: stok_arr[i].loc,
+				rlbt: stok_arr[i].rlbt,				// 지폭(mm)
+				diameter: stok_arr[i].diameter,		// 지름(반)
+				visible: stok_arr[i].visible,		// 재고표시여부
+				stokstat: stok_arr[i].stokstat,		// 재고상태
+				
+				clickHandler: function ( stok ) {
+					_app.callAppMethod("selectStok", stok);
+				}
+			});
+
+			roll_Geometry.draw();
+
+		    //  단 Label 추가
+			var rotation = new THREE.Euler( 0, 0, 0 );
+			addLabel( stok_arr[i].rank + '단', new THREE.Vector3( -80, stok_arr[i].position.y - 5, 0 ), rotation, 12, 0x0100ff );
+		}
+	});
+	
+	// 조회 후 처음 재고 선택 ============================================
+	if(stok_arr.length > 0){
+		var first_stok = warehouse.scene.getObjectByName(stok_arr[0].name);
+		
+		warehouse.INTERSECTED = first_stok;
+		
+		_app.callAppMethod("selectStok", first_stok);
+		
+		//=============================================================
+		// 재고객체의 경우 material array 를 사용하면서 성능향상을 위해 전역변수로 설정하여 material 를 부분적으로 컨트롤 할 수 없다
+		// 그러기에 선택 객체와 동일한 cover 객체를 생성하여 선택효과를 준다.
+		var cover_geometry = new THREE.CylinderGeometry( first_stok.diameter, first_stok.diameter, first_stok.rlbt, 32 );
+		var cover_object = new THREE.Mesh( cover_geometry, new THREE.MeshBasicMaterial( { color: 0xff0000 } ) );
+		cover_object.position.x = first_stok.position.x;
+		cover_object.position.y = first_stok.position.y;
+		cover_object.position.z = first_stok.position.z;
+		cover_object.material.opacity = 0.5;			// 투명도
+		cover_object.material.transparent = true;		// transparent: 투명
+
+		warehouse.scene.add( cover_object );
+		
+		warehouse.INTERSECTED_COVER = cover_object;
+		//=============================================================
+	}
+}
+
+function drawStok(stok_arr, draw){
+
+	// 이미 연동된 객체가 있다면 해제
+	if ( warehouse.INTERSECTED && warehouse.INTERSECTED_COVER ) {
+		warehouse.scene.remove( warehouse.INTERSECTED_COVER );
+	}
+
+	warehouse.INTERSECTED = null;
+	warehouse.INTERSECTED_COVER  = null;
+	
+	// 기존재고객체 삭제
+	var objects = warehouse.scene.children;
+	var remove_stok = [];
+	
+	for(var i=0 ; i<objects.length ; i++){
+		if(objects[i].type == 'stok' || objects[i].type == 'stat' || objects[i].type == 'font' ){
+			remove_stok.push(objects[i]);
+		}
+	}
+		
+	for(var i=0 ; i<remove_stok.length ; i++){
+		warehouse.scene.remove( warehouse.scene.getObjectByName( remove_stok[i].name ) );
+	}
+
+	warehouse.scene.remove( warehouse.scene.getObjectByName( 'top' ) );
+	warehouse.scene.remove( warehouse.scene.getObjectByName( 'pillar' ) );
+	
+	/* 아래 로직의 경우 scene.remove 순간 scene.children 의 index 를 변화되어 정상적 수행안됨
+	for(var i=0 ; i<warehouse.scene.children.length ; i++){
+		if(warehouse.scene.children[i].type == 'stok'){
+			warehouse.scene.remove( warehouse.scene.children[i] ) );
+		}
+	}*/
+	
+	draw();
+}
+
+function drawTop( height, sum_rlbt ){
+	
+	warehouse.scene.remove( warehouse.scene.getObjectByName( 'top' ) );
+	warehouse.scene.remove( warehouse.scene.getObjectByName( 'pillar' ) );
+	
+	var position_y = height * 1000 / 2200 * 80;
+	var top_geometry = new THREE.BoxBufferGeometry( 160, 2, 2 );
+	var top_object = new THREE.Mesh( top_geometry, new THREE.MeshLambertMaterial({color: 0xeaeaea}) );  
+	//top_object.material.opacity = 0.2;				// 투명도
+	//top_object.material.transparent = true;		// transparent: 투명
+	top_object.position.y = position_y + 10;
+	top_object.name = 'top';
+	warehouse.scene.add( top_object );
+	
+	
+	var pillar_geometry = new THREE.CylinderGeometry( 2, 2, position_y + 10, 32 );
+	pillar_object = new THREE.Mesh( pillar_geometry, new THREE.MeshPhongMaterial( {color: 0xeaeaea} ) );
+	//pillar_object.material.opacity = 0.8;				// 투명도
+	//pillar_object.material.transparent = true;		// transparent: 투명
+	pillar_object.position.y = (position_y + 10) / 2;
+	pillar_object.name = 'pillar';
+	warehouse.scene.add( pillar_object );
+	
+    //  높이 Label 추가
+	var rotation = new THREE.Euler( 0, 0, 0 );
+	addLabel( height + 'm', new THREE.Vector3( 50, top_object.position.y + 8, 0 ), rotation, 12, 0x000000 );
+	
+	// 적치율계산(%)
+	var putw_rate = parseFloat( sum_rlbt / position_y * 100 ).toFixed(1);
+	_app.callAppMethod("setPutwRate", putw_rate);
+}
+
+</script>
+</html>

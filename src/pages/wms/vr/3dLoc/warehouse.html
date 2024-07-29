@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Location Setup</title>
+    <style>
+        body, html { height: 100%; margin: 0; }
+        .container { width: 100%; height: 100%; }
+    </style>
+
+    <script src="https://threejs.org/build/three.js"></script>
+    <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://threejs.org/examples/js/loaders/GLTFLoader.js"></script>
+
+    <script src="data/data.js"></script>
+    <script src="warehouse.js"></script>
+
+</head>
+<body>
+    <div id="main-div" style="position:relative; height:100%; width: 100%;"></div>
+</body>
+<script>
+var container = document.querySelector("#main-div");
+var warehouse = new Warehouse(container);
+
+
+
+</script>
+</html>

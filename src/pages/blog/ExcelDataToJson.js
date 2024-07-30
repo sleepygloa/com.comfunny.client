@@ -28,6 +28,14 @@ const initData = (e) => {
     console.log(jsonData);
     setReturnJsonData(jsonData);
     // 여기서 jsonData를 서버로 업로드하거나 필요한 처리를 할 수 있습니다.
+    
+
+    try {
+      navigator.clipboard.writeText(JSON.stringify(jsonData).replace(/},/g, '},\n'));
+      alert('Text copied to clipboard');
+    } catch (err) {
+        alert('Failed to copy: ', err);
+    }
   };
 
   return (
@@ -36,7 +44,7 @@ const initData = (e) => {
       <button onClick={convertToJson}>Upload & Convert to JSON</button>
       <button onClick={initData}>Init</button>
       <div></div>
-      {returnJsonData.length > 0 && (<div>{JSON.stringify(returnJsonData)}</div>)}
+      {returnJsonData.length > 0 && (<div>{JSON.stringify(returnJsonData).replace(/},/g, '},\n')}</div>)}
       <textarea
         placeholder="여기에 엑셀 데이터를 붙여넣으세요..."
         onPaste={handlePaste}
@@ -44,7 +52,7 @@ const initData = (e) => {
         cols={50}
       />
       {previewData.length > 0 && (
-        <div>
+        <div style={{height:'500px', overflowY:'auto'}}>
           <table>
             <tbody>
               {previewData.map((row, rowIndex) => (

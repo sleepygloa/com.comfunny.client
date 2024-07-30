@@ -10,6 +10,7 @@ var WarehouseInfo = function(){
     this.warehouse_std_x = 0;
     this.warehouse_std_y = 0;
     this.warehouse_std_z = 0;
+
 }
 
     
@@ -39,11 +40,20 @@ var CameraInfo = function(){
 }
 var Warehouse = function( container ) {
 	(function( warehouse ) {
+
+        //기본정보 세팅
         warehouse.WarehouseInfo = new WarehouseInfo();
         warehouse.ModelInfo = new ModelInfo();
         warehouse.CameraInfo = new CameraInfo();
+
+
+        //창고 시작 위치 설정
+        warehouse.WarehouseInfo.warehouse_std_x = -1 * (WarehouseInfo.warehouse_width / 2);
+        warehouse.WarehouseInfo.warehouse_std_y = -1 * (WarehouseInfo.warehouse_length / 2);
+
     
 
+        //카메라세팅
 	    warehouse.camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
 	    warehouse.camera.position.set( 0, 1000, 2000 );
 

@@ -1,7 +1,7 @@
 function dcData(){
     return [
-        {"dc_cd":"DC001","dc_nm":"쒖슱 臾쇰쪟쇳꽣","std_loc_x":"26","std_loc_y":"26","std_loc_z\r":"5\r"},
-        {"dc_cd":"DC002","dc_nm":"寃쎄린 臾쇰쪟쇳꽣","std_loc_x":"52","std_loc_y":"52","std_loc_z\r":"5"}
+        {"dc_cd":"DC001","dc_nm":"서울 물류창고","std_loc_x":"26","std_loc_y":"26","std_loc_z":"5"},
+        {"dc_cd":"DC002","dc_nm":"경기 물류창고","std_loc_x":"52","std_loc_y":"52","std_loc_z":"5"}
     ]
 
 }
@@ -10,22 +10,22 @@ function dcData(){
 function areaData(){
     return 
     [
-        {"dc_cd":"DC001","area_cd":"A","area_nm":"A낃퀬援ъ뿭","std_width":"26","std_length\r":"26\r"},
-        {"dc_cd":"DC001","area_cd":"B","area_nm":"B蹂닿援ъ뿭","std_width":"","std_length\r":"\r"},
-        {"dc_cd":"DC001","area_cd":"C","area_nm":"C異쒓퀬援ъ뿭"}
+        {"dc_cd":"DC001","area_cd":"A","area_nm":"A구역","std_width":"26","std_length":"26"},
+        {"dc_cd":"DC001","area_cd":"B","area_nm":"B구역","std_width":"26","std_length":"26"},
+        {"dc_cd":"DC001","area_cd":"C","area_nm":"C구역","std_width":"26","std_length":"26"},
     ]
 }
 
 function zoneData(){
     return [
-        {"dc_cd":"DC001","zone_cd":"A1","zone_nm":"낃퀬湲곗〈","std_loc_x":"","std_loc_y":"","std_loc_z\r":"\r"},
-        {"dc_cd":"DC001","zone_cd":"A2","zone_nm":"낃퀬寃섏〈","std_loc_x":"","std_loc_y":"","std_loc_z\r":"\r"},
-        {"dc_cd":"DC001","zone_cd":"B1","zone_nm":"蹂닿議1","std_loc_x":"","std_loc_y":"","std_loc_z\r":"\r"},
-        {"dc_cd":"DC001","zone_cd":"B2","zone_nm":"蹂닿議2","std_loc_x":"","std_loc_y":"","std_loc_z\r":"\r"},
-        {"dc_cd":"DC001","zone_cd":"B3","zone_nm":"蹂닿議3 ","std_loc_x":"","std_loc_y":"","std_loc_z\r":"\r"},
-        {"dc_cd":"DC001","zone_cd":"C1","zone_nm":"異쒓퀬湲곗〈","std_loc_x":"","std_loc_y":"","std_loc_z\r":"\r"},
-        {"dc_cd":"DC001","zone_cd":"C2","zone_nm":"異쒓퀬쇳궧議","std_loc_x":"","std_loc_y":"","std_loc_z\r":"\r"},
-        {"dc_cd":"DC001","zone_cd":"C3","zone_nm":"異쒗븯곸감議"}
+        {"dc_cd":"DC001","zone_cd":"A1","zone_nm":"입고대기존","std_loc_x":"","std_loc_y":"","std_loc_z":""},
+        {"dc_cd":"DC001","zone_cd":"A2","zone_nm":"입고검수존","std_loc_x":"","std_loc_y":"","std_loc_z":""},
+        {"dc_cd":"DC001","zone_cd":"B1","zone_nm":"보관1","std_loc_x":"","std_loc_y":"","std_loc_z":""},
+        {"dc_cd":"DC001","zone_cd":"B2","zone_nm":"보관2","std_loc_x":"","std_loc_y":"","std_loc_z":""},
+        {"dc_cd":"DC001","zone_cd":"B3","zone_nm":"보관3 ","std_loc_x":"","std_loc_y":"","std_loc_z":""},
+        {"dc_cd":"DC001","zone_cd":"C1","zone_nm":"출고대기존","std_loc_x":"","std_loc_y":"","std_loc_z":""},
+        {"dc_cd":"DC001","zone_cd":"C2","zone_nm":"출고피킹존","std_loc_x":"","std_loc_y":"","std_loc_z":""},
+        {"dc_cd":"DC001","zone_cd":"C3","zone_nm":"출고상차존","std_loc_x":"","std_loc_y":"","std_loc_z":""},
     ]
 
 }

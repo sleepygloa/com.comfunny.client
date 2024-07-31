@@ -1,12 +1,40 @@
 import * as THREE from 'three';
 
+  /** 선반 추가 */
+export function addShelf(rack) {
+    // 선반 만들기
+
+    let rackPos = {
+      // x: this.rackX.position.x,
+      x: rack.rackX,
+      y: 0.5,
+      // z: this.rackZ.position.z
+      z: rack.rackZ,
+    };
+
+    // Rack 생성부분 - createRack 호출
+
+    let rackMesh = createRack(
+      rack.rackWidth,
+      rack.rackLength,
+      rack.rackFloor,
+      rackPos
+    );
+    let mesh = new THREE.Box3().setFromObject(rackMesh);
+
+    rackMesh.userData.rackSeq = rack.seq
+
+    rackMesh.name = "선반인데요";
+	return rackMesh;
+  }
+
 /** 랙 생성 모듈 함수!! 
  * sizeX => 선반의 가로
  * sizeZ => 선반의 세로
  * rackFloor => 선반의 층수
  * rackPos => 선반 위치
 */
-export default function createRack(sizeX, sizeZ, rackFloor, rackPos) {
+export function createRack(sizeX, sizeZ, rackFloor, rackPos) {
 
 	const board = new THREE.BoxGeometry(sizeX, 0.02, sizeZ, 1, 1, 1);
 	// const pilar = new THREE.BoxGeometry(0.05, sizeY, 0.05);

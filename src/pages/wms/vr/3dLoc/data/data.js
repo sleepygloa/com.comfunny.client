@@ -1,15 +1,103 @@
+//매트릭스 데이터 생성
+function createMatrixData(minX, maxX, minY, maxY) {
+    const rows = maxY - minY + 1;
+    const cols = maxX - minX + 1;
+
+    let matrix = new Array(rows).fill(0).map(() => new Array(cols).fill(0));
+
+    return createMatrixArrToData(matrix);
+}
+//매트릭스 데이터의 배열 생성
+function createMatrixArrData(minX, maxX, minY, maxY) {
+    const rows = maxY - minY + 1;
+    const cols = maxX - minX + 1;
+
+    return new Array(rows).fill(0).map(() => new Array(cols).fill(0));
+}
+//매트릭스 배열을 매트릭스 데이터로 변환
+function createMatrixArrToData(matrix) {
+    return matrix.map(row => row.join('')).join('\n');
+}
+
+//매트릭스 데이터를 매트릭스 배열로 변환
+function createMatrixDataToArr(matrixData) {
+    return matrixData.trim().split('\n').map(row => row.split(''));
+}
+
+//매트릭스 데이터로 Geometry 생성
+function createGeometryOfMatrixData(geometry, rows, cols){
+    const vertices = geometry.attributes.position.array;
+    for (let i = 0; i < vertices.length; i += 3) { // every 3rd index is a z-coordinate in a flat array of x, y, z
+        const x = vertices[i];   // x-coordinate
+        const y = vertices[i+1]; // y-coordinate
+        const row = Math.floor(y);
+        const col = Math.floor(x);
+        if (row < rows && col < cols) {
+            //  vertices[i+2] = matrix[row][col]; // Set z based on matrix value
+            vertices[i+2] = 0
+        }
+    }
+
+    geometry.attributes.position.needsUpdate = true;
+    geometry.computeVertexNormals(); // To ensure lighting calculations reflect the new geometry
+    return geometry;
+}
+
+//매트릭스 데이터 중 특정 값의 위치만 추출
+function getValidDataOfMatrixData(matrix, value){
+    if(value == undefined) return;
+    const positions = [];
+    
+    for (let y = 0; y < matrix.length; y++) {
+        for (let x = 0; x < matrix[y].length; x++) {
+            if (matrix[y][x] === value) {
+                positions.push({ x, y });
+            }
+        }
+    }
+    return positions;
+}
+
+//List 배열중 std_loc_x, std_loc_y, std_loc_z를 기준으로 매트릭스 데이터 생성
+function createMatrixDataFromList(baseMatrix, list, value){
+    const maxX = baseMatrix[0].length;
+    const maxY = baseMatrix.length;
+
+    list.forEach(item => {
+        const x = parseInt(item.std_loc_x, 10) - 1; // Adjust if indexing in your data starts from 1
+        const y = parseInt(item.std_loc_y, 10) - 1; // Adjust if indexing in your data starts from 1
+        if (x >= 0 && x < maxX && y >= 0 && y < maxY) {
+            baseMatrix[y][x] = value; // Set to 1 (or another specific value) to indicate presence
+        }
+    });
+
+    return baseMatrix;
+}
+
+//매트릭스 데이터 2개를 더하기
+function addMatrices(matrix1, matrix2) {
+    const result = [];
+    for (let i = 0; i < matrix1.length; i++) {
+        result[i] = [];
+        for (let j = 0; j < matrix1[i].length; j++) {
+            result[i][j] = matrix1[i][j] + matrix2[i][j];
+        }
+    }
+    return result;
+}
+
 var dcData = 
     [   
-        {"dc_cd":"DC001","dc_nm":"서울 물류창고","std_loc_x":"26","std_loc_y":"26","std_loc_z":"5"},
-        {"dc_cd":"DC002","dc_nm":"경기 물류창고","std_loc_x":"52","std_loc_y":"52","std_loc_z":"5"}
+        {"dc_cd":"DC001","dc_nm":"서울 물류창고","std_width":"26","std_length":"26","std_loc_x":"0","std_loc_y":"0","std_loc_z":"0"},
+        {"dc_cd":"DC002","dc_nm":"경기 물류창고","std_width":"52","std_length":"52","std_loc_x":"0","std_loc_y":"0","std_loc_z":"0"}
     ]
 
 
 var areaData =
     [
-        {"dc_cd":"DC001","area_cd":"A","area_nm":"A구역","std_width":"26","std_length":"26", "std_loc_x":"0","std_loc_y":"26","std_loc_z":"0"},
-        {"dc_cd":"DC001","area_cd":"B","area_nm":"B구역","std_width":"26","std_length":"26", "std_loc_x":"0","std_loc_y":"26","std_loc_z":"0"},
-        {"dc_cd":"DC001","area_cd":"C","area_nm":"C구역","std_width":"26","std_length":"26", "std_loc_x":"0","std_loc_y":"26","std_loc_z":"0"},
+        {"dc_cd":"DC001","area_cd":"A","area_nm":"A구역","std_width":"26","std_length":"26", "std_loc_x":"0","std_loc_y":"0","std_loc_z":"0"},
+        {"dc_cd":"DC001","area_cd":"B","area_nm":"B구역","std_width":"26","std_length":"26", "std_loc_x":"0","std_loc_y":"0","std_loc_z":"0"},
+        {"dc_cd":"DC001","area_cd":"C","area_nm":"C구역","std_width":"26","std_length":"26", "std_loc_x":"0","std_loc_y":"0","std_loc_z":"0"},
     ]
 
 var zoneData = [

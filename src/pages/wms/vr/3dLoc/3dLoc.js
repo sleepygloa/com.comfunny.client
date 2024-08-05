@@ -52,12 +52,13 @@ export default function Loc3d(props) {
 
   var ModelInfo = {
     //바닥위치 
-    gltfY : 1.4,
+    gltfY : 0,
+    gltfZ : 0,
 
     //지게차 크기
-    forklift_scale_x : 0.005,
-    forklift_scale_y : 0.005,
-    forklift_scale_z : 0.005,
+    forklift_scale_x : 0.001,
+    forklift_scale_y : 0.001,
+    forklift_scale_z : 0.001,
 
     //선반 크기
     rack_size_width : 1, //선반크기(가로)
@@ -68,11 +69,11 @@ export default function Loc3d(props) {
 
   var CameraInfo = {
     //카메라 위치
-    camera_x : 0,
+    camera_x : 20,
     // camera_x : -20,
     camera_y : 20,
     // camera_y : 0,
-    camera_z : 0,
+    camera_z : 20,
   }
 
   var RackGroup = new THREE.Group();

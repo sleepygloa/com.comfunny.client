@@ -2,31 +2,60 @@ import * as THREE from 'three';
 
   /** 선반 추가 */
 export function addShelf(rack) {
-    // 선반 만들기
+	// 선반 만들기
 
-    let rackPos = {
-      // x: this.rackX.position.x,
-      x: rack.rackX,
-      y: 0.5,
-      // z: this.rackZ.position.z
-      z: rack.rackZ,
-    };
+	let rackPos = {
+		// x: this.rackX.position.x,
+		x: rack.rackX,
+		y: 0.5,
+		// z: this.rackZ.position.z
+		z: rack.rackZ,
+	};
 
-    // Rack 생성부분 - createRack 호출
+	// Rack 생성부분 - createRack 호출
 
-    let rackMesh = createRack(
-      rack.rackWidth,
-      rack.rackLength,
-      rack.rackFloor,
-      rackPos
-    );
-    let mesh = new THREE.Box3().setFromObject(rackMesh);
+	let rackMesh = createRack(
+		rack.rackWidth,
+		rack.rackLength,
+		rack.rackFloor,
+		rackPos
+	);
+	let mesh = new THREE.Box3().setFromObject(rackMesh);
 
-    rackMesh.userData.rackSeq = rack.seq
+	rackMesh.userData.rackSeq = rack.seq
 
-    rackMesh.name = "선반인데요";
+	rackMesh.name = "선반인데요";
 	return rackMesh;
-  }
+}
+
+
+  /** 선반 추가 */
+  export function addFloorShelf(rack) {
+	// 선반 만들기
+	
+	let rackPos = {
+		// x: this.rackX.position.x,
+		x: rack.rackX,
+		y: 0.5,
+		// z: this.rackZ.position.z
+		z: rack.rackZ,
+	};
+	
+	// Rack 생성부분 - createRack 호출
+	
+	let rackMesh = createRack(
+		rack.rackWidth,
+		rack.rackLength,
+		1,
+		rackPos
+	);
+	let mesh = new THREE.Box3().setFromObject(rackMesh);
+	
+	rackMesh.userData.rackSeq = rack.seq
+	
+	rackMesh.name = "선반인데요";
+	return rackMesh;
+	}
 
 /** 랙 생성 모듈 함수!! 
  * sizeX => 선반의 가로
@@ -39,7 +68,7 @@ export function createRack(sizeX, sizeZ, rackFloor, rackPos) {
 	const board = new THREE.BoxGeometry(sizeX, 0.02, sizeZ, 1, 1, 1);
 	// const pilar = new THREE.BoxGeometry(0.05, sizeY, 0.05);
 	// const board = new THREE.BoxGeometry(1, 0.02, 1, 1, 1, 1);
-	const pilar = new THREE.BoxGeometry(0.05, 1, 0.05);
+	const pilar = new THREE.BoxGeometry(0.05, (rackFloor == 1 ? 0 : 1), 0.05);
 	// const material = new THREE.MeshBasicMaterial({color:0xffffff})
 	const randomColor = new THREE.Color(
 		Math.random(),
@@ -57,7 +86,8 @@ export function createRack(sizeX, sizeZ, rackFloor, rackPos) {
 		clearcoat: 0.3,
 		clearcoatRoughness: 0,
 		wireframe: false,
-		flatShading: false
+		flatShading: false,
+		opacity: 0.5,
 	})
 
 	const board_material = new THREE.MeshPhysicalMaterial({
@@ -68,7 +98,8 @@ export function createRack(sizeX, sizeZ, rackFloor, rackPos) {
 		clearcoat: 0.3,
 		clearcoatRoughness: 0,
 		wireframe: false,
-		flatShading: false
+		flatShading: false,
+		opacity: 0.5,
 	})
 
 
@@ -86,17 +117,27 @@ export function createRack(sizeX, sizeZ, rackFloor, rackPos) {
 	const boardBox = new THREE.Box3().setFromObject(boardMesh);
 	const pilarBox = new THREE.Box3().setFromObject(pilar1);
 	const pilarYLen = pilarBox.max.y - pilarBox.min.y;
+	
 
 	pilar1.position.set(boardBox.min.x, boardBox.max.y + pilarYLen / 2 - pilarYLen * 0.2, boardBox.min.z);
 	pilar2.position.set(boardBox.max.x, boardBox.max.y + pilarYLen / 2 - pilarYLen * 0.2, boardBox.min.z);
 	pilar3.position.set(boardBox.max.x, boardBox.max.y + pilarYLen / 2 - pilarYLen * 0.2, boardBox.max.z);
 	pilar4.position.set(boardBox.min.x, boardBox.max.y + pilarYLen / 2 - pilarYLen * 0.2, boardBox.max.z);
 
+	// pilar1.material.transparent = true;
+	// pilar2.material.transparent = true;
+	// pilar3.material.transparent = true;
+	// pilar4.material.transparent = true;
+	// pilar1.material.opacity = 0.5;
+	// pilar2.material.opacity = 0.5;
+	// pilar3.material.opacity = 0.5;
+	// pilar4.material.opacity = 0.5;
 
 	let rackComponentGroup = new THREE.Group();
 	const rackUnitGroup = new THREE.Group();
 	
-	boardMesh.name = "판11111"
+	boardMesh.name = "locationRack"
+	rackComponentGroup.name = "locationRack"
 	rackComponentGroup.add(boardMesh, pilar1, pilar2, pilar3, pilar4);
 
 	rackUnitGroup.add(rackComponentGroup);
@@ -110,8 +151,7 @@ export function createRack(sizeX, sizeZ, rackFloor, rackPos) {
 	}
 
 	// 수정 필요
-	rackUnitGroup.name = "선반"
-	rackUnitGroup.position.set(rackPos.x, 0.2, rackPos.z)
-
+	// rackUnitGroup.name = "locationRack"
+	rackUnitGroup.position.set(rackPos.x, 0.2, -rackPos.z)
 	return rackUnitGroup;
 }

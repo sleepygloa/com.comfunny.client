@@ -12,6 +12,12 @@
     <script src="./data/data.js"></script>
 </head>
 <body>
+    <!-- 버튼 그룹, 버튼으로 레이어를 보이고 안보이게 설정 -->
+    <button id="ShowAll">전체 Layer(0)</button>
+    <button id="ShowBottom">바닥 Layer(0)</button>
+    <button id="ShowArea">구역 Layer(1)</button>
+    <button id="ShowZone">존 Layer(2)</button>
+    <button id="ShowLocationModel">랙 Layer(9)</button>
 <!-- Import -->
 <script type="importmap">
     {
@@ -43,6 +49,10 @@
     const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
     camera.position.set(CameraInfo.camera_x, CameraInfo.camera_y, CameraInfo.camera_z);
     camera.lookAt(0, 0, 0);
+    //카메라가 보는 레이어 설정
+    camera.layers.enable(0);  // Enable the cube for layer 1
+    camera.layers.enable(1);  // Enable the cube for layer 1
+
 
     //렌더러 생성
     const renderer = new THREE.WebGLRenderer({antialias: true});
@@ -124,103 +134,261 @@
 
 
 
-    //창고 바닥 생성
-    const floorGeometry = new THREE.PlaneGeometry(WarehouseInfo.warehouse_width, WarehouseInfo.warehouse_length);
-    const floorMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff, side: THREE.DoubleSide });
-    var floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    floor.rotation.x = -Math.PI / 2;
-    floor.layers.set(0);  // Add the cube to layer 1
-    scene.add(floor);
 
-    // 격자 추가
-    const gridHelper = new THREE.GridHelper(WarehouseInfo.warehouse_width, WarehouseInfo.warehouse_length, 0x000000, 0x888888);
-    gridHelper.position.y = 0.01;
-    scene.add(gridHelper);
-
-    //창고 벽 생성
-    const wallGeometry = new THREE.BoxGeometry(WarehouseInfo.warehouse_width, WarehouseInfo.warehouse_height, 0.1);
-    const wallMaterial = new THREE.MeshPhongMaterial({ color: 0xc2c2c2 });
-    var wall = new THREE.Mesh(wallGeometry, wallMaterial);
-    wall.position.set( 0, WarehouseInfo.warehouse_height/4, WarehouseInfo.warehouse_width/2);
-    wall.material.opacity = 0.5;
-    scene.add(wall);
-
-    //창고 벽 생성
-    const wallGeometry2 = new THREE.BoxGeometry(WarehouseInfo.warehouse_width, WarehouseInfo.warehouse_height, 0.1);
-    const wallMaterial2 = new THREE.MeshPhongMaterial({ color: 0xc2c2c2 });
-    var wall2 = new THREE.Mesh(wallGeometry2, wallMaterial2);
-    wall2.position.set( 0, WarehouseInfo.warehouse_height/4, -WarehouseInfo.warehouse_width/2);
-    wall2.material.opacity = 0.5;
-    scene.add(wall2);
-
-    //창고 벽 생성
-    const wallGeometry3 = new THREE.BoxGeometry(0.1, WarehouseInfo.warehouse_height, WarehouseInfo.warehouse_length);
-    const wallMaterial3 = new THREE.MeshPhongMaterial({ color: 0xc2c2c2 });
-    var wall3 = new THREE.Mesh(wallGeometry3, wallMaterial3);
-    wall3.position.set( WarehouseInfo.warehouse_width/2, WarehouseInfo.warehouse_height/4, 0);
-    wall3.material.opacity = 0.5;
-    scene.add(wall3);
-
-    //창고 벽 생성
-    const wallGeometry4 = new THREE.BoxGeometry(0.1, WarehouseInfo.warehouse_height, WarehouseInfo.warehouse_length);
-    const wallMaterial4 = new THREE.MeshPhongMaterial({ color: 0xc2c2c2 });
-    var wall4 = new THREE.Mesh(wallGeometry4, wallMaterial4);
-    wall4.position.set( -WarehouseInfo.warehouse_width/2, WarehouseInfo.warehouse_height/4, 0);
-    wall4.material.opacity = 0.5;
-    scene.add(wall4);
-
-    //창고 정보 생성
-    // const warehouseInfoGeometry = new TextGeometry('Warehouse Info', {
-    //     font: loaded_font,
-    //     size: 0.5,
-    //     height: 0.1,
-    //     curveSegments: 12,
-    //     bevelEnabled: false
-    // });
 
     //구역 Layout
-    // const layoutGeometry = new TextGeometry('Layout', {
-    //     font: loaded_font,
-    //     size: 0.5,
-    //     height: 0.1,
-    //     curveSegments: 12,
-    //     bevelEnabled: false
-    // });
-    // const layoutMaterial = new THREE.MeshPhongMaterial({ color: 0x000000 });
-    // var layout = new THREE.Mesh(layoutGeometry, layoutMaterial);
-    // layout.position.set(-WarehouseInfo.warehouse_width/2, WarehouseInfo.warehouse_height/2, -WarehouseInfo.warehouse_length/2);
-    // scene.add(layout);
+    //Plane 영역 생성하기 
+    function createPlaneGeometry(scene, minX, maxX, minY, maxY, color, name, offsetY){
+        var areaMatrix = createMatrixData(minX, maxX, minY, maxY);
+        var matrix = createMatrixArrData(minX, maxX, minY, maxY);
+
+        const rows = matrix.length;
+        const cols = matrix[0].length;
+
+        const geometry = new THREE.PlaneGeometry(cols, rows, cols - 1, rows - 1);
+        geometry.translate(WarehouseInfo.warehouse_std_x, WarehouseInfo.warehouse_std_y, 0);
+        createGeometryOfMatrixData(geometry, rows, cols);
+
+        const material = new THREE.MeshStandardMaterial({color: color, side: THREE.DoubleSide, wireframe: false});
+        const plane = new THREE.Mesh(geometry, material);
+        plane.rotation.x = -Math.PI / 2;
+        // plane.position.x = -WarehouseInfo.warehouse_width/2 + Number(minX)/2 + Number(maxX)/2;
+        plane.position.x = Number(minX)/2 + Number(maxX)/2;
+        plane.position.y = offsetY;
+        plane.position.z = -(Number(minY)/2 + Number(maxY)/2);
+        plane.material.transparent = true;
+        plane.material.opacity = 0.5;
+
+        plane.layers.set(1);  // Add the cube to layer 1
+        plane.name = name;
+        scene.add(plane);
+    }
 
 
-    //존 Layout
+    //창고 바닥 생성
+    {
+        const minX = dcData[0].std_loc_x;
+        const maxX = dcData[0].std_width;
+        const minY = dcData[0].std_loc_y;
+        const maxY = dcData[0].std_length;
+
+        createPlaneGeometry(scene, minX, maxX, minY, maxY, 0x156289, 'ShowBottom', 0.01)
+
+        // 격자 추가
+        const gridHelper = new THREE.GridHelper(maxX, maxY, 0x000000, 0x000000);
+        gridHelper.position.y = 0.01;
+        scene.add(gridHelper);
+    }
+
+    {
+        //입고구역
+        const minX = areaData[0].std_loc_x;
+        const maxX = areaData[0].std_width;
+        const minY = areaData[0].std_loc_y;
+        const maxY = areaData[0].std_length;
+
+        createPlaneGeometry(scene, minX, maxX, minY, maxY, 0xE5E1DA, 'Area', 0.02)
+    }
+    {
+        //보관구역
+        const minX = areaData[1].std_loc_x;
+        const maxX = areaData[1].std_width;
+        const minY = areaData[1].std_loc_y;
+        const maxY = areaData[1].std_length;
+
+        createPlaneGeometry(scene, minX, maxX, minY, maxY, 0xFBF9F1, 'Area', 0.02)
+    }
+    {
+        //출고구역
+        const minX = areaData[2].std_loc_x;
+        const maxX = areaData[2].std_width;
+        const minY = areaData[2].std_loc_y;
+        const maxY = areaData[2].std_length;
+
+        createPlaneGeometry(scene, minX, maxX, minY, maxY, 0xE5E1DA, 'Area', 0.02)
+    }
+
+
+    {
+        //입고대기존
+        const minX = zoneData[0].std_loc_x;
+        const maxX = zoneData[0].std_width;
+        const minY = zoneData[0].std_loc_y;
+        const maxY = zoneData[0].std_length;
+
+        createPlaneGeometry(scene, minX, maxX, minY, maxY, 0x3A4D39, 'Zone', 0.04)
+    }
+    {
+        //입고검수존
+        const minX = zoneData[1].std_loc_x;
+        const maxX = zoneData[1].std_width;
+        const minY = zoneData[1].std_loc_y;
+        const maxY = zoneData[1].std_length;
+
+        createPlaneGeometry(scene, minX, maxX, minY, maxY, 0x739072, 'Zone', 0.04)
+    }
+    {
+        //보관1
+        const minX = zoneData[2].std_loc_x;
+        const maxX = zoneData[2].std_width;
+        const minY = zoneData[2].std_loc_y;
+        const maxY = zoneData[2].std_length;
+
+        createPlaneGeometry(scene, minX, maxX, minY, maxY, 0x8D493A, 'Zone', 0.04)
+    }
+    {
+        //보관2
+        const minX = zoneData[3].std_loc_x;
+        const maxX = zoneData[3].std_width;
+        const minY = zoneData[3].std_loc_y;
+        const maxY = zoneData[3].std_length;
+
+        createPlaneGeometry(scene, minX, maxX, minY, maxY, 0x8D493A, 'Zone', 0.04)
+    }
+    {
+        //출고피킹존
+        const minX = zoneData[4].std_loc_x;
+        const maxX = zoneData[4].std_width;
+        const minY = zoneData[4].std_loc_y;
+        const maxY = zoneData[4].std_length;
+
+        createPlaneGeometry(scene, minX, maxX, minY, maxY, 0xC8DBBE, 'Zone', 0.04)
+    }
+    {
+        //출고상차존
+        const minX = zoneData[5].std_loc_x;
+        const maxX = zoneData[5].std_width;
+        const minY = zoneData[5].std_loc_y;
+        const maxY = zoneData[5].std_length;
+
+        createPlaneGeometry(scene, minX, maxX, minY, maxY, 0xC8DBBE, 'Zone', 0.04)
+    }
+
+    //바닥 레이어 보기 안보기 설정
+    ShowAll.addEventListener('click', function() {
+        scene.traverse(function(child) {
+            if(child.visible){
+                child.visible = false;
+            }else{
+                child.visible = true;
+            }
+        });
+    });
+
+    //바닥 레이어 보기 안보기 설정
+    ShowBottom.addEventListener('click', function() {
+        scene.traverse(function(child) {
+            if(child.name === 'ShowBottom'){
+                if(child.visible){
+                    child.visible = false;
+                }else{
+                    child.visible = true;
+                }
+            }
+        });
+    });
+
+    //구역 레이어 보기 안보기 설정
+    ShowArea.addEventListener('click', function() {
+        scene.traverse(function(child) {
+            if(child.name === 'Area'){
+                if(child.visible){
+                    child.visible = false;
+                }else{
+                    child.visible = true;
+                }
+            }
+        });
+    });
+    //존 레이어 보기 안보기 설정
+    ShowZone.addEventListener('click', function() {
+        scene.traverse(function(child) {
+            if(child.name === 'Zone'){
+                if(child.visible){
+                    child.visible = false;
+                }else{
+                    child.visible = true;
+                }
+            }
+        });
+    });
+    //로케이션랙 레이어 보기 안보기 설정
+    ShowLocationModel.addEventListener('click', function() {
+        scene.traverse(function(child) {
+            if(child.name === 'locationRack'){
+                if(child.visible){
+                    child.visible = false;
+                }else{
+                    child.visible = true;
+                }
+            }
+        });
+    });
+
 
 
     //지게차 로드
     const loader2 = new GLTFLoader();
     loader2.load('./images/vr/model/low/forklift_truck.glb', function(gltf) {
         gltf.scene.scale.set(ModelInfo.forklift_scale_x, ModelInfo.forklift_scale_y, ModelInfo.forklift_scale_z);
-        gltf.scene.position.set(10, ModelInfo.gltfY, 10)
+        gltf.scene.position.set(ModelInfo.gltfX, ModelInfo.gltfY, ModelInfo.gltfZ)
         scene.add(gltf.scene);
     });
 
-    //랙 생성
-    var rackGroup = new THREE.Group();
-    rackGroup.name = 'RackGroup';
-    for(let i = 0; i < locData.length; i++){
-        console.log(WarehouseInfo.warehouse_std_x, Number(locData[i].std_loc_x))
-        var rack = addShelf({
-                                seq : i+1,
-                                rackX : WarehouseInfo.warehouse_std_x  + Number(locData[i].std_loc_x),
-                                rackZ : WarehouseInfo.warehouse_std_y  + Number(locData[i].std_loc_y),
-                                rackWidth : ModelInfo.rack_size_width,
-                                rackLength : ModelInfo.rack_size_length,
-                                rackFloor : ModelInfo.rack_size_floor,
-                        });
-        rackGroup.add(rack);
+    {
+        const maxX = dcData[0].std_width;
+        const maxY = dcData[0].std_length;
+        const matrix = createMatrixArrData(dcData[0].std_loc_x, maxX, dcData[0].std_loc_y, maxY);
+
+        var locMatrixArr = createMatrixDataFromList(matrix, locData);
+        var locMatrix = createMatrixArrToData(locMatrixArr);
+
+        var validLocArr = getValidDataOfMatrixData(locMatrixArr, 1);
+        //랙 생성
+        var rackGroup = new THREE.Group();
+        rackGroup.name = 'RackGroup';
+        for(let i = 0; i < validLocArr.length; i++){
+            var rack = addShelf({
+                seq : i+1,
+                rackX : WarehouseInfo.warehouse_std_x + validLocArr[i].x,
+                rackZ : WarehouseInfo.warehouse_std_y + validLocArr[i].y,
+                rackWidth : ModelInfo.rack_size_width,
+                rackLength : ModelInfo.rack_size_length,
+                rackFloor : 1,
+            });
+            rackGroup.add(rack);
+        }
+        var validLocArrTwo = getValidDataOfMatrixData(locMatrixArr, 2);
+        //랙 생성
+        for(let i = 0; i < validLocArrTwo.length; i++){
+            // console.log(validLocArrTwo[i]);
+            var rack = addShelf({
+                seq : i+1,
+                rackX : WarehouseInfo.warehouse_std_x + validLocArrTwo[i].x,
+                rackZ : WarehouseInfo.warehouse_std_y + validLocArrTwo[i].y,
+                rackWidth : ModelInfo.rack_size_width,
+                rackLength : ModelInfo.rack_size_length,
+                rackFloor : 2,
+            });
+            rackGroup.add(rack);
+        }
+        var validLocArrThree = getValidDataOfMatrixData(locMatrixArr, 3);
+        //랙 생성
+        for(let i = 0; i < validLocArrThree.length; i++){
+            // console.log(validLocArrTwo[i]);
+            var rack = addShelf({
+                seq : i+1,
+                rackX : WarehouseInfo.warehouse_std_x + validLocArrThree[i].x,
+                rackZ : WarehouseInfo.warehouse_std_y + validLocArrThree[i].y,
+                rackWidth : ModelInfo.rack_size_width,
+                rackLength : ModelInfo.rack_size_length,
+                rackFloor : 3,
+            });
+            rackGroup.add(rack);
+        }
+        scene.add(rackGroup);
+        //
     }
-    scene.add(rackGroup);
-
-
 </script>
 
 </body>

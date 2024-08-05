@@ -144,6 +144,7 @@
 
         const rows = matrix.length;
         const cols = matrix[0].length;
+        console.log(rows,cols)
 
         const geometry = new THREE.PlaneGeometry(cols, rows, cols - 1, rows - 1);
         geometry.translate(WarehouseInfo.warehouse_std_x, WarehouseInfo.warehouse_std_y, 0);
@@ -154,6 +155,7 @@
         plane.rotation.x = -Math.PI / 2;
         // plane.position.x = -WarehouseInfo.warehouse_width/2 + Number(minX)/2 + Number(maxX)/2;
         plane.position.x = Number(minX)/2 + Number(maxX)/2;
+        // plane.position.x = Number(minX)/2 + Number(maxX)/2;
         plane.position.y = offsetY;
         plane.position.z = -(Number(minY)/2 + Number(maxY)/2);
         plane.material.transparent = true;
@@ -175,11 +177,10 @@
         createPlaneGeometry(scene, minX, maxX, minY, maxY, 0x156289, 'ShowBottom', 0.01)
 
         // 격자 추가
-        const gridHelper = new THREE.GridHelper(maxX, maxY, 0x000000, 0x000000);
+        const gridHelper = new THREE.GridHelper(maxX*1.5, 20);
         gridHelper.position.y = 0.01;
         scene.add(gridHelper);
     }
-
     {
         //입고구역
         const minX = areaData[0].std_loc_x;
@@ -207,8 +208,6 @@
 
         createPlaneGeometry(scene, minX, maxX, minY, maxY, 0xE5E1DA, 'Area', 0.02)
     }
-
-
     {
         //입고대기존
         const minX = zoneData[0].std_loc_x;

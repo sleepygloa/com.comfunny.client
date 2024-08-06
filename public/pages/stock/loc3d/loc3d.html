@@ -8,6 +8,7 @@
         body { margin: 0; }
         canvas { display: block; }
     </style>
+
     <script src="./data/warehouseInfo.js"></script>
     <script src="./data/data.js"></script>
 </head>
@@ -18,6 +19,7 @@
     <button id="ShowArea">구역 Layer(1)</button>
     <button id="ShowZone">존 Layer(2)</button>
     <button id="ShowLocationModel">랙 Layer(9)</button>
+    <div id="container"></div>
 <!-- Import -->
 <script type="importmap">
     {
@@ -36,6 +38,9 @@
     import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three/examples/jsm/loaders/GLTFLoader.js';
 
     import { createRack, addShelf } from './createRackModule.js';
+
+    //컨테이너 생성
+    const container = document.getElementById('container');
 
     //창고 시작 위치 설정
     WarehouseInfo.warehouse_std_x = -1 * (WarehouseInfo.warehouse_width / 2);
@@ -57,7 +62,8 @@
     //렌더러 생성
     const renderer = new THREE.WebGLRenderer({antialias: true});
     renderer.setSize( window.innerWidth, window.innerHeight );
-    document.body.appendChild( renderer.domElement );
+    container.appendChild( renderer.domElement );
+    console.log(container)
 
     //조명 생성
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);

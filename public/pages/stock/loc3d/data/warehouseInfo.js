@@ -17,14 +17,14 @@ var WarehouseInfo = {
 var ModelInfo = {
 
     //바닥위치
-    gltfX: 12.25,
+    gltfX: 11.5,
     gltfY: 0.7,
     gltfZ: 12.25,
 
     //지게차 크기
-    forklift_scale_x: 0.004,
-    forklift_scale_y: 0.004,
-    forklift_scale_z: 0.004,
+    forklift_scale_x: 0.3,
+    forklift_scale_y: 0.3,
+    forklift_scale_z: 0.3,
 
     //선반 크기
     rack_size_width: 1, //선반크기(가로)

@@ -246,7 +246,21 @@ var warehouse = function (container){
         }
 
 
-
+        {
+            //지게차 로드
+            const loader2 = new THREE.OBJLoader();
+            loader2.load('./images/vr/model/low/forklift/forklift.obj', function (object) {
+                object.scale.set(ModelInfo.forklift_scale_x, ModelInfo.forklift_scale_y, ModelInfo.forklift_scale_z);
+                object.position.set(ModelInfo.gltfX, ModelInfo.gltfY, ModelInfo.gltfZ)
+                warehouse.scene.add(object);
+            }, function (xhr) {
+                // 모델이 로드되는 동안 호출되는 함수
+                console.log(xhr.loaded / xhr.total * 100, '% loaded');
+            }, function (error) {
+                // 모델 로드가 실패했을 때 호출하는 함수                    
+                alert('모델을 로드 중 오류가 발생하였습니다.');
+            });
+        }
         {
             const maxX = dcData[0].std_width;
             const maxY = dcData[0].std_length;
@@ -617,9 +631,7 @@ var warehouse = function (container){
 
 
     
-    var container = document.querySelector("#container");
-    console.log('===', '')
+    var container = document.querySelector("#loc3dContainer");
     var warehouse = new warehouse(container);
-    console.log(warehouse)
     warehouse.animation();
     warehouse.cameraControls();

@@ -1,7 +1,6 @@
-import * as THREE from 'three';
 
   /** 선반 추가 */
-export function addShelf(rack) {
+function addShelf(rack) {
 	// 선반 만들기
 
 	let rackPos = {
@@ -30,7 +29,7 @@ export function addShelf(rack) {
 
 
   /** 선반 추가 */
-  export function addFloorShelf(rack) {
+  function addFloorShelf(rack) {
 	// 선반 만들기
 	
 	let rackPos = {
@@ -63,7 +62,7 @@ export function addShelf(rack) {
  * rackFloor => 선반의 층수
  * rackPos => 선반 위치
 */
-export function createRack(sizeX, sizeZ, rackFloor, rackPos) {
+function createRack(sizeX, sizeZ, rackFloor, rackPos) {
 
 	const board = new THREE.BoxGeometry(sizeX, 0.02, sizeZ, 1, 1, 1);
 	// const pilar = new THREE.BoxGeometry(0.05, sizeY, 0.05);

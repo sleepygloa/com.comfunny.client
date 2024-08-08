@@ -315,323 +315,73 @@ var warehouse = function (container){
             //
         }
 
+
+
+        //바닥 레이어 보기 안보기 설정
+        ShowAll.addEventListener('click', function() {
+            scene.traverse(function(child) {
+                if(child.visible){
+                    child.visible = false;
+                }else{
+                    child.visible = true;
+                }
+            });
+        });
+
+        //바닥 레이어 보기 안보기 설정
+        ShowBottom.addEventListener('click', function() {
+            scene.traverse(function(child) {
+                if(child.name === 'ShowBottom'){
+                    if(child.visible){
+                        child.visible = false;
+                    }else{
+                        child.visible = true;
+                    }
+                }
+            });
+        });
+
+        //구역 레이어 보기 안보기 설정
+        ShowArea.addEventListener('click', function() {
+            scene.traverse(function(child) {
+                if(child.name === 'Area'){
+                    if(child.visible){
+                        child.visible = false;
+                    }else{
+                        child.visible = true;
+                    }
+                }
+            });
+        });
+        //존 레이어 보기 안보기 설정
+        ShowZone.addEventListener('click', function() {
+            scene.traverse(function(child) {
+                if(child.name === 'Zone'){
+                    if(child.visible){
+                        child.visible = false;
+                    }else{
+                        child.visible = true;
+                    }
+                }
+            });
+        });
+        //로케이션랙 레이어 보기 안보기 설정
+        ShowLocationModel.addEventListener('click', function() {
+            scene.traverse(function(child) {
+                if(child.name === 'locationRack'){
+                    if(child.visible){
+                        child.visible = false;
+                    }else{
+                        child.visible = true;
+                    }
+                }
+            });
+        });
     })(this);
 }
 
-    // //카메라 생성
-    // const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-    // camera.position.set(CameraInfo.camera_x, CameraInfo.camera_y, CameraInfo.camera_z);
-    // camera.lookAt(0, 0, 0);
-    // //카메라가 보는 레이어 설정
-    // camera.layers.enable(0);  // Enable the cube for layer 1
-    // camera.layers.enable(1);  // Enable the cube for layer 1
-
-    // //렌더러 생성
-    // const renderer = new THREE.WebGLRenderer({antialias: true});
-    // renderer.setSize( window.innerWidth, window.innerHeight );
-    // // container.appendChild( renderer.domElement );
-
-    // //조명 생성
-    // const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-    // directionalLight.position.set(CameraInfo.camera_x, CameraInfo.camera_y, CameraInfo.camera_z);
-    // scene.add(directionalLight);
-
-    //카메라 컨트롤러 생성
-    // const controls = new THREE.OrbitControls(camera, renderer.domElement);
-    // controls.update();
-
-
-
-    // //그리드 생성
-    // scene.add( new THREE.AxesHelper(500) );
-
-    //애니메이션
-    // function animate() {
-    //     requestAnimationFrame( animate );
-    //     // controls.update();
-    //     renderer.render( scene, camera );
-    // }
-    // animate();
-
-    // //리사이즈
-    // window.addEventListener('resize', function() {
-    //     camera.aspect = window.innerWidth / window.innerHeight;
-    //     camera.updateProjectionMatrix();
-    //     renderer.setSize( window.innerWidth, window.innerHeight );
-    // });
     
-
-    // //마우스 이벤트
-    // window.addEventListener('click', function(event) {
-    //     const raycaster = new THREE.Raycaster();
-    //     const mouse = new THREE.Vector2();
-    //     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    //     mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
-    //     raycaster.setFromCamera(mouse, camera);
-    //     const intersects = raycaster.intersectObjects(scene.children, true);
-    //     if (intersects.length > 0) {
-    //         console.log(intersects[0].object.name);
-    //     }
-    // });
-
-    // //키보드 이벤트
-    // window.addEventListener('keydown', function(event) {
-    //     switch (event.key) {
-    //         case 'ArrowUp':
-    //             camera.position.z -= 1;
-    //             break;
-    //         case 'ArrowDown':
-    //             camera.position.z += 1;
-    //             break;
-    //         case 'ArrowLeft':
-    //             camera.position.x -= 1;
-    //             break;
-    //         case 'ArrowRight':
-    //             camera.position.x += 1;
-    //             break;
-    //     }
-    // });
-
-    // //앱 메소드 호출
-    // window.callAppMethod = function(method, ...args) {
-    //     console.log(method, args);
-    // }
-
-    // //앱 메소드 호출
-    // window.callAppMethod('init', '3D Location Setup');
-
-
-
-
-
-
-
-
-    // //창고 바닥 생성
-    // {
-    //     const minX = dcData[0].std_loc_x;
-    //     const maxX = dcData[0].std_width;
-    //     const minY = dcData[0].std_loc_y;
-    //     const maxY = dcData[0].std_length;
-
-    //     createPlaneGeometry(scene, minX, maxX, minY, maxY, 0x156289, 'ShowBottom', 0.01)
-
-    //     // 격자 추가
-    //     const gridHelper = new THREE.GridHelper(maxX*1.5, 20);
-    //     gridHelper.position.y = 0.01;
-    //     scene.add(gridHelper);
-    // }
-    // {
-    //     //입고구역
-    //     const minX = areaData[0].std_loc_x;
-    //     const maxX = areaData[0].std_width;
-    //     const minY = areaData[0].std_loc_y;
-    //     const maxY = areaData[0].std_length;
-
-    //     createPlaneGeometry(scene, minX, maxX, minY, maxY, 0xE5E1DA, 'Area', 0.02)
-    // }
-    // {
-    //     //보관구역
-    //     const minX = areaData[1].std_loc_x;
-    //     const maxX = areaData[1].std_width;
-    //     const minY = areaData[1].std_loc_y;
-    //     const maxY = areaData[1].std_length;
-
-    //     createPlaneGeometry(scene, minX, maxX, minY, maxY, 0xFBF9F1, 'Area', 0.02)
-    // }
-    // {
-    //     //출고구역
-    //     const minX = areaData[2].std_loc_x;
-    //     const maxX = areaData[2].std_width;
-    //     const minY = areaData[2].std_loc_y;
-    //     const maxY = areaData[2].std_length;
-
-    //     createPlaneGeometry(scene, minX, maxX, minY, maxY, 0xE5E1DA, 'Area', 0.02)
-    // }
-    // {
-    //     //입고대기존
-    //     const minX = zoneData[0].std_loc_x;
-    //     const maxX = zoneData[0].std_width;
-    //     const minY = zoneData[0].std_loc_y;
-    //     const maxY = zoneData[0].std_length;
-
-    //     createPlaneGeometry(scene, minX, maxX, minY, maxY, 0x3A4D39, 'Zone', 0.04)
-    // }
-    // {
-    //     //입고검수존
-    //     const minX = zoneData[1].std_loc_x;
-    //     const maxX = zoneData[1].std_width;
-    //     const minY = zoneData[1].std_loc_y;
-    //     const maxY = zoneData[1].std_length;
-
-    //     createPlaneGeometry(scene, minX, maxX, minY, maxY, 0x739072, 'Zone', 0.04)
-    // }
-    // {
-    //     //보관1
-    //     const minX = zoneData[2].std_loc_x;
-    //     const maxX = zoneData[2].std_width;
-    //     const minY = zoneData[2].std_loc_y;
-    //     const maxY = zoneData[2].std_length;
-
-    //     createPlaneGeometry(scene, minX, maxX, minY, maxY, 0x8D493A, 'Zone', 0.04)
-    // }
-    // {
-    //     //보관2
-    //     const minX = zoneData[3].std_loc_x;
-    //     const maxX = zoneData[3].std_width;
-    //     const minY = zoneData[3].std_loc_y;
-    //     const maxY = zoneData[3].std_length;
-
-    //     createPlaneGeometry(scene, minX, maxX, minY, maxY, 0x8D493A, 'Zone', 0.04)
-    // }
-    // {
-    //     //출고피킹존
-    //     const minX = zoneData[4].std_loc_x;
-    //     const maxX = zoneData[4].std_width;
-    //     const minY = zoneData[4].std_loc_y;
-    //     const maxY = zoneData[4].std_length;
-
-    //     createPlaneGeometry(scene, minX, maxX, minY, maxY, 0xC8DBBE, 'Zone', 0.04)
-    // }
-    // {
-    //     //출고상차존
-    //     const minX = zoneData[5].std_loc_x;
-    //     const maxX = zoneData[5].std_width;
-    //     const minY = zoneData[5].std_loc_y;
-    //     const maxY = zoneData[5].std_length;
-
-    //     createPlaneGeometry(scene, minX, maxX, minY, maxY, 0xC8DBBE, 'Zone', 0.04)
-    // }
-
-    // //바닥 레이어 보기 안보기 설정
-    // ShowAll.addEventListener('click', function() {
-    //     scene.traverse(function(child) {
-    //         if(child.visible){
-    //             child.visible = false;
-    //         }else{
-    //             child.visible = true;
-    //         }
-    //     });
-    // });
-
-    // //바닥 레이어 보기 안보기 설정
-    // ShowBottom.addEventListener('click', function() {
-    //     scene.traverse(function(child) {
-    //         if(child.name === 'ShowBottom'){
-    //             if(child.visible){
-    //                 child.visible = false;
-    //             }else{
-    //                 child.visible = true;
-    //             }
-    //         }
-    //     });
-    // });
-
-    // //구역 레이어 보기 안보기 설정
-    // ShowArea.addEventListener('click', function() {
-    //     scene.traverse(function(child) {
-    //         if(child.name === 'Area'){
-    //             if(child.visible){
-    //                 child.visible = false;
-    //             }else{
-    //                 child.visible = true;
-    //             }
-    //         }
-    //     });
-    // });
-    // //존 레이어 보기 안보기 설정
-    // ShowZone.addEventListener('click', function() {
-    //     scene.traverse(function(child) {
-    //         if(child.name === 'Zone'){
-    //             if(child.visible){
-    //                 child.visible = false;
-    //             }else{
-    //                 child.visible = true;
-    //             }
-    //         }
-    //     });
-    // });
-    // //로케이션랙 레이어 보기 안보기 설정
-    // ShowLocationModel.addEventListener('click', function() {
-    //     scene.traverse(function(child) {
-    //         if(child.name === 'locationRack'){
-    //             if(child.visible){
-    //                 child.visible = false;
-    //             }else{
-    //                 child.visible = true;
-    //             }
-    //         }
-    //     });
-    // });
-
-
-
-    //지게차 로드
-    // const loader2 = new THREE.GLTFLoader();
-    // loader2.load('./images/vr/model/low/forklift_truck.glb', {function(gltf) {
-    //     gltf.scene.scale.set(ModelInfo.forklift_scale_x, ModelInfo.forklift_scale_y, ModelInfo.forklift_scale_z);
-    //     gltf.scene.position.set(ModelInfo.gltfX, ModelInfo.gltfY, ModelInfo.gltfZ)
-    //     scene.add(gltf.scene);
-    // }});
-
-    // {
-    //     const maxX = dcData[0].std_width;
-    //     const maxY = dcData[0].std_length;
-    //     const matrix = createMatrixArrData(dcData[0].std_loc_x, maxX, dcData[0].std_loc_y, maxY);
-
-    //     var locMatrixArr = createMatrixDataFromList(matrix, locData);
-    //     var locMatrix = createMatrixArrToData(locMatrixArr);
-
-    //     var validLocArr = getValidDataOfMatrixData(locMatrixArr, 1);
-    //     //랙 생성
-    //     var rackGroup = new THREE.Group();
-    //     rackGroup.name = 'RackGroup';
-    //     for(let i = 0; i < validLocArr.length; i++){
-    //         var rack = addShelf({
-    //             seq : i+1,
-    //             rackX : WarehouseInfo.warehouse_std_x + validLocArr[i].x,
-    //             rackZ : WarehouseInfo.warehouse_std_y + validLocArr[i].y,
-    //             rackWidth : ModelInfo.rack_size_width,
-    //             rackLength : ModelInfo.rack_size_length,
-    //             rackFloor : 1,
-    //         });
-    //         rackGroup.add(rack);
-    //     }
-    //     var validLocArrTwo = getValidDataOfMatrixData(locMatrixArr, 2);
-    //     //랙 생성
-    //     for(let i = 0; i < validLocArrTwo.length; i++){
-    //         var rack = addShelf({
-    //             seq : i+1,
-    //             rackX : WarehouseInfo.warehouse_std_x + validLocArrTwo[i].x,
-    //             rackZ : WarehouseInfo.warehouse_std_y + validLocArrTwo[i].y,
-    //             rackWidth : ModelInfo.rack_size_width,
-    //             rackLength : ModelInfo.rack_size_length,
-    //             rackFloor : 2,
-    //         });
-    //         rackGroup.add(rack);
-    //     }
-    //     var validLocArrThree = getValidDataOfMatrixData(locMatrixArr, 3);
-    //     //랙 생성
-    //     for(let i = 0; i < validLocArrThree.length; i++){
-    //         // console.log(validLocArrTwo[i]);
-    //         var rack = addShelf({
-    //             seq : i+1,
-    //             rackX : WarehouseInfo.warehouse_std_x + validLocArrThree[i].x,
-    //             rackZ : WarehouseInfo.warehouse_std_y + validLocArrThree[i].y,
-    //             rackWidth : ModelInfo.rack_size_width,
-    //             rackLength : ModelInfo.rack_size_length,
-    //             rackFloor : 3,
-    //         });
-    //         rackGroup.add(rack);
-    //     }
-    //     scene.add(rackGroup);
-    //     //
-    // }
-
-
-
-    
-    var container = document.querySelector("#loc3dContainer");
-    var warehouse = new warehouse(container);
-    warehouse.animation();
-    warehouse.cameraControls();
+var container = document.querySelector("#loc3dContainer");
+var warehouse = new warehouse(container);
+warehouse.animation();
+warehouse.cameraControls();

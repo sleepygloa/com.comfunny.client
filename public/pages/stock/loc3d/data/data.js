@@ -105,9 +105,7 @@ function addMatrices(matrix1, matrix2) {
 var dcData = 
     [   
         {"dc_cd":"DC001","dc_nm":"서울 물류창고","std_width":"30","std_length":"20","std_loc_x":"0","std_loc_y":"0","std_loc_z":"0"},
-        // {"dc_cd":"DC002","dc_nm":"경기 물류창고","std_width":"52","std_length":"52","std_loc_x":"0","std_loc_y":"0","std_loc_z":"0"}
     ]
-
 
 var areaData =
     [
@@ -121,7 +119,6 @@ var zoneData = [
         {"dc_cd":"DC001","zone_cd":"A2","zone_nm":"입고검수존","std_width":"6","std_length":"19", "std_loc_x":"4","std_loc_y":"1","std_loc_z":"1"},
         {"dc_cd":"DC001","zone_cd":"B1","zone_nm":"보관1","std_width":"23","std_length":"9", "std_loc_x":"9","std_loc_y":"1","std_loc_z":"1"},
         {"dc_cd":"DC001","zone_cd":"B2","zone_nm":"보관2","std_width":"23","std_length":"19", "std_loc_x":"9","std_loc_y":"11","std_loc_z":"1"},
-        // {"dc_cd":"DC001","zone_cd":"C1","zone_nm":"출고대기존","std_width":"26","std_length":"26", "std_loc_x":"","std_loc_y":"","std_loc_z":""},
         {"dc_cd":"DC001","zone_cd":"C2","zone_nm":"출고피킹존","std_width":"27","std_length":"19", "std_loc_x":"26","std_loc_y":"1","std_loc_z":"1"},
         {"dc_cd":"DC001","zone_cd":"C3","zone_nm":"출고상차존","std_width":"30","std_length":"19", "std_loc_x":"29","std_loc_y":"1","std_loc_z":"1"},
     ]

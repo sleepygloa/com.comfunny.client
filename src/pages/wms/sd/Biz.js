@@ -184,7 +184,7 @@ export default function Biz(props) {
   function onClickSave(){
     var rowData = gvGetRowData(dataList, selRowId);
     if(!rowData) return;
-    
+
     openModal('', '',  '저장 하시겠습니까?', 
       () => {
         //메뉴리스트 저장
@@ -270,7 +270,7 @@ export default function Biz(props) {
         //Event
         // selRowId={selRowId} //쎌선택 변수지정
         // setSelRowId={setSelRowId}
-        onRowClick={handleGridCellClick}
+        onCellClick={handleGridCellClick}
         onCellEditCommit={handleEditCellChangeCommitted} //쎌변경시 데이터변경
         
         //Multi

@@ -102,32 +102,32 @@ const columns = [
   { field: "userCol4",         headerName: "사용자컬럼4",               editable: true, align:"left", width:100},
   { field: "userCol5",         headerName: "사용자컬럼5",               editable: true, align:"left", width:100},
 
-  { field: "stdWidth",          headerName: "기준X",                editable: true, align:"right", width:100,
+  { field: "stdWidth",          headerName: "가로",                   editable: true, align:"right", width:100,
     preProcessEditCellProps: (params) => gvGridFieldNumberPreEdit(params),
     valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
     valueParser: (value) => gvGridFieldNumberParser(value)
   },
-  { field: "stdLength",         headerName: "기준Y",                editable: true, align:"right", width:100,
+  { field: "stdLength",         headerName: "세로",                   editable: true, align:"right", width:100,
     preProcessEditCellProps: (params) => gvGridFieldNumberPreEdit(params),
     valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
     valueParser: (value) => gvGridFieldNumberParser(value)
   },
-  { field: "stdLocx",             headerName: "가로",                 editable: true, align:"right", width:100,
+  { field: "stdLocx",           headerName: "기준위치X",                editable: true, align:"right", width:100,
     preProcessEditCellProps: (params) => gvGridFieldNumberPreEdit(params),
     valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
     valueParser: (value) => gvGridFieldNumberParser(value)
   },
-  { field: "stdLocy",            headerName: "세로",                 editable: true, align:"right", width:100,
+  { field: "stdLocy",            headerName: "기준위치Y",                editable: true, align:"right", width:100,
     preProcessEditCellProps: (params) => gvGridFieldNumberPreEdit(params),
     valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
     valueParser: (value) => gvGridFieldNumberParser(value)
   },
-  { field: "stdLocz",            headerName: "높이",                 editable: true, align:"right", width:100,
+  { field: "stdLocz",            headerName: "기준위치Z",                editable: true, align:"right", width:100,
     preProcessEditCellProps: (params) => gvGridFieldNumberPreEdit(params),
     valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
     valueParser: (value) => gvGridFieldNumberParser(value)
   },
-  { field: "remark",            headerName: "비고",                 editable: true, align:"left", width:300},
+  { field: "remark",            headerName: "비고",                    editable: true, align:"left", width:300},
 ];
 
   //조회조건

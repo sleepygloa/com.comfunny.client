@@ -15,19 +15,16 @@ import {client} from '../../../contraints.js';
 import { gvGridDropdownDisLabel, 
   gvGetRowData, 
   gvSetDropdownData, 
-  gvGridLevelDropdownDisLabel, 
-  gvSetLevelDropdownData ,
-  gvGridLevel2DropdownDisLabel, 
-  gvSetLevel2DropdownData ,
-  gvGridFieldNumberPreEdit,
-  gvGridFieldNumberFormatter,
-  gvGridFieldNumberParser , 
+  gvGridFieldFormatPhoneNumber, gvGridFieldParsePhoneNumber, gvGridFieldInputPhoneNumber, //핸드폰번호 포맷팅
+  gvGridFieldFormatFaxNumber, gvGridFieldParseFaxNumber, gvGridFieldInputFaxNumber, //팩스번호 포맷팅
+  gvGridFieldNumberPreEdit, gvGridFieldNumberFormatter, gvGridFieldNumberParser , //숫자 포멧
 } from "../../../components/Common.js";
+import { ComDeGrid } from "../../../components/Grid/ComDeGrid.js";
 
 //Modal
 import {useModal} from "../../../context/ModalContext.js";
 
-export default function Biz(props) {
+export default function Area(props) {
   const {menuTitle} = '구역 관리';
   const PRO_URL = '/wms/sd/area';
   const {openModal} = useModal();
@@ -46,28 +43,28 @@ export default function Biz(props) {
 
   const columns = [
     { field: "id",                headerName: "ID",                               align:"center", width:20},
-    { field: "dcCd",              headerName: "물류창고",         editable: true, 
+    { field: "dcCd",              headerName: "물류창고",             editable: true,               width:150,
         align:"center", type: "singleSelect", valueFormatter: gvGridDropdownDisLabel,  
         valueOptions: dcCmb,
     },
     { field: "areaCd",            headerName: "구역코드",             editable: true, align:"left", width:100},
     { field: "areaNm",            headerName: "구역명",               editable: true, align:"left", width:200},
-    { field: "keepTempeGbnCd",    headerName: "보관온도구분",             editable: true, 
+    { field: "keepTempeGbnCd",    headerName: "보관온도구분",          editable: true, 
       align:"center", type: "singleSelect", valueFormatter: gvGridDropdownDisLabel,  
       valueOptions: keepTempGbnCmb,
     },
 
-    { field: "stdWidth",          headerName: "기준X",                editable: true, align:"center", width:100},
-    { field: "stdLength",         headerName: "기준Y",                editable: true, align:"center", width:100},
-    { field: "width",             headerName: "가로",                 editable: true, align:"center", width:100},
-    { field: "length",            headerName: "세로",                 editable: true, align:"center", width:100},
-    { field: "height",            headerName: "높이",                 editable: true, align:"center", width:100},
+    { field: "stdWidth",          headerName: "가로",                editable: true, align:"center", width:100},
+    { field: "stdLength",         headerName: "세로",                editable: true, align:"center", width:100},
+    { field: "stdLocx",           headerName: "기준위치X",            editable: true, align:"center", width:100},
+    { field: "stdLocy",           headerName: "기준위치Y",            editable: true, align:"center", width:100},
+    { field: "stdLocz",           headerName: "기준위치Z",            editable: true, align:"center", width:100},
     
     { field: "useYn",             headerName: "사용여부",             editable: true, 
         align:"center", type: "singleSelect", valueFormatter: gvGridDropdownDisLabel, 
         valueOptions: useYnCmb,
     },
-    { field: "remark",            headerName: "비고",               editable: true, align:"left", width:300},
+    { field: "remark",            headerName: "비고",                editable: true, align:"left", width:300},
   ];
 
   //조회조건
@@ -75,8 +72,8 @@ export default function Biz(props) {
     codeCd: "", 
   });
   //조회조건
-  const onChangeSearch = (event) => {
-    setSchValues({ ...values, [event.target.id]: event.target.value });
+  const onChangeSearch = (event, id) => {
+    setSchValues({ ...schValues, [id]: event });
   };
   const onKeyDown = (e) =>{
     if(e.keyCode === 13){
@@ -106,21 +103,10 @@ export default function Biz(props) {
     }else{
       if(useYnCmb.length === 0) setUseYnCmb(getCmbOfGlobalData('CMMN_CD', 'USE_YN'));
       if(keepTempGbnCmb.length === 0) setKeepTempGbnCmb(getCmbOfGlobalData('CMMN_CD', 'KEEP_TEMPE_GBN_CD'))
-
-      if(dcCmb.length === 0) fnSearchDc();
+      if(dcCmb.length === 0) setDcCmb(getCmbOfGlobalData('DC_CD'))
     }
 
   }, [selRowId, useYnCmb, keepTempGbnCmb, dcCmb]);
-  
-  //물류창고 조회
-  const fnSearchDc = async () => {
-    await client.post(`${PRO_URL}/selectDcList`, null, {})
-      .then(res => {
-        setDcCmb(gvSetDropdownData(res.data));
-      }).catch(error => { 
-        console.log('error = '+error); 
-      })
-  }
   
   
   //조회
@@ -149,6 +135,8 @@ export default function Biz(props) {
   //저장클릭
   function onClickSave(){
     var rowData = gvGetRowData(dataList, selRowId);
+    if(!rowData) return;
+    
     openModal('', '',  '저장 하시겠습니까?', 
       () => {
         //메뉴리스트 저장
@@ -166,6 +154,8 @@ export default function Biz(props) {
   //삭제클릭
   function onClickDel(){
     var rowData = gvGetRowData(dataList, selRowId);
+    if(!rowData) return;
+    
     openModal('', '',  '삭제 하시겠습니까?', 
       () => {
         //메뉴리스트 저장
@@ -186,34 +176,44 @@ export default function Biz(props) {
     setSelRowId(e.row.id); 
   }  
 
+  //쎌변경시 데이터 변경
+  const handleEditCellChangeCommitted = React.useCallback(
+    ({ id, field, value }) => {
+      dataList[id-1][field] = value
+    },
+    [dataList],
+  );
+
   return (
     <>
       <PageTitle title={"구역 관리"}  />
-      <SearchBar
+      <ComDeGrid
         onClickSelect={onClickSelect} 
         onClickAdd={onClickAdd} 
         onClickSave={onClickSave}
-        onClickDel={onClickDel}>
-          <SchTextField id="codeCd" label='코드/명'
-            div={"3"}
-            onChange={onChangeSearch} 
-            onKeyDown={onKeyDown} />    
-      </SearchBar>
-      
-      <Grid item xs={12} style={{ height: 750, width: '100%' }}>
-        <DataGrid
-          title={menuTitle} //제목
-          rows={dataList} //dataList
-          columns={columns} //컬럼 정의
-          headerHeight={30} //헤더 높이
-          rowHeight={28} //행 높이
-          onCellClick={handleGridCellClick}
-          footerHeight={30}
-          selectionModel={selRowId} //쎌선택 변수지정
-          onCellEditCommit={React.useCallback((params) => {dataList[params.id-1][params.field] = params.value;},[dataList] //쎌변경시 데이터변경
-        )}
-        />
-      </Grid>
+        onClickDel={onClickDel}
+        searchBarChildren={
+          <>
+            <SchTextField id="codeCd" label='코드/명'
+              div={"3"}
+              onChange={onChangeSearch} 
+              onKeyDown={onKeyDown} />  
+          </>
+        }
+
+        title={"Area List"} //제목
+        dataList={dataList} //dataList
+        columns={columns} //컬럼 정의
+        // height={"250px"}
+        //Event
+        // selRowId={selRowId} //쎌선택 변수지정
+        // setSelRowId={setSelRowId}
+        onCellClick={handleGridCellClick}
+        onCellEditCommit={handleEditCellChangeCommitted} //쎌변경시 데이터변경
+        
+        //Multi
+        type={"single"}
+      />
     </>
     
   );

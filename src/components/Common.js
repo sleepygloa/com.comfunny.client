@@ -68,6 +68,11 @@ export function gvCommCodeData(){
 
 //그리드 선택한 행의 데이터 조회
 export function gvGetRowData(data, id){
+    if(id === undefined || id === null || id === '' || id == -1) {
+        alert('선택된 데이터가 없습니다.');
+        return false;
+    }
+
     for(var i = 0; i < data.length; i++){
         if(data[i].id === id){
 

@@ -1,5 +1,8 @@
 import React, {useEffect, useState, useCallback } from "react";
 
+// context
+import { useCommonData } from "../../../context/CommonDataContext.js";
+
 // components
 import PageTitle from "../../../components/PageTitle/PageTitle.js";
 import SearchBar from "../../../components/SearchBar/SearchBar.js";
@@ -34,8 +37,9 @@ export default function Biz(props) {
   const PRO_URL = '/wms/sd/biz';
   const classes = useStyles();
   const {openModal, closeModal} = useModal();
+  const { getCmbOfGlobalData } = useCommonData();
 
-  const useYnCmb = [{value:"Y", label:"사용"},{value:"N", label:"미사용"}];
+  const [useYnCmb, setUseYnCmb] = useState([]); //사용여부
   const columns = [
     { field: "id",                headerName: "ID",                               align:"center", width:20},
     { field: "bizCd",             headerName: "사업자코드",           editable: true, align:"left", width:200},
@@ -132,23 +136,26 @@ export default function Biz(props) {
   //화면 로드시 1번만 실행
   useEffect(() => {
     // selRowId 변경을 감지하고, 주소 찾기 함수 호출
-    if (selRowId === -1) return;
+    if (selRowId !== -1) {
 
-    //주소 콜백이 있을때만 작동
-    if(callbackDelivery != undefined){
-      var rowData = gvGetRowData(dataList, selRowId);
-      rowData.zip = callbackDelivery.zip;
-      rowData.jibunAddr = callbackDelivery.jibunAddr;
-      rowData.roadAddr = callbackDelivery.roadAddr;
-      rowData.detailAddr = callbackDelivery.detailAddr;
-      rowData.deliveryNm = callbackDelivery.deliveryNm;
-      rowData.lat = callbackDelivery.lat;
-      rowData.lon = callbackDelivery.lon;
-      setCallbackDelivery(null);
+      //주소 콜백이 있을때만 작동
+      if(callbackDelivery != undefined){
+        var rowData = gvGetRowData(dataList, selRowId);
+        rowData.zip = callbackDelivery.zip;
+        rowData.jibunAddr = callbackDelivery.jibunAddr;
+        rowData.roadAddr = callbackDelivery.roadAddr;
+        rowData.detailAddr = callbackDelivery.detailAddr;
+        rowData.deliveryNm = callbackDelivery.deliveryNm;
+        rowData.lat = callbackDelivery.lat;
+        rowData.lon = callbackDelivery.lon;
+        setCallbackDelivery(null);
+      }
+    }else{
+
+      //콤보박스 데이터 조회
+      if(useYnCmb.length == 0) setUseYnCmb(getCmbOfGlobalData('CMMN_CD', 'USE_YN'));
     }
-
-
-  }, [selRowId, callbackDelivery]);
+  }, [selRowId, callbackDelivery, useYnCmb]);
   
   //조회
   const fnSearch = () => {
@@ -176,6 +183,8 @@ export default function Biz(props) {
   //저장클릭
   function onClickSave(){
     var rowData = gvGetRowData(dataList, selRowId);
+    if(!rowData) return;
+    
     openModal('', '',  '저장 하시겠습니까?', 
       () => {
         //메뉴리스트 저장
@@ -193,6 +202,8 @@ export default function Biz(props) {
   //삭제클릭
   function onClickDel(){
     var rowData = gvGetRowData(dataList, selRowId);
+    if(!rowData) return;
+
     openModal('', '',  '삭제 하시겠습니까?', 
       () => {
         //메뉴리스트 저장

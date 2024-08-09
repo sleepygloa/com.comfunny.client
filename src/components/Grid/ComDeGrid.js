@@ -62,7 +62,7 @@ export const ComDeGrid = (props) =>{
               columns={props.columns} //컬럼 정의
     
               onRowClick={props.onRowClick ? props.onRowClick : null}
-              // onCellClick={props.onCellClick ? props.onCellClick : null}
+              onCellClick={props.onCellClick ? props.onCellClick : null}
               // onCellClick={handleGridCellClick}
               // selectionModel={props.selRowId} //쎌선택 변수지정
               onCellEditCommit={props.onCellEditCommit ? props.onCellEditCommit : null} //쎌변경시 데이터변경

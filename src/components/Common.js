@@ -2,6 +2,29 @@ import React, {useEffect, useState, useCallback, useRef } from "react";
 import { TextField } from "@mui/material";
 import numeral from 'numeral';
 
+
+//값이 undefined, null, '' 인지 체크
+export function isEmpty(value){
+    if(value === undefined || value === null || value === '') return true;
+    return false;
+}
+export function isNotEmpty(value){
+    if(value === undefined || value === null || value === '') return false;
+    return true;
+}
+
+//날짜 변환 YYYYMMDD -> YYYY-MM-DD
+export function gvDateToYYYY_MM_DD(date){    
+    if(date === undefined || date === null || date === '') return '';
+    return date.substring(0, 4) + '-' + date.substring(4, 6) + '-' + date.substring(6, 8);
+}
+
+//날짜 변환 YYYY-MM-DD -> YYYYMMDD
+export function gvDateToYYYYMMDD(date){
+    if(date === undefined || date === null || date === '') return '';
+    return date.replace(/-/gi, '');
+}
+
 //오늘날짜 구하기
 export function gvGetToday(){
     var date = new Date();
@@ -47,6 +70,14 @@ export function gvCommCodeData(){
 export function gvGetRowData(data, id){
     for(var i = 0; i < data.length; i++){
         if(data[i].id === id){
+
+            //키가 TelNo, faxNo 인 경우 값 변경
+            if(isNotEmpty(data[i].TelNo)) data[i].TelNo = gvGridFieldFormatPhoneNumber(data[i].TelNo);
+            if(isNotEmpty(data[i].FaxNo)) data[i].FaxNo = gvGridFieldFormatFaxNumber(data[i].FaxNo);
+
+            console.log(data[i])
+
+
         return data[i]
         }
     }
@@ -357,12 +388,22 @@ export const gvGridFieldInputPhoneNumber = (params) => {
 //팩스 번호 포멧
 export const gvGridFieldFormatFaxNumber = (value) => {
     if (!value) return '';
-    const faxNumber = value.replace(/[^\d]/g, '');
-    const faxNumberLength = faxNumber.length;
-    if (faxNumberLength < 4) return faxNumber;
-    if (faxNumberLength < 8) return `${faxNumber.slice(0, 3)}-${faxNumber.slice(3)}`;
-    return `${faxNumber.slice(0, 3)}-${faxNumber.slice(3, 7)}-${faxNumber.slice(7, 11)}`;
-}
+    const phoneNumber = value.replace(/[^\d]/g, '');
+    const phoneNumberLength = phoneNumber.length;
+    // 지역번호가 2자리인 경우 (예: 02-xxxx-xxxx)
+    if (phoneNumber.startsWith('02') && phoneNumberLength > 2) {
+        if (phoneNumberLength <= 5) return `${phoneNumber.slice(0, 2)}-${phoneNumber.slice(2)}`;
+        if (phoneNumberLength <= 9) return `${phoneNumber.slice(0, 2)}-${phoneNumber.slice(2, 5)}-${phoneNumber.slice(5)}`;
+        if (phoneNumberLength <= 10) return `${phoneNumber.slice(0, 2)}-${phoneNumber.slice(2, 6)}-${phoneNumber.slice(6)}`;
+    }
+    // 지역번호가 3자리인 경우 (예: 031-xxxx-xxxx)
+    else if (phoneNumberLength > 3) {
+        if (phoneNumberLength <= 6) return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3)}`;
+        if (phoneNumberLength <= 10) return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6)}`;
+        if (phoneNumberLength <= 11) return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3, 7)}-${phoneNumber.slice(7)}`;
+    }
+    return phoneNumber; // 지역번호를 찾지 못한 경우
+};
 export const gvGridFieldParseFaxNumber = (value) => value.replace(/[^\d]/g, '');
 export const gvGridFieldInputFaxNumber = (params) => {
     return <TextField

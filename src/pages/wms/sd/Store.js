@@ -15,6 +15,7 @@ import { gvGridDropdownDisLabel, gvGetRowData, gvSeData, gvSetRowData,
   gvGridFieldFormatPhoneNumber, gvGridFieldParsePhoneNumber, gvGridFieldInputPhoneNumber, //핸드폰번호 포맷팅
   gvGridFieldFormatFaxNumber, gvGridFieldParseFaxNumber, gvGridFieldInputFaxNumber, //팩스번호 포맷팅
 } from "../../../components/Common.js";
+import { ComDeGrid } from "../../../components/Grid/ComDeGrid.js";
 
 //Modal
 import {useModal} from "../../../context/ModalContext.js";
@@ -31,7 +32,7 @@ import DaumPostcodeShppingMall from "../maps/DaumPostcodeShppingMall.js";
 
  
 
-export default function Biz(props) {
+export default function Store(props) {
   const {menuTitle} = '배송처 리스트';
   const PRO_URL = '/wms/sd/store';
   const classes = useStyles();
@@ -60,9 +61,6 @@ const columns = [
   },
   { field: "storeCd",           headerName: "배송처코드",             editable: true, align:"left", width:100},
   { field: "storeNm",           headerName: "배송처명",             editable: true, align:"left", width:200},
-  { field: "bizNo",             headerName: "사업자번호",            editable: true, align:"left", width:100},
-  { field: "bizNm",             headerName: "사업자명",             editable: true, align:"left", width:200},
-  { field: "ceoNm",             headerName: "대표자",               editable: true, align:"left", width:100},
   /* 주소 시작 */
   { field: "deliveryNm",        headerName: "배송처명",            editable: true, align:"left", width:200,
       renderCell: (params) => (
@@ -78,23 +76,23 @@ const columns = [
   { field: "lat",               headerName: "위도",               editable: false, align:"left", width:150},
   { field: "lon",               headerName: "경도",               editable: false, align:"left", width:150},
   /* 주소 끝 */
-  { field: "bizTp",             headerName: "업태(사업자유형)",       editable: true, align:"left", width:100},
-  { field: "bizKnd",            headerName: "업종(사업자종류)",       editable: true, align:"left", width:100},
+  // { field: "bizTp",             headerName: "업태(사업자유형)",       editable: true, align:"left", width:100},
+  // { field: "bizKnd",            headerName: "업종(사업자종류)",       editable: true, align:"left", width:100},
   { field: "telNo",             headerName: "전화번호",             editable: true, align:"left", width:150,
     valueFormatter: (params) => gvGridFieldFormatPhoneNumber(params.value),
-    valueParser: (value) => gvGridFieldParsePhoneNumber(value),
-    renderEditCell: (params) => gvGridFieldInputPhoneNumber(params)
+    // valueParser: (value) => gvGridFieldParsePhoneNumber(value),
+    // renderEditCell: (params) => gvGridFieldInputPhoneNumber(params)
   },
   { field: "faxNo",             headerName: "팩스",                editable: true, align:"left", width:120,
     valueFormatter: (params) => gvGridFieldFormatFaxNumber(params.value),
-    valueParser: (value) => gvGridFieldParseFaxNumber(value),
-    renderEditCell: (params) => gvGridFieldInputFaxNumber(params)
+    // valueParser: (value) => gvGridFieldParseFaxNumber(value),
+    // renderEditCell: (params) => gvGridFieldInputFaxNumber(params)
   },
   { field: "contactNm",         headerName: "담당자명",             editable: true, align:"left", width:100},
   { field: "contactTelNo",      headerName: "담당자전화번호",         editable: true, align:"left", width:150,
     valueFormatter: (params) => gvGridFieldFormatPhoneNumber(params.value),
-    valueParser: (value) => gvGridFieldParsePhoneNumber(value),
-    renderEditCell: (params) => gvGridFieldInputPhoneNumber(params)
+    // valueParser: (value) => gvGridFieldParsePhoneNumber(value),
+    // renderEditCell: (params) => gvGridFieldInputPhoneNumber(params)
   },
   { field: "contactEmail",      headerName: "담당자이메일",          editable: true, align:"left", width:200,
     renderEditCell: (params) => gvGridFieldEmailInput(params)
@@ -102,8 +100,6 @@ const columns = [
 
   { field: "deliveryDcCd",      headerName: "배송물류센터",             editable: true, align:"left", width:100},
   { field: "deliveryDomainCd",  headerName: "배송권역코드",             editable: true, align:"left", width:100},
-  { field: "allocPrioordCd",    headerName: "할당우선순위코드",         editable: true, align:"left", width:100},
-  { field: "channelGbnCd",      headerName: "채널구분코드",             editable: true, align:"left", width:100},
   { field: "dealStartYmd",      headerName: "거래시작일자",             editable: true, align:"left", width:150, 
     valueSetter: (params) => {return GridDateSetField(params, 'dealStartYmd');},
     renderCell: (params) => <GridDateRenderField params={params} />,
@@ -120,12 +116,17 @@ const columns = [
     align:"center",type: "singleSelect", valueFormatter: gvGridDropdownDisLabel,
     valueOptions: useYnCmb,
   },
-  { field: "userCol1",         headerName: "사용자컬럼1",               editable: true, align:"left", width:100},
-  { field: "userCol2",         headerName: "사용자컬럼2",               editable: true, align:"left", width:100},
-  { field: "userCol3",         headerName: "사용자컬럼3",               editable: true, align:"left", width:100},
-  { field: "userCol4",         headerName: "사용자컬럼4",               editable: true, align:"left", width:100},
-  { field: "userCol5",         headerName: "사용자컬럼5",               editable: true, align:"left", width:100},
+  // { field: "userCol1",         headerName: "사용자컬럼1",               editable: true, align:"left", width:100},
+  // { field: "userCol2",         headerName: "사용자컬럼2",               editable: true, align:"left", width:100},
+  // { field: "userCol3",         headerName: "사용자컬럼3",               editable: true, align:"left", width:100},
+  // { field: "userCol4",         headerName: "사용자컬럼4",               editable: true, align:"left", width:100},
+  // { field: "userCol5",         headerName: "사용자컬럼5",               editable: true, align:"left", width:100},
   { field: "remark",            headerName: "비고",               editable: true, align:"left", width:300},
+  // { field: "bizNo",             headerName: "사업자번호",            editable: true, align:"left", width:100},
+  // { field: "bizNm",             headerName: "사업자명",             editable: true, align:"left", width:200},
+  // { field: "ceoNm",             headerName: "대표자",               editable: true, align:"left", width:100},
+  // { field: "allocPrioordCd",    headerName: "할당우선순위코드",         editable: true, align:"left", width:100},
+  // { field: "channelGbnCd",      headerName: "채널구분코드",             editable: true, align:"left", width:100},
 ];
 
   //조회조건
@@ -133,8 +134,8 @@ const columns = [
     codeCd: "", 
   });
   //조회조건
-  const onChangeSearch = (event) => {
-    setSchValues({ ...values, [event.target.id]: event.target.value });
+  const onChangeSearch = (event, id) => {
+    setSchValues({ ...schValues, [id]: event });
   };
   const onKeyDown = (e) =>{
     if(e.keyCode === 13){
@@ -291,34 +292,44 @@ const columns = [
     setCallbackDelivery(addressData);
   };
 
+  //쎌변경시 데이터 변경
+  const handleEditCellChangeCommitted = React.useCallback(
+    ({ id, field, value }) => {
+      dataList[id-1][field] = value
+    },
+    [dataList],
+  );
+
   return (
     <>
       <PageTitle title={'배송처 관리'}  />
-      <SearchBar
+      <ComDeGrid
         onClickSelect={onClickSelect} 
         onClickAdd={onClickAdd} 
         onClickSave={onClickSave}
-        onClickDel={onClickDel}>
-          <SchTextField id="codeCd" label='코드/명'
-            div={"3"}
-            onChange={onChangeSearch} 
-            onKeyDown={onKeyDown} />    
-      </SearchBar>
-      
-      <Grid item xs={12} style={{ height: 750, width: '100%' }}>
-        <DataGrid
-          title={menuTitle} //제목
-          rows={dataList} //dataList
-          columns={columns} //컬럼 정의
-          headerHeight={30} //헤더 높이
-          rowHeight={28} //행 높이
-          onCellClick={handleGridCellClick}
-          footerHeight={30}
-          selectionModel={selRowId} //쎌선택 변수지정
-          onCellEditCommit={React.useCallback((params) => {dataList[params.id-1][params.field] = params.value;},[dataList] //쎌변경시 데이터변경
-        )}
-        />
-      </Grid>
+        onClickDel={onClickDel}
+        searchBarChildren={
+          <>
+            <SchTextField id="codeCd" label='코드/명'
+              div={"3"}
+              onChange={onChangeSearch} 
+              onKeyDown={onKeyDown} />  
+          </>
+        }
+
+        title={"Store List"} //제목
+        dataList={dataList} //dataList
+        columns={columns} //컬럼 정의
+        height={"750px"}
+        //Event
+        // selRowId={selRowId} //쎌선택 변수지정
+        // setSelRowId={setSelRowId}
+        onCellClick={handleGridCellClick}
+        onCellEditCommit={handleEditCellChangeCommitted} //쎌변경시 데이터변경
+        
+        //Multi
+        type={"single"}
+      />
     </>
     
   );

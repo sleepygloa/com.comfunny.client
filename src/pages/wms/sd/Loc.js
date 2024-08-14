@@ -21,6 +21,7 @@ import { gvGridDropdownDisLabel,
   gvGridFieldNumberFormatter,
   gvGridFieldNumberParser , 
 } from "../../../components/Common.js";
+import { ComDeGrid } from "../../../components/Grid/ComDeGrid.js";
 
 //CommonData
 import { useCommonData } from "../../../context/CommonDataContext.js";
@@ -31,7 +32,7 @@ import LocMultiReg from "./LocMultiRegPop.js";
 
  
 
-export default function Biz(props) {
+export default function Loc(props) {
   const {menuTitle} = '로케이션 관리';
   const PRO_URL = '/wms/sd/loc';
   const {openModal} = useModal();
@@ -86,9 +87,9 @@ export default function Biz(props) {
     },
     { field: "locCd",             headerName: "로케이션코드",       editable: false, align:"left", width:120},
     { field: "linCd",             headerName: "행",               editable: true, align:"left", width:100},
-    { field: "rowCd",             headerName: "열",             editable: true, align:"left", width:100},
-    { field: "levCd",             headerName: "단",             editable: true, align:"left", width:100},
-    { field: "locTypeCd",         headerName: "로케이션유형",     editable: true, 
+    { field: "rowCd",             headerName: "열",               editable: true, align:"left", width:100},
+    { field: "levCd",             headerName: "단",               editable: true, align:"left", width:100},
+    { field: "locTypeCd",         headerName: "로케이션유형",       editable: true, 
       align:"center", type: "singleSelect", valueFormatter: gvGridDropdownDisLabel,
       valueOptions: locTypeCdCmb,
     },
@@ -101,7 +102,7 @@ export default function Biz(props) {
       valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
       valueParser: (value) => gvGridFieldNumberParser(value)
     },
-    { field: "horizontal",        headerName: "가로",           editable: true, align:"left", width:100,
+    { field: "horizontal",        headerName: "가로",             editable: true, align:"left", width:100,
       valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
       valueParser: (value) => gvGridFieldNumberParser(value)
     },
@@ -236,6 +237,8 @@ export default function Biz(props) {
   //저장클릭
   function onClickSave(){
     var rowData = gvGetRowData(dataList, selRowId);
+    if(!rowData) return;
+    
     openModal('', '',  '저장 하시겠습니까?', 
       () => {
         //메뉴리스트 저장
@@ -253,6 +256,8 @@ export default function Biz(props) {
   //삭제클릭
   function onClickDel(){
     var rowData = gvGetRowData(dataList, selRowId);
+    if(!rowData) return;
+    
     openModal('', '',  '삭제 하시겠습니까?', 
       () => {
         //메뉴리스트 저장
@@ -323,33 +328,36 @@ export default function Biz(props) {
   return (
     <>
       <PageTitle title={'로케이션 관리'}  />
-      <SearchBar
+
+      <ComDeGrid
         onClickSelect={onClickSelect} 
         onClickAdd={onClickAdd} 
         onClickSave={onClickSave}
         onClickDel={onClickDel}
         onClickCustom1={onClickCustom1}
         onClickCustomNm1='로케이션다중등록'
-        >
-          <SchTextField id="codeCd" label='코드/명'
-            div={"3"}
-            onChange={onChangeSearch} 
-            onKeyDown={onKeyDown} />    
-      </SearchBar>
-      
-      <Grid item xs={12} style={{ height: 750, width: '100%' }}>
-        <DataGrid
-          title={"Loc List"} //제목
-          rows={dataList} //dataList
-          columns={columns} //컬럼 정의
-          headerHeight={30} //헤더 높이
-          rowHeight={28} //행 높이
-          onRowClick={(e)=>{setValues(e.row); setSelRowId(e.row.id);} }
-          footerHeight={30}
-          selectionModel={selRowId} //쎌선택 변수지정
-          onCellEditCommit={handleEditCellChangeCommitted}
-        />
-      </Grid>
+        searchBarChildren={
+          <>
+            <SchTextField id="codeCd" label='코드/명'
+              div={"3"}
+              onChange={onChangeSearch} 
+              onKeyDown={onKeyDown} />  
+          </>
+        }
+
+        title={"Loc List"} //제목
+        dataList={dataList} //dataList
+        columns={columns} //컬럼 정의
+        // height={"250px"}
+        //Event
+        // selRowId={selRowId} //쎌선택 변수지정
+        // setSelRowId={setSelRowId}
+        onCellClick={handleGridCellClick}
+        onCellEditCommit={handleEditCellChangeCommitted} //쎌변경시 데이터변경
+        
+        //Multi
+        type={"single"}
+      />
     </>
     
   );

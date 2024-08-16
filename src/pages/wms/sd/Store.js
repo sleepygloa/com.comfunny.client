@@ -72,7 +72,7 @@ const columns = [
   { field: "zip",               headerName: "우편번호",             editable: false, align:"left", width:100},
   { field: "jibunAddr",         headerName: "지번주소",             editable: false, align:"left", width:300},
   { field: "roadAddr",          headerName: "도로명주소",           editable: false, align:"left", width:300},
-  { field: "detailAddr",        headerName: "상세주소",             editable: false, align:"left", width:300},
+  { field: "detailAddr",        headerName: "상세주소",             editable: true, align:"left", width:300},
   { field: "lat",               headerName: "위도",               editable: false, align:"left", width:150},
   { field: "lon",               headerName: "경도",               editable: false, align:"left", width:150},
   /* 주소 끝 */

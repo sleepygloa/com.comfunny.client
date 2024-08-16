@@ -15,6 +15,7 @@ import { gvGridDropdownDisLabel, gvGetRowData, gvSeData, gvSetRowData,
   gvGridFieldFormatPhoneNumber, gvGridFieldParsePhoneNumber, gvGridFieldInputPhoneNumber, //핸드폰번호 포맷팅
   gvGridFieldFormatFaxNumber, gvGridFieldParseFaxNumber, gvGridFieldInputFaxNumber, //팩스번호 포맷팅
 } from "../../../components/Common.js";
+import { ComDeGrid } from "../../../components/Grid/ComDeGrid.js";
 
 //Modal
 import {useModal} from "../../../context/ModalContext.js";
@@ -58,9 +59,9 @@ export default function Biz(props) {
     },
     { field: "supplierCd",        headerName: "공급처코드",             editable: false, align:"left", width:100},
     { field: "supplierNm",        headerName: "공급처명",             editable: true, align:"left", width:200},
-    { field: "bizNo",             headerName: "사업자번호",            editable: true, align:"left", width:100},
-    { field: "bizNm",             headerName: "사업자명",             editable: true, align:"left", width:200},
-    { field: "ceoNm",             headerName: "대표자",               editable: true, align:"left", width:100},
+    // { field: "bizNo",             headerName: "사업자번호",            editable: true, align:"left", width:100},
+    // { field: "bizNm",             headerName: "사업자명",             editable: true, align:"left", width:200},
+    // { field: "ceoNm",             headerName: "대표자",               editable: true, align:"left", width:100},
     /* 주소 시작 */
     { field: "deliveryNm",        headerName: "배송처명",            editable: true, align:"left", width:200,
         renderCell: (params) => (
@@ -72,27 +73,27 @@ export default function Biz(props) {
     { field: "zip",               headerName: "우편번호",              editable: false, align:"left", width:100},
     { field: "jibunAddr",         headerName: "지번주소",              editable: false, align:"left", width:300},
     { field: "roadAddr",          headerName: "도로명주소",             editable: false, align:"left", width:300},
-    { field: "detailAddr",        headerName: "상세주소",              editable: false, align:"left", width:300},
+    { field: "detailAddr",        headerName: "상세주소",              editable: true, align:"left", width:300},
     { field: "lat",               headerName: "위도",                 editable: false, align:"left", width:150},
     { field: "lon",               headerName: "경도",                 editable: false, align:"left", width:150},
     /* 주소 끝 */
-    { field: "bizTp",             headerName: "업태(사업자유형)",       editable: true, align:"left", width:100},
-    { field: "bizKnd",            headerName: "업종(사업자종류)",       editable: true, align:"left", width:100},
+    // { field: "bizTp",             headerName: "업태(사업자유형)",       editable: true, align:"left", width:100},
+    // { field: "bizKnd",            headerName: "업종(사업자종류)",       editable: true, align:"left", width:100},
     { field: "telNo",             headerName: "전화번호",             editable: true, align:"left", width:150,
       valueFormatter: (params) => gvGridFieldFormatPhoneNumber(params.value),
-      valueParser: (value) => gvGridFieldParsePhoneNumber(value),
-      renderEditCell: (params) => gvGridFieldInputPhoneNumber(params)
+      // valueParser: (value) => gvGridFieldParsePhoneNumber(value),
+      // renderEditCell: (params) => gvGridFieldInputPhoneNumber(params)
     },
     { field: "faxNo",             headerName: "팩스",                editable: true, align:"left", width:120,
       valueFormatter: (params) => gvGridFieldFormatFaxNumber(params.value),
-      valueParser: (value) => gvGridFieldParseFaxNumber(value),
-      renderEditCell: (params) => gvGridFieldInputFaxNumber(params)
+      // valueParser: (value) => gvGridFieldParseFaxNumber(value),
+      // renderEditCell: (params) => gvGridFieldInputFaxNumber(params)
     },
     { field: "contactNm",         headerName: "담당자명",             editable: true, align:"left", width:100},
     { field: "contactTelNo",      headerName: "담당자전화번호",         editable: true, align:"left", width:150,
       valueFormatter: (params) => gvGridFieldFormatPhoneNumber(params.value),
-      valueParser: (value) => gvGridFieldParsePhoneNumber(value),
-      renderEditCell: (params) => gvGridFieldInputPhoneNumber(params)
+      // valueParser: (value) => gvGridFieldParsePhoneNumber(value),
+      // renderEditCell: (params) => gvGridFieldInputPhoneNumber(params)
     },
     { field: "contactEmail",      headerName: "담당자이메일",          editable: true, align:"left", width:200,
       renderEditCell: (params) => gvGridFieldEmailInput(params)
@@ -129,8 +130,8 @@ export default function Biz(props) {
     codeCd: "", 
   });
   //조회조건
-  const onChangeSearch = (event) => {
-    setSchValues({ ...values, [event.target.id]: event.target.value });
+  const onChangeSearch = (event, id) => {
+    setSchValues({ ...schValues, [id]: event });
   };
   const onKeyDown = (e) =>{
     if(e.keyCode === 13){
@@ -194,16 +195,12 @@ export default function Biz(props) {
 
     }else{
       //콤보박스 데이터 조회
-      setUseYnCmb(getCmbOfGlobalData('CMMN_CD', 'USE_YN'));
-      setDealGbnCdCmb(getCmbOfGlobalData('CMMN_CD', 'DEAL_GBN_CD'));
-
-      if(clientCdCmb.length == 0) {
-        //콤보박스 데이터 조회
-        setClientCdCmb(getCmbOfGlobalData("CLIENT_CD", ''))
-      }
+      if(useYnCmb.length === 0) setUseYnCmb(getCmbOfGlobalData('CMMN_CD', 'USE_YN'));
+      if(dealGbnCdCmb.length === 0) setDealGbnCdCmb(getCmbOfGlobalData('CMMN_CD', 'DEAL_GBN_CD'));
+      if(clientCdCmb.length == 0) setClientCdCmb(getCmbOfGlobalData("CLIENT_CD", ''))
     }
 
-  }, [selRowId, callbackDelivery, clientCdCmb, dataList]);
+  }, [selRowId, callbackDelivery, clientCdCmb, useYnCmb, dealGbnCdCmb, dataList]);
   
   //조회
   const fnSearch = () => {
@@ -231,6 +228,8 @@ export default function Biz(props) {
   //저장클릭
   function onClickSave(){
     var rowData = gvGetRowData(dataList, selRowId);
+    if(!rowData) return;
+    
     openModal('', '',  '저장 하시겠습니까?', 
       () => {
         //메뉴리스트 저장
@@ -248,6 +247,8 @@ export default function Biz(props) {
   //삭제클릭
   function onClickDel(){
     var rowData = gvGetRowData(dataList, selRowId);
+    if(!rowData) return;
+    
     openModal('', '',  '삭제 하시겠습니까?', 
       () => {
         //메뉴리스트 저장
@@ -282,34 +283,46 @@ export default function Biz(props) {
     setCallbackDelivery(addressData);
   };
 
+  //쎌변경시 데이터 변경
+  const handleEditCellChangeCommitted = React.useCallback(
+    ({ id, field, value }) => {
+      dataList[id-1][field] = value
+    },
+    [dataList],
+  );
+
   return (
     <>
       <PageTitle title={'공급처 관리'}  />
-      <SearchBar
+
+
+      <ComDeGrid
         onClickSelect={onClickSelect} 
         onClickAdd={onClickAdd} 
         onClickSave={onClickSave}
-        onClickDel={onClickDel}>
-          <SchTextField id="codeCd" label='코드/명'
-            div={"3"}
-            onChange={onChangeSearch} 
-            onKeyDown={onKeyDown} />    
-      </SearchBar>
-      
-      <Grid item xs={12} style={{ height: 750, width: '100%' }}>
-        <DataGrid
-          title={menuTitle} //제목
-          rows={dataList} //dataList
-          columns={columns} //컬럼 정의
-          headerHeight={30} //헤더 높이
-          rowHeight={28} //행 높이
-          onCellClick={handleGridCellClick}
-          footerHeight={30}
-          selectionModel={selRowId} //쎌선택 변수지정
-          onCellEditCommit={React.useCallback((params) => {dataList[params.id-1][params.field] = params.value;},[dataList] //쎌변경시 데이터변경
-        )}
-        />
-      </Grid>
+        onClickDel={onClickDel}
+        searchBarChildren={
+          <>
+            <SchTextField id="codeCd" label='코드/명'
+              div={"3"}
+              onChange={onChangeSearch} 
+              onKeyDown={onKeyDown} />  
+          </>
+        }
+
+        title={"Supplier List"} //제목
+        dataList={dataList} //dataList
+        columns={columns} //컬럼 정의
+        height={"750px"}
+        //Event
+        // selRowId={selRowId} //쎌선택 변수지정
+        // setSelRowId={setSelRowId}
+        onCellClick={handleGridCellClick}
+        onCellEditCommit={handleEditCellChangeCommitted} //쎌변경시 데이터변경
+        
+        //Multi
+        type={"single"}
+      />
     </>
     
   );

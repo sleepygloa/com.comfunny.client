@@ -9,17 +9,13 @@ import { DataGrid } from "@mui/x-data-grid";
 import { Grid, Box, Typography } from "@mui/material";
 import { useCommonData } from "../../../context/CommonDataContext.js";
 import { gvGridDropdownDisLabel, gvGetRowData, gvSeData } from "../../../components/Common.js";
+import { ComDeGrid } from "../../../components/Grid/ComDeGrid.js";
 
 //Modal
 import {useModal} from "../../../context/ModalContext.js";
 
 // styles
 import useStyles from "../styles.js";
-
-// DataGrid Css
-import IconButton from '@mui/material/IconButton';
-import SearchIcon from '@mui/icons-material/Search';
-import { height } from "@mui/system";
 
 // 필드 정보를 관리하는 객체
 const fieldLabels = {
@@ -50,14 +46,8 @@ export default function Item(props) {
   const [selRowId, setSelRowId] = useState(-1);
   //메뉴 데이터 변수
   const [dataList, setDataList] = useState([]); //
-  //배송처 콜백 데이터 변수
-  const [callbackDelivery, setCallbackDelivery] = useState(null);
 
   const [clientCdCmb, setClientCdCmb] = useState([]); //고객사 콤보박스
-  const [keepTempeGbnCdCmb, setKeepTempeGbnCdCmb] = useState([]);
-  const [minUomCdCmb, setMinUomCdCmb] = useState([]);
-  const [setItemYnCmb, setSetItemYnCmb] = useState([]);
-  const [vatYnCmb, setVatYnCmb] = useState([]);
   const [useYnCmb, setUseYnCmb] = useState([]);
   const columns = [
     { field: "id",                headerName: "ID",                               align:"center", width:20},
@@ -86,8 +76,8 @@ export default function Item(props) {
     codeCd: "", 
   });
   //조회조건
-  const onChangeSearch = (event) => {
-    setSchValues({ ...values, [event.target.id]: event.target.value });
+  const onChangeSearch = (event, id) => {
+    setSchValues({ ...schValues, [id]: event });
   };
   const onKeyDown = (e) =>{
     if(e.keyCode === 13){
@@ -116,13 +106,10 @@ export default function Item(props) {
   //화면 로드시 1번만 실행
   useEffect(() => {
 
-    if(clientCdCmb.length > 0) return;
+    if(clientCdCmb.length == 0) setClientCdCmb(getCmbOfGlobalData("CLIENT_CD", ''))
+    if(useYnCmb.length == 0) setUseYnCmb(getCmbOfGlobalData('CMMN_CD', 'USE_YN'));
 
-    //콤보박스 데이터 조회
-    setClientCdCmb(getCmbOfGlobalData("CLIENT_CD", ''))
-    setUseYnCmb(getCmbOfGlobalData('CMMN_CD', 'USE_YN'));
-
-  }, [clientCdCmb]);
+  }, [selRowId, dataList, clientCdCmb, useYnCmb]);
   
   //조회
   const fnSearch = () => {
@@ -150,6 +137,8 @@ export default function Item(props) {
   //저장클릭
   function onClickSave(){
     var rowData = gvGetRowData(dataList, selRowId);
+    if(!rowData) return;
+    
     openModal('', '',  '저장 하시겠습니까?', 
       () => {
         //메뉴리스트 저장
@@ -167,6 +156,8 @@ export default function Item(props) {
   //삭제클릭
   function onClickDel(){
     var rowData = gvGetRowData(dataList, selRowId);
+    if(!rowData) return;
+    
     openModal('', '',  '삭제 하시겠습니까?', 
       () => {
         //메뉴리스트 저장
@@ -199,37 +190,46 @@ export default function Item(props) {
     setSelRowId(e.row.id); 
   }  
 
+  //쎌변경시 데이터 변경
+  const handleEditCellChangeCommitted = React.useCallback(
+    ({ id, field, value }) => {
+      dataList[id-1][field] = value
+    },
+    [dataList],
+  );
+
   return (
     <>
       <PageTitle title={'상품분류 관리'}  />
-      <SearchBar
+      <ComDeGrid
         onClickSelect={onClickSelect} 
         onClickAdd={onClickAdd} 
         onClickSave={onClickSave}
         onClickDel={onClickDel}
         onClickCustom1={onClickCopy}
         onClickCustomNm1={'복사'}
-        >
-          <SchTextField id="codeCd" label='코드/명'
-            div={"3"}
-            onChange={onChangeSearch} 
-            onKeyDown={onKeyDown} />    
-      </SearchBar>
-      
-      <Grid item xs={12} style={{ height: 750, width: '100%' }}>
-        <DataGrid
-          title={menuTitle} //제목
-          rows={dataList} //dataList
-          columns={columns} //컬럼 정의
-          headerHeight={30} //헤더 높이
-          rowHeight={28} //행 높이
-          onCellClick={handleGridCellClick}
-          footerHeight={30}
-          selectionModel={selRowId} //쎌선택 변수지정
-          onCellEditCommit={React.useCallback((params) => {dataList[params.id-1][params.field] = params.value;},[dataList] //쎌변경시 데이터변경
-        )}
-        />
-      </Grid>
+        searchBarChildren={
+          <>
+            <SchTextField id="codeCd" label='코드/명'
+              div={"3"}
+              onChange={onChangeSearch} 
+              onKeyDown={onKeyDown} />  
+          </>
+        }
+
+        title={"Item Class List"} //제목
+        dataList={dataList} //dataList
+        columns={columns} //컬럼 정의
+        height={"750px"}
+        //Event
+        // selRowId={selRowId} //쎌선택 변수지정
+        // setSelRowId={setSelRowId}
+        onCellClick={handleGridCellClick}
+        onCellEditCommit={handleEditCellChangeCommitted} //쎌변경시 데이터변경
+        
+        //Multi
+        type={"single"}
+      />
     </>
     
   );

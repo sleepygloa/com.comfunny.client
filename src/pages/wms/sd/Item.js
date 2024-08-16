@@ -21,6 +21,7 @@ import { gvGridDropdownDisLabel,
   gvGridFieldNumberFormatter,
   gvGridFieldNumberParser , 
 } from "../../../components/Common.js";
+import { ComDeGrid } from "../../../components/Grid/ComDeGrid.js";
 import numeral from 'numeral';
 
 //Modal
@@ -161,16 +162,16 @@ export default function Item(props) {
       align:"center", type: "singleSelect", valueFormatter: gvGridDropdownDisLabel,
       valueOptions: keepTempeGbnCdCmb,
   },
-    { field: "replaceItemCd",      headerName: "대체상품코드",          editable: true, align:"left", width:100},
+    // { field: "replaceItemCd",      headerName: "대체상품코드",          editable: true, align:"left", width:100},
     { field: "distExpiryDays",     headerName: "유통기한일수",          editable: true, align:"left", width:100},
-    { field: "minUomCd",           headerName: "최소단위코드",          editable: true, 
-      align:"center", type: "singleSelect", valueFormatter: gvGridDropdownDisLabel,
-      valueOptions: minUomCdCmb,
-  },
-    { field: "setItemYn",          headerName: "세트상품여부",          editable: true, 
-      align:"center", type: "singleSelect", valueFormatter: gvGridDropdownDisLabel,
-      valueOptions: setItemYnCmb,
-  },
+  //   { field: "minUomCd",           headerName: "최소단위코드",          editable: true, 
+  //     align:"center", type: "singleSelect", valueFormatter: gvGridDropdownDisLabel,
+  //     valueOptions: minUomCdCmb,
+  // },
+  //   { field: "setItemYn",          headerName: "세트상품여부",          editable: true, 
+  //     align:"center", type: "singleSelect", valueFormatter: gvGridDropdownDisLabel,
+  //     valueOptions: setItemYnCmb,
+  // },
     { field: "vatYn",              headerName: "과세여부",             editable: true, 
       align:"center", type: "singleSelect", valueFormatter: gvGridDropdownDisLabel,
       valueOptions: vatYnCmb,
@@ -179,11 +180,11 @@ export default function Item(props) {
         align:"center", type: "singleSelect", valueFormatter: gvGridDropdownDisLabel,
         valueOptions: useYnCmb,
     },
-    { field: "userCol1",         headerName: "사용자컬럼1",               editable: true, align:"left", width:100},
-    { field: "userCol2",         headerName: "사용자컬럼2",               editable: true, align:"left", width:100},
-    { field: "userCol3",         headerName: "사용자컬럼3",               editable: true, align:"left", width:100},
-    { field: "userCol4",         headerName: "사용자컬럼4",               editable: true, align:"left", width:100},
-    { field: "userCol5",         headerName: "사용자컬럼5",               editable: true, align:"left", width:100},
+    // { field: "userCol1",         headerName: "사용자컬럼1",               editable: true, align:"left", width:100},
+    // { field: "userCol2",         headerName: "사용자컬럼2",               editable: true, align:"left", width:100},
+    // { field: "userCol3",         headerName: "사용자컬럼3",               editable: true, align:"left", width:100},
+    // { field: "userCol4",         headerName: "사용자컬럼4",               editable: true, align:"left", width:100},
+    // { field: "userCol5",         headerName: "사용자컬럼5",               editable: true, align:"left", width:100},
     { field: "remark",            headerName: "비고",               editable: true, align:"left", width:300},
   ];
    
@@ -193,8 +194,8 @@ export default function Item(props) {
     codeCd: "", 
   });
   //조회조건
-  const onChangeSearch = (event) => {
-    setSchValues({ ...values, [event.target.id]: event.target.value });
+  const onChangeSearch = (event, id) => {
+    setSchValues({ ...schValues, [id]: event });
   };
   const onKeyDown = (e) =>{
     if(e.keyCode === 13){
@@ -246,18 +247,14 @@ export default function Item(props) {
     if(selRowId !== -1){
 
     }else{
-      if(clientCdCmb.length > 0) return;
-
+      if(clientCdCmb.length == 0) setClientCdCmb(getCmbOfGlobalData("CLIENT_CD", ''))
       //콤보박스 데이터 조회
-      setClientCdCmb(getCmbOfGlobalData("CLIENT_CD", ''))
-  
-      //콤보박스 데이터 조회
-      setKeepTempeGbnCdCmb(getCmbOfGlobalData('CMMN_CD', 'KEEP_TEMPE_GBN_CD'));
-      setMinUomCdCmb(getCmbOfGlobalData('CMMN_CD', 'UOM_CD'));
-      setSetItemYnCmb(getCmbOfGlobalData('CMMN_CD', 'YN'));
-      setVatYnCmb(getCmbOfGlobalData('CMMN_CD', 'YN'));
-      setUseYnCmb(getCmbOfGlobalData('CMMN_CD', 'USE_YN'));
-      setItemGbnCdCmb(getCmbOfGlobalData('CMMN_CD', 'ITEM_GBN_CD'));
+      if(keepTempeGbnCdCmb.length == 0) setKeepTempeGbnCdCmb(getCmbOfGlobalData('CMMN_CD', 'KEEP_TEMPE_GBN_CD'));
+      if(minUomCdCmb.length == 0) setMinUomCdCmb(getCmbOfGlobalData('CMMN_CD', 'UOM_CD'));
+      if(setItemYnCmb.length == 0) setSetItemYnCmb(getCmbOfGlobalData('CMMN_CD', 'YN'));
+      if(vatYnCmb.length == 0) setVatYnCmb(getCmbOfGlobalData('CMMN_CD', 'YN'));
+      if(useYnCmb.length == 0) setUseYnCmb(getCmbOfGlobalData('CMMN_CD', 'USE_YN'));
+      if(itemGbnCdCmb.length == 0) setItemGbnCdCmb(getCmbOfGlobalData('CMMN_CD', 'ITEM_GBN_CD'));
 
       if(largeClassCdCmb.length > 0) return;
       //대분류, 중분류, 소분류 조회 
@@ -265,7 +262,7 @@ export default function Item(props) {
       fnSearchLargeMiddleClassCd();
       fnSearchLargeMiddleSmallClassCd();
     }
-  }, [selRowId, clientCdCmb]);
+  }, [selRowId, clientCdCmb, keepTempeGbnCdCmb, minUomCdCmb, setItemYnCmb, vatYnCmb, useYnCmb, largeClassCdCmb, largeMiddleClassCdCmb, largeMiddleSmallClassCdCmb]);
   
   //조회
   const fnSearch = () => {
@@ -293,6 +290,8 @@ export default function Item(props) {
   //저장클릭
   function onClickSave(){
     var rowData = gvGetRowData(dataList, selRowId);
+    if(!rowData) return;
+    
     openModal('', '',  '저장 하시겠습니까?', 
       () => {
         //메뉴리스트 저장
@@ -310,6 +309,8 @@ export default function Item(props) {
   //삭제클릭
   function onClickDel(){
     var rowData = gvGetRowData(dataList, selRowId);
+    if(!rowData) return;
+    
     openModal('', '',  '삭제 하시겠습니까?', 
       () => {
         //메뉴리스트 저장
@@ -401,35 +402,35 @@ export default function Item(props) {
   return (
     <>
       <PageTitle title={'상품 관리'}  />
-      <SearchBar
+      <ComDeGrid
         onClickSelect={onClickSelect} 
         onClickAdd={onClickAdd} 
         onClickSave={onClickSave}
         onClickDel={onClickDel}
         onClickCustom1={onClickCopy}
         onClickCustomNm1={'복사'}
-        >
-          <SchTextField id="codeCd" label='코드/명'
-            div={"3"}
-            onChange={onChangeSearch} 
-            onKeyDown={onKeyDown} />    
-      </SearchBar>
-      
-      <Grid item xs={12} style={{ height: 750, width: '100%' }}>
-        <DataGrid
-          title={menuTitle} //제목
-          rows={dataList} //dataList
-          columns={columns} //컬럼 정의
-          headerHeight={30} //헤더 높이
-          rowHeight={28} //행 높이
-          onCellClick={handleGridCellClick}
-          footerHeight={30}
-          selectionModel={selRowId} //쎌선택 변수지정
-          onCellEditCommit={handleEditCellChangeCommitted}
-          // onCellEditCommit={React.useCallback((params) => {dataList[params.id-1][params.field] = params.value;},[dataList] //쎌변경시 데이터변경
-        // )}
-        />
-      </Grid>
+        searchBarChildren={
+          <>
+            <SchTextField id="codeCd" label='코드/명'
+              div={"3"}
+              onChange={onChangeSearch} 
+              onKeyDown={onKeyDown} />  
+          </>
+        }
+
+        title={"Item List"} //제목
+        dataList={dataList} //dataList
+        columns={columns} //컬럼 정의
+        height={"750px"}
+        //Event
+        // selRowId={selRowId} //쎌선택 변수지정
+        // setSelRowId={setSelRowId}
+        onCellClick={handleGridCellClick}
+        onCellEditCommit={handleEditCellChangeCommitted} //쎌변경시 데이터변경
+        
+        //Multi
+        type={"single"}
+      />
     </>
     
   );

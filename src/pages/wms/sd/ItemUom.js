@@ -9,17 +9,13 @@ import { DataGrid } from "@mui/x-data-grid";
 import { Grid, Box, Typography } from "@mui/material";
 import { useCommonData } from "../../../context/CommonDataContext.js";
 import { gvGridDropdownDisLabel, gvGetRowData, gvSeData } from "../../../components/Common.js";
+import { ComDeGrid } from "../../../components/Grid/ComDeGrid.js";
 
 //Modal
 import {useModal} from "../../../context/ModalContext.js";
 
 // styles
 import useStyles from "../styles.js";
-
-// DataGrid Css
-import IconButton from '@mui/material/IconButton';
-import SearchIcon from '@mui/icons-material/Search';
-import { height } from "@mui/system";
 
 // 필드 정보를 관리하는 객체
 const fieldLabels = {
@@ -52,7 +48,10 @@ export default function ItemUom(props) {
   const [uomCdCmb, setUomCdCmb] = useState([]); //단위코드
   const columns = [
     { field: "id",                headerName: "ID",                               align:"center", width:20},
-    { field: "clientCd",          headerName: "고객사",               editable: false, align:"left", width:100},
+    { field: "clientCd",          headerName: "고객사",               editable: false, align:"left", width:100,
+      align:"center", type: "singleSelect", valueFormatter: gvGridDropdownDisLabel,
+      valueOptions: clientCdCmb,
+    },
     { field: "itemCd",            headerName: "상품코드",              editable: false, align:"left", width:100},
     { field: "itemNm",            headerName: "상품명",               editable: false, align:"left", width:300},
     { field: "stdUomCd",          headerName: "기준단위",           editable: true, 
@@ -77,8 +76,8 @@ export default function ItemUom(props) {
     codeCd: "", 
   });
   //조회조건
-  const onChangeSearch = (event) => {
-    setSchValues({ ...values, [event.target.id]: event.target.value });
+  const onChangeSearch = (event, id) => {
+    setSchValues({ ...schValues, [id]: event });
   };
   const onKeyDown = (e) =>{
     if(e.keyCode === 13){
@@ -106,16 +105,11 @@ export default function ItemUom(props) {
     if(selRowId !== -1){
 
     }else{
-      if(clientCdCmb.length > 0) return;
-
-      //콤보박스 데이터 조회
-      setClientCdCmb(getCmbOfGlobalData("CLIENT_CD", ''))
-  
-      //콤보박스 데이터 조회
-      setUseYnCmb(getCmbOfGlobalData('CMMN_CD', 'USE_YN'));
-      setUomCdCmb(getCmbOfGlobalData('CMMN_CD', 'UOM_CD'));
+      if(clientCdCmb.length == 0) setClientCdCmb(getCmbOfGlobalData("CLIENT_CD", ''))
+      if(useYnCmb.length == 0) setUseYnCmb(getCmbOfGlobalData('CMMN_CD', 'USE_YN'));
+      if(uomCdCmb.length == 0) setUomCdCmb(getCmbOfGlobalData('CMMN_CD', 'UOM_CD'));
     }
-  }, [selRowId, clientCdCmb]);
+  }, [selRowId, clientCdCmb, useYnCmb, uomCdCmb]);
   
   //조회
   const fnSearch = () => {
@@ -143,6 +137,8 @@ export default function ItemUom(props) {
   //저장클릭
   function onClickSave(){
     var rowData = gvGetRowData(dataList, selRowId);
+    if(!rowData) return;
+    
     openModal('', '',  '저장 하시겠습니까?', 
       () => {
         //메뉴리스트 저장
@@ -160,6 +156,8 @@ export default function ItemUom(props) {
   //삭제클릭
   function onClickDel(){
     var rowData = gvGetRowData(dataList, selRowId);
+    if(!rowData) return;
+    
     openModal('', '',  '삭제 하시겠습니까?', 
       () => {
         //메뉴리스트 저장
@@ -180,34 +178,45 @@ export default function ItemUom(props) {
     setSelRowId(e.row.id); 
   }  
 
+  //쎌변경시 데이터 변경
+  const handleEditCellChangeCommitted = React.useCallback(
+    ({ id, field, value }) => {
+      dataList[id-1][field] = value
+    },
+    [dataList],
+  );
+  
+
   return (
     <>
       <PageTitle title={'상품단위 관리'}  />
-      <SearchBar
+      <ComDeGrid
         onClickSelect={onClickSelect} 
         onClickAdd={onClickAdd} 
         onClickSave={onClickSave}
-        onClickDel={onClickDel}>
-          <SchTextField id="codeCd" label='코드/명'
-            div={"3"}
-            onChange={onChangeSearch} 
-            onKeyDown={onKeyDown} />    
-      </SearchBar>
-      
-      <Grid item xs={12} style={{ height: 750, width: '100%' }}>
-        <DataGrid
-          title={menuTitle} //제목
-          rows={dataList} //dataList
-          columns={columns} //컬럼 정의
-          headerHeight={30} //헤더 높이
-          rowHeight={28} //행 높이
-          onCellClick={handleGridCellClick}
-          footerHeight={30}
-          selectionModel={selRowId} //쎌선택 변수지정
-          onCellEditCommit={React.useCallback((params) => {dataList[params.id-1][params.field] = params.value;},[dataList] //쎌변경시 데이터변경
-        )}
-        />
-      </Grid>
+        onClickDel={onClickDel}
+        searchBarChildren={
+          <>
+            <SchTextField id="codeCd" label='코드/명'
+              div={"3"}
+              onChange={onChangeSearch} 
+              onKeyDown={onKeyDown} />  
+          </>
+        }
+
+        title={"Item Uom List"} //제목
+        dataList={dataList} //dataList
+        columns={columns} //컬럼 정의
+        height={"750px"}
+        //Event
+        // selRowId={selRowId} //쎌선택 변수지정
+        // setSelRowId={setSelRowId}
+        onCellClick={handleGridCellClick}
+        onCellEditCommit={handleEditCellChangeCommitted} //쎌변경시 데이터변경
+        
+        //Multi
+        type={"single"}
+      />
     </>
     
   );

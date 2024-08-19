@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 // components
 import PageTitle from "../../../components/PageTitle/PageTitle.js";
 import SearchBar from "../../../components/SearchBar/SearchBar.js";
-import {SchTextField, SchDateField} from "../../../components/SearchBar/Components/TextFieldDefault.js"
+import {SchTextField, GridDateRenderField, SchDateField} from "../../../components/SearchBar/Components/TextFieldDefault.js"
 
 import { DataGrid } from "@mui/x-data-grid";
 import { Box, Tabs, Tab, Badge, Grid } from '@mui/material';
@@ -20,7 +20,7 @@ import { useCommonData } from "../../../context/CommonDataContext.js";
 //Modal
 import {useModal} from "../../../context/ModalContext.js";
 
-export default function InboundPlan() {
+export default function InboundPutw() {
   const {menuTitle} = '입고적치';
   const PRO_URL = '/wms/ib/inboundPutw';
   const {openModal} = useModal();

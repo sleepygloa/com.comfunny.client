@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 // components
 import PageTitle from "../../../components/PageTitle/PageTitle.js";
 import SearchBar from "../../../components/SearchBar/SearchBar.js";
-import {SchTextField, SchDateField} from "../../../components/SearchBar/Components/TextFieldDefault.js"
+import {SchTextField, GridDateRenderField, SchDateField} from "../../../components/SearchBar/Components/TextFieldDefault.js"
 
 import { DataGrid } from "@mui/x-data-grid";
 import { ComDeGrid } from "../../../components/Grid/ComDeGrid.js";
@@ -68,13 +68,16 @@ export default function StockMove(props) {
     { field: "clientNm",          headerName: "고객사",       editable: false, align:"left", width:120},
     { field: "moveNo",            headerName: "재고이동번호",   editable: false, align:"left", width:150},
     // { field: "ibGbnCd",           headerName: "입고구분코드",     editable: false, align:"left", width:120},
-    { field: "workYmd",           headerName: "작업일",       editable: false, align:"left", width:120},
+    { field: "workYmd",           headerName: "작업일",       editable: false, align:"left", width:150,
+      // valueSetter: (params) => {return GridDateSetField(params, 'dealEndYmd');},
+      renderCell: (params) => <GridDateRenderField params={params} />,
+    },
     // { field: "ibProgStCd",        headerName: "입고진행상태코드",   editable: false, align:"left", width:100},
     { field: "moveGbnNm",         headerName: "이동구분명",     editable: false, align:"left", width:100},
     { field: "workStNm",          headerName: "이동상태명",     editable: false, align:"left", width:100},
     
     { field: "refVal1",           headerName: "참조값1",     editable: false, align:"left", width:100},
-    { field: "refVal2",           headerName: "참조값2",     editable: false, align:"left", width:100},
+    { field: "refVal2",           headerName: "참조값2",     editable: false, align:"left", width:150},
     { field: "refVal3",           headerName: "참조값3",     editable: false, align:"left", width:100},
     { field: "remark",            headerName: "비고",       editable: false, align:"left", width:500},
   ];
@@ -108,9 +111,9 @@ export default function StockMove(props) {
     { field: "moveRsNm",          headerName: "이동사유구분",           editable: false, align:"right", width:100},
 
     { field: "workDt",            headerName: "작업일시",      editable: false,  align:"center", width:100,},
-    { field: "workUserId",        headerName: "작업자",       editable: false, align:"right", width:100},
-    { field: "refVal1",           headerName: "참조값1",      editable: false, align:"right", width:100},
-    { field: "refVal2",           headerName: "참조값2",      editable: false, align:"right", width:150},
+    { field: "workUserId",        headerName: "작업자",       editable: false, align:"center", width:100},
+    { field: "refVal1",           headerName: "참조값1",      editable: false, align:"left", width:100},
+    { field: "refVal2",           headerName: "참조값2",      editable: false, align:"left", width:150},
     { field: "refVal3",           headerName: "참조값3",      editable: false, align:"right", width:100},
     { field: "remark",            headerName: "비고",               editable: false, align:"left", width:300},
   ];
@@ -256,7 +259,7 @@ export default function StockMove(props) {
 
   //로케이션찾기 팝업
   const openPopupFindToLocCd = () => {
-    openModal('FIND_TO_LOC', '로케이션 찾기', <StockMoveLocPop refVal1={"IB"} />, handleAddressUpdate, '800px', '600px');
+    openModal('FIND_TO_LOC', '로케이션 찾기', <StockMoveLocPop refVal1={"IB_INST"} />, handleAddressUpdate, '800px', '600px');
   }
 
   //로케이션찾기 팝업 콜백함수

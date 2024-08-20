@@ -273,6 +273,7 @@ export function GridDateSetField (params, id) {
 
 //그리드 날짜 컴포넌트 (render)
 export function GridDateRenderField ({params}) {
+
   const convertToDateObject = (input) => {
     if (!input) return null;
     try {
@@ -304,15 +305,29 @@ export function GridDateRenderField ({params}) {
       setDate(null); // 유효하지 않은 입력 처리
     }
   };
+  
+  if(params.isEditable){
+    return (
+      <DatePicker
+        selected={date}
+        onChange={handleDateChange}
+        dateFormat="yyyy-MM-dd"
+        customInput={<TextField fullWidth />}
+      />
+    );
+  }else{
+    var newFormattedDate = '';
+    if(date != null){
+      const newDate = new Date(date);
+      newFormattedDate = newDate.getFullYear() + '-' +
+              ('0' + (newDate.getMonth() + 1)).slice(-2) + '-' +
+              ('0' + newDate.getDate()).slice(-2);
+    }
+    return (
+      <TextField value={newFormattedDate} readonly/>
+    );
 
-  return (
-    <DatePicker
-      selected={date}
-      onChange={handleDateChange}
-      dateFormat="yyyy-MM-dd"
-      customInput={<TextField fullWidth />}
-    />
-  );
+  }
 }
 
 //검색필드 날짜 컴포넌트

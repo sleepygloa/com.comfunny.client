@@ -3,10 +3,8 @@ import React, { useState, useEffect } from 'react';
 // components
 import PageTitle from "../../../components/PageTitle/PageTitle.js";
 import SearchBar from "../../../components/SearchBar/SearchBar.js";
-import {SchTextField, SchDateField} from "../../../components/SearchBar/Components/TextFieldDefault.js"
-
-import { DataGrid } from "@mui/x-data-grid";
-import { Box, Tabs, Tab, Badge, Grid } from '@mui/material';
+import {SchTextField, GridDateRenderField, SchDateField} from "../../../components/SearchBar/Components/TextFieldDefault.js"
+import { ComDeGrid } from "../../../components/Grid/ComDeGrid.js";
 
 //Common
 import {client} from '../../../contraints.js';
@@ -51,27 +49,32 @@ export default function OutboundPlan() {
   const columns = [
     { field: "id",                headerName: "ID",             editable:false, align:"center", width:20},
     // { field: "dcCd",              headerName: "물류창고",      editable: false, align:"left", width:120},
-    { field: "dcNm",              headerName: "물류창고",      editable: false, align:"left", width:120},
+    { field: "dcNm",              headerName: "물류창고",         editable: false, align:"left", width:120},
     { field: "obNo",              headerName: "출고번호",         editable: false, align:"left", width:150},
     // { field: "clientCd",          headerName: "고객사코드",       editable: false, align:"left", width:120},
-    { field: "clientNm",          headerName: "고객사",       editable: false, align:"left", width:120},
+    { field: "clientNm",          headerName: "고객사",           editable: false, align:"left", width:120},
     // { field: "obGbnCd",           headerName: "출고구분코드",     editable: false, align:"left", width:120},
-    { field: "obGbnNm",           headerName: "출고구분",     editable: false, align:"left", width:120},
+    { field: "obGbnNm",           headerName: "출고구분",         editable: false, align:"left", width:120},
     // { field: "obProgStCd",        headerName: "출고진행상태코드",   editable: false, align:"left", width:100},
-    { field: "obProgStNm",        headerName: "출고진행상태",   editable: false, align:"left", width:100},
-    { field: "obPlanYmd",         headerName: "출고예정일자",     editable: false, align:"left", width:100},
-    { field: "obYmd",             headerName: "출고일자",       editable: false, align:"left", width:100},
+    { field: "obProgStNm",        headerName: "출고진행상태",     editable: false, align:"left", width:100},
+    { field: "obPlanYmd",         headerName: "출고예정일자",     editable: false, align:"left", width:150,
+      // valueSetter: (params) => {return GridDateSetField(params, 'dealEndYmd');},
+      renderCell: (params) => <GridDateRenderField params={params} />,
+    },
+    { field: "obYmd",             headerName: "출고일자",         editable: false, align:"left", width:150,
+      // valueSetter: (params) => {return GridDateSetField(params, 'dealEndYmd');},
+      renderCell: (params) => <GridDateRenderField params={params} />,
+    },
     // { field: "poNo",              headerName: "발주번호",       editable: false, align:"left", width:100},
     // { field: "poYmd",             headerName: "발주일자",       editable: false, align:"left", width:100},
     // { field: "supplierCd",        headerName: "공급처코드",     editable: false, align:"left", width:100},
-    { field: "supplierNm",        headerName: "공급처",     editable: false, align:"left", width:100},
-    { field: "carNo",             headerName: "차량번호",       editable: false, align:"left", width:100},
-    { field: "tcObNo",            headerName: "이고출고번호",     editable: false, align:"left", width:100},
-    { field: "userCol1",          headerName: "사용자컬럼1",      editable: false, align:"left", width:100},
-    { field: "userCol2",          headerName: "사용자컬럼2",      editable: false, align:"left", width:100},
-    { field: "userCol3",          headerName: "사용자컬럼3",      editable: false, align:"left", width:100},
-    { field: "userCol4",          headerName: "사용자컬럼4",      editable: false, align:"left", width:100},
-    { field: "userCol5",          headerName: "사용자컬럼5",       editable: false, align:"left", width:100},
+    { field: "supplierNm",        headerName: "공급처",           editable: false, align:"left", width:100},
+    { field: "carNo",             headerName: "차량번호",         editable: false, align:"left", width:100},
+    // { field: "userCol1",          headerName: "사용자컬럼1",      editable: false, align:"left", width:100},
+    // { field: "userCol2",          headerName: "사용자컬럼2",      editable: false, align:"left", width:100},
+    // { field: "userCol3",          headerName: "사용자컬럼3",      editable: false, align:"left", width:100},
+    // { field: "userCol4",          headerName: "사용자컬럼4",      editable: false, align:"left", width:100},
+    // { field: "userCol5",          headerName: "사용자컬럼5",       editable: false, align:"left", width:100},
     // { field: "useYn",             headerName: "사용여부",         editable: false, align:"left", width:100},
     { field: "useYnNm",             headerName: "사용여부",         editable: false, align:"left", width:100},
     { field: "remark",            headerName: "비고",               editable: false, align:"left", width:300},
@@ -83,15 +86,23 @@ export default function OutboundPlan() {
     // { field: "obProgStCd",        headerName: "출고진행상태코드",   editable: false, align:"left", width:100},
     { field: "obProgStNm",        headerName: "진행상태",   editable: false, align:"left", width:100},
     { field: "itemCd",            headerName: "상품코드",   editable: false, align:"left", width:100},
-    { field: "itemNm",            headerName: "상품명",   editable: false, align:"left", width:300},
+    { field: "itemNm",            headerName: "상품명",   editable: false, align:"left", width:250},
     // { field: "itemStCd",          headerName: "상품상태코드",   editable: false, align:"left", width:100},
     { field: "itemStNm",          headerName: "상품상태",   editable: false, align:"left", width:100},
     // { field: "poUomCd",           headerName: "발주단위코드",   editable: false, align:"left", width:100},
     // { field: "poQty",             headerName: "발주수량",   editable: false, align:"left", width:100},
-    { field: "pkqty",             headerName: "입수",      editable: false,  align:"center", width:100,},
-    { field: "planTotQty",           headerName: "예정(총)",   editable: false, align:"right", width:100},
-    { field: "planBoxQty",           headerName: "예정(박스)",   editable: false, align:"right", width:100},
-    { field: "planEaQty",           headerName: "예정(낱개)",   editable: false, align:"right", width:100},
+    { field: "pkqty",             headerName: "입수",      editable: false,  align:"center", width:100,
+      valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
+    },
+    { field: "planTotQty",           headerName: "예정(총)",   editable: false, align:"right", width:100,
+      valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
+    },
+    { field: "planBoxQty",           headerName: "예정(박스)",   editable: false, align:"right", width:100,
+      valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
+    },
+    { field: "planEaQty",           headerName: "예정(낱개)",   editable: false, align:"right", width:100,
+      valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
+    },
     // { field: "confQty",           headerName: "확정",   editable: false, align:"right", width:60},
     // { field: "apprQty",           headerName: "승인",   editable: false, align:"right", width:60},
     // { field: "examQty",           headerName: "검수",   editable: false, align:"right", width:60},
@@ -108,22 +119,28 @@ export default function OutboundPlan() {
     { field: "obAmt",             headerName: "출고금액",   editable: false, align:"right", width:100,
       valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
     },
-    { field: "makeLot",           headerName: "제조LOT",   editable: false, align:"left", width:100},
-    { field: "makeYmd",           headerName: "제조일자",   editable: false, align:"left", width:100},
-    { field: "distExpiryYmd",     headerName: "유통기한일자",   editable: false, align:"left", width:100},
+    { field: "makeLot",           headerName: "제조LOT",   editable: false, align:"left", width:130},
+    { field: "makeYmd",           headerName: "제조일자",   editable: false, align:"left", width:150,
+      // valueSetter: (params) => {return GridDateSetField(params, 'dealEndYmd');},
+      renderCell: (params) => <GridDateRenderField params={params} />,
+    },
+    { field: "distExpiryYmd",     headerName: "유통기한일자",   editable: false, align:"left", width:150,
+      // valueSetter: (params) => {return GridDateSetField(params, 'dealEndYmd');},
+      renderCell: (params) => <GridDateRenderField params={params} />,
+    },
     { field: "lotId",             headerName: "LOT_ID",   editable: false, align:"left", width:100},
-    { field: "lotAttr1",          headerName: "LOT속성1",   editable: false, align:"left", width:100},
-    { field: "lotAttr2",          headerName: "LOT속성2",   editable: false, align:"left", width:100},
-    { field: "lotAttr3",          headerName: "LOT속성3",   editable: false, align:"left", width:100},
-    { field: "lotAttr4",          headerName: "LOT속성4",   editable: false, align:"left", width:100},
-    { field: "lotAttr5",          headerName: "LOT속성5",   editable: false, align:"left", width:100},
+    // { field: "lotAttr1",          headerName: "LOT속성1",   editable: false, align:"left", width:100},
+    // { field: "lotAttr2",          headerName: "LOT속성2",   editable: false, align:"left", width:100},
+    // { field: "lotAttr3",          headerName: "LOT속성3",   editable: false, align:"left", width:100},
+    // { field: "lotAttr4",          headerName: "LOT속성4",   editable: false, align:"left", width:100},
+    // { field: "lotAttr5",          headerName: "LOT속성5",   editable: false, align:"left", width:100},
 
     // { field: "tcObDetailSeq",     headerName: "이고출고상세순번",     editable: false, align:"left", width:100},
-    { field: "userCol1",          headerName: "사용자컬럼1",      editable: false, align:"left", width:100},
-    { field: "userCol2",          headerName: "사용자컬럼2",      editable: false, align:"left", width:100},
-    { field: "userCol3",          headerName: "사용자컬럼3",      editable: false, align:"left", width:100},
-    { field: "userCol4",          headerName: "사용자컬럼4",      editable: false, align:"left", width:100},
-    { field: "userCol5",          headerName: "사용자컬럼5",       editable: false, align:"left", width:100},
+    // { field: "userCol1",          headerName: "사용자컬럼1",      editable: false, align:"left", width:100},
+    // { field: "userCol2",          headerName: "사용자컬럼2",      editable: false, align:"left", width:100},
+    // { field: "userCol3",          headerName: "사용자컬럼3",      editable: false, align:"left", width:100},
+    // { field: "userCol4",          headerName: "사용자컬럼4",      editable: false, align:"left", width:100},
+    // { field: "userCol5",          headerName: "사용자컬럼5",       editable: false, align:"left", width:100},
     // { field: "useYn",             headerName: "사용여부",         editable: false, align:"left", width:100},
     { field: "useYnNm",             headerName: "사용여부",         editable: false, align:"left", width:100},
     { field: "remark",            headerName: "비고",               editable: false, align:"left", width:300},
@@ -223,66 +240,47 @@ export default function OutboundPlan() {
 
   return (
     <>
-      <SearchBar
+      <ComDeGrid
         onClickSelect={onClickSelect} 
         onClickAdd={onClickAdd} 
-        // onClickSave={onClickSave}
-        // onClickDel={onClickDel}
-        >
-          <SchTextField id="obNo" label='출고번호/명'
-            div={"4"}
-            onChange={onChangeSearch} 
-            onKeyDown={onKeyDown} />  
-          <SchDateField id="obPlanYmd" label='출고예정일'
-            div={"4"}
-            selected={schValues.obPlanYmd}
-            onChange={onChangeSearch} 
-            />    
-      </SearchBar>
-      <Grid item xs={12} style={{ height: 350, width: '100%' }}>
-        <DataGrid
-          title={"Outbound List"} //제목
-          rows={dataList} //dataList
-          columns={columns} //컬럼 정의
-          headerHeight={30} //헤더 높이
-          rowHeight={28} //행 높이
-          onRowClick={(e)=>{setValues(e.row); fnSearchDtl(e.row)} }
-          footerHeight={30}
-          selectionModel={selRowId} //쎌선택 변수지정
-          
-          onCellEditCommit={React.useCallback((params) => {
-            dataList[params.id-1][params.field] = params.value;
-            
-          },[dataList] //쎌변경시 데이터변경
-        )}
-        />
-      </Grid>      
+        searchBarChildren={
+          <>
+            <SchTextField id="obNo" label='출고번호/명'
+              div={"4"}
+              onChange={onChangeSearch} 
+              onKeyDown={onKeyDown} />  
+            <SchDateField id="obPlanYmd" label='출고예정일'
+              div={"4"}
+              selected={schValues.obPlanYmd}
+              onChange={onChangeSearch} 
+              />    
+          </>
+        }
 
-      <SearchBar
-        // onClickSelect={onClickDtlSelect}
-        // onClickAdd={onClickDtlAdd}
-        // onClickSave={onClickDtlSave}
-        // onClickDel={onClickDtlDel}
-        >
-      </SearchBar>
-      <Grid item xs={12} style={{ height: '500px', width: '100%' }}>
-        <DataGrid
-          title={"Outbound Detail List"} //제목
-          rows={dataDtlList} //dataList
-          columns={columnsDtl} //컬럼 정의
-          headerHeight={30} //헤더 높이
-          rowHeight={28} //행 높이
-          onRowClick={(e)=>{setValuesDtl(e.row); setSelDtlRowId(e.row.id);} }
-          footerHeight={30}
-          selectionModel={selDtlRowId} //쎌선택 변수지정
-          
-          onCellEditCommit={React.useCallback((params) => {
-            dataDtlList[params.id-1][params.field] = params.value;
-            
-          },[dataDtlList] //쎌변경시 데이터변경
-        )}
-        />
-      </Grid>
+        title={"Outbound List"} //제목
+        dataList={dataList} //dataList
+        columns={columns} //컬럼 정의
+        height={"250px"}
+        //Event
+        // selRowId={selRowId} //쎌선택 변수지정
+        // setSelRowId={setSelRowId}
+        onRowClick={(params)=>{setSelRowId(params.id); fnSearchDtl(params.row)}}
+        
+        //Multi
+        type={"single"}
+      />
+
+      <ComDeGrid
+
+        title={"Outbound Detail List"} //제목
+        dataList={dataDtlList} //dataList
+        columns={columnsDtl} //컬럼 정의
+        //Event
+        onRowClick={(params)=>{setSelDtlRowId(params.id)}}
+        // onCellEditCommit={handleEditCellChangeCommitted} //쎌변경시 데이터변경
+        
+        type={"single"}
+      />
     </>
   );
 }

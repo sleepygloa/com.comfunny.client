@@ -52,7 +52,6 @@ export default function OutboundPlan() {
     { field: "dcNm",              headerName: "물류창고",         editable: false, align:"left", width:120},
     { field: "obNo",              headerName: "출고번호",         editable: false, align:"left", width:150},
     // { field: "clientCd",          headerName: "고객사코드",       editable: false, align:"left", width:120},
-    { field: "clientNm",          headerName: "고객사",           editable: false, align:"left", width:120},
     // { field: "obGbnCd",           headerName: "출고구분코드",     editable: false, align:"left", width:120},
     { field: "obGbnNm",           headerName: "출고구분",         editable: false, align:"left", width:120},
     // { field: "obProgStCd",        headerName: "출고진행상태코드",   editable: false, align:"left", width:100},

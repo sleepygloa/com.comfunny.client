@@ -50,6 +50,7 @@ export default function OutboundPlanItemPop(props) {
 
   const columns = [
     { field: "id",                headerName: "ID",                               align:"center", width:20},
+    { field: "clientCd",          headerName: "고객사코드",           editable: false, align:"left", width:100},
     { field: "itemCd",            headerName: "상품코드",             editable: false, align:"left", width:100},
     { field: "itemNm",            headerName: "상품명",              editable: false, align:"left", width:300},
     { field: "itemSpec",          headerName: "상품규격",             editable: false, align:"left", width:100},

@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
 // components
-import PageTitle from "../../../components/PageTitle/PageTitle.js";
-import SearchBar from "../../../components/SearchBar/SearchBar.js";
 import {SchTextField, GridDateRenderField, SchDateField} from "../../../components/SearchBar/Components/TextFieldDefault.js"
-
-import { DataGrid } from "@mui/x-data-grid";
 import { ComDeGrid } from "../../../components/Grid/ComDeGrid.js";
-import { Box, Tabs, Tab, Badge, Grid } from '@mui/material';
 
 //Common
 import {client} from '../../../contraints.js';
@@ -120,20 +115,23 @@ export default function InboundPlan() {
       // valueSetter: (params) => {return GridDateSetField(params, 'dealEndYmd');},
       renderCell: (params) => <GridDateRenderField params={params} />,
     },
-    { field: "distExpiryYmd",     headerName: "유통기한일자",   editable: false, align:"left", width:150},
+    { field: "distExpiryYmd",     headerName: "유통기한일자",   editable: false, align:"left", width:150,
+      // valueSetter: (params) => {return GridDateSetField(params, 'dealEndYmd');},
+      renderCell: (params) => <GridDateRenderField params={params} />,
+    },
     { field: "lotId",             headerName: "LOT_ID",   editable: false, align:"left", width:150},
-    { field: "lotAttr1",          headerName: "LOT속성1",   editable: false, align:"left", width:100},
-    { field: "lotAttr2",          headerName: "LOT속성2",   editable: false, align:"left", width:100},
-    { field: "lotAttr3",          headerName: "LOT속성3",   editable: false, align:"left", width:100},
-    { field: "lotAttr4",          headerName: "LOT속성4",   editable: false, align:"left", width:100},
-    { field: "lotAttr5",          headerName: "LOT속성5",   editable: false, align:"left", width:100},
+    // { field: "lotAttr1",          headerName: "LOT속성1",   editable: false, align:"left", width:100},
+    // { field: "lotAttr2",          headerName: "LOT속성2",   editable: false, align:"left", width:100},
+    // { field: "lotAttr3",          headerName: "LOT속성3",   editable: false, align:"left", width:100},
+    // { field: "lotAttr4",          headerName: "LOT속성4",   editable: false, align:"left", width:100},
+    // { field: "lotAttr5",          headerName: "LOT속성5",   editable: false, align:"left", width:100},
 
     // { field: "tcObDetailSeq",     headerName: "이고출고상세순번",     editable: false, align:"left", width:100},
-    { field: "userCol1",          headerName: "사용자컬럼1",      editable: false, align:"left", width:100},
-    { field: "userCol2",          headerName: "사용자컬럼2",      editable: false, align:"left", width:100},
-    { field: "userCol3",          headerName: "사용자컬럼3",      editable: false, align:"left", width:100},
-    { field: "userCol4",          headerName: "사용자컬럼4",      editable: false, align:"left", width:100},
-    { field: "userCol5",          headerName: "사용자컬럼5",       editable: false, align:"left", width:100},
+    // { field: "userCol1",          headerName: "사용자컬럼1",      editable: false, align:"left", width:100},
+    // { field: "userCol2",          headerName: "사용자컬럼2",      editable: false, align:"left", width:100},
+    // { field: "userCol3",          headerName: "사용자컬럼3",      editable: false, align:"left", width:100},
+    // { field: "userCol4",          headerName: "사용자컬럼4",      editable: false, align:"left", width:100},
+    // { field: "userCol5",          headerName: "사용자컬럼5",       editable: false, align:"left", width:100},
     // { field: "useYn",             headerName: "사용여부",         editable: false, align:"left", width:100},
     { field: "useYnNm",             headerName: "사용여부",         editable: false, align:"left", width:100},
     { field: "remark",            headerName: "비고",               editable: false, align:"left", width:300},
@@ -233,9 +231,6 @@ export default function InboundPlan() {
 
   return (
     <>
-
-
-
       <ComDeGrid
         onClickSelect={onClickSelect} 
         onClickAdd={onClickAdd} 

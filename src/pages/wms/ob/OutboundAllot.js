@@ -3,14 +3,8 @@ import React, { useState, useEffect } from 'react';
 // components
 import PageTitle from "../../../components/PageTitle/PageTitle.js";
 import SearchBar from "../../../components/SearchBar/SearchBar.js";
-import {SchTextField, SchDateField} from "../../../components/SearchBar/Components/TextFieldDefault.js"
-
-import { DataGrid } from "@mui/x-data-grid";
+import {SchTextField, GridDateRenderField, SchDateField} from "../../../components/SearchBar/Components/TextFieldDefault.js"
 import { ComDeGrid } from "../../../components/Grid/ComDeGrid.js";
-import { Box, Tabs, Tab, Badge, Grid, Typography } from '@mui/material';
-// DataGrid Css
-import IconButton from '@mui/material/IconButton';
-import SearchIcon from '@mui/icons-material/Search';
 
 //Common
 import {client} from '../../../contraints.js';
@@ -36,8 +30,8 @@ import { useCommonData } from "../../../context/CommonDataContext.js";
 import {useModal} from "../../../context/ModalContext.js";
 
 
-export default function OutboundAllot() {
-  const {menuTitle} = '출고지시';
+export default function OutboundInst() {
+  const {menuTitle} = '출고할당';
   const PRO_URL = '/wms/ob/outboundAllot';
   const {openModal} = useModal();
   const { cmmnCdData, getCodesCmbByGroupCode } = useCommonData();
@@ -60,56 +54,80 @@ export default function OutboundAllot() {
     { field: "id",                headerName: "ID",             editable:false, align:"center", width:20},
     { field: "dcNm",              headerName: "물류창고",      editable: false, align:"left", width:120},
     { field: "obNo",              headerName: "출고번호",         editable: false, align:"left", width:150},
-    { field: "clientNm",          headerName: "고객사",       editable: false, align:"left", width:120},
     { field: "obGbnNm",           headerName: "출고구분",     editable: false, align:"left", width:120},
     { field: "obProgStNm",        headerName: "출고진행상태",   editable: false, align:"left", width:100},
-    { field: "obPlanYmd",         headerName: "출고예정일자",     editable: false, align:"left", width:100},
-    { field: "obYmd",             headerName: "출고일자",       editable: false, align:"left", width:100},
-    { field: "storeNm",           headerName: "배송처",         editable: false, align:"left", width:100},
-    { field: "carNo",             headerName: "차량번호",       editable: false, align:"left", width:100},
-    { field: "userCol1",          headerName: "사용자컬럼1",      editable: false, align:"left", width:100},
-    { field: "userCol2",          headerName: "사용자컬럼2",      editable: false, align:"left", width:100},
-    { field: "userCol3",          headerName: "사용자컬럼3",      editable: false, align:"left", width:100},
-    { field: "userCol4",          headerName: "사용자컬럼4",      editable: false, align:"left", width:100},
-    { field: "userCol5",          headerName: "사용자컬럼5",       editable: false, align:"left", width:100},
+    { field: "obPlanYmd",         headerName: "출고예정일자",     editable: false, align:"left", width:150,
+      // valueSetter: (params) => {return GridDateSetField(params, 'dealEndYmd');},
+      renderCell: (params) => <GridDateRenderField params={params} />,
+    },
+    { field: "obYmd",             headerName: "출고일자",       editable: false, align:"left", width:150,
+      // valueSetter: (params) => {return GridDateSetField(params, 'dealEndYmd');},
+      renderCell: (params) => <GridDateRenderField params={params} />,
+    },
+    { field: "storeNm",           headerName: "배송처",         editable: false, align:"left", width:250},
+    // { field: "carNo",             headerName: "차량번호",       editable: false, align:"left", width:100},
+    // { field: "userCol1",          headerName: "사용자컬럼1",      editable: false, align:"left", width:100},
+    // { field: "userCol2",          headerName: "사용자컬럼2",      editable: false, align:"left", width:100},
+    // { field: "userCol3",          headerName: "사용자컬럼3",      editable: false, align:"left", width:100},
+    // { field: "userCol4",          headerName: "사용자컬럼4",      editable: false, align:"left", width:100},
+    // { field: "userCol5",          headerName: "사용자컬럼5",       editable: false, align:"left", width:100},
     { field: "useYnNm",             headerName: "사용여부",         editable: false, align:"left", width:100},
     { field: "remark",            headerName: "비고",               editable: false, align:"left", width:300},
   ];
   //출고전표컬럼
   const columnsDtl = [
     { field: "id",                headerName: "ID",             editable:false, align:"center", width:20},
-    { field: "obDetailSeq",       headerName: "순번",       editable: false, align:"right", width:60},
-    { field: "obProgStNm",        headerName: "진행상태",   editable: false, align:"left", width:100},
-    { field: "itemCd",            headerName: "상품코드",   editable: false, align:"left", width:100},
-    { field: "itemNm",             headerName: "상품명",   editable: false, align:"left", width:300},
-    { field: "itemStNm",          headerName: "상품상태",   editable: false, align:"left", width:100},
+    // { field: "obNo",              headerName: "출고번호",         editable: false, align:"left", width:100, hidden:true},
+    // { field: "dcCd",              headerName: "물류창고코드",      editable: false, align:"left", width:100, hidden:true},
+    // { field: "clientCd",          headerName: "고객사코드",       editable: false, align:"left", width:100, hidden:true},
+    { field: "obDetailSeq",       headerName: "순번",           editable: false, align:"right", width:60},
+    { field: "obProgStNm",        headerName: "진행상태",         editable: false, align:"left", width:100},
+    { field: "itemCd",            headerName: "상품코드",         editable: false, align:"left", width:100},
+    { field: "itemNm",             headerName: "상품명",        editable: false, align:"left", width:250},
+    { field: "itemStNm",          headerName: "상품상태",         editable: false, align:"left", width:100},
 
-    { field: "pkqty",             headerName: "입수",      editable: false,  align:"center", width:100,},
-    { field: "planTotQty",           headerName: "예정(총)",   editable: false, align:"right", width:100},
-    { field: "planBoxQty",           headerName: "예정(박스)",   editable: false, align:"right", width:100},
-    { field: "planEaQty",           headerName: "예정(낱개)",   editable: false, align:"right", width:100},
-    { field: "allotTotQty",           headerName: "할당(총)",   editable: false, align:"right", width:100},
+    { field: "pkqty",             headerName: "입수",           editable: false,  align:"center", width:100,
+      valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
+    },
+    { field: "planTotQty",           headerName: "예정(총)",    editable: false, align:"right", width:100,
+      valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
+    },
+    { field: "planBoxQty",           headerName: "예정(박스)",   editable: false, align:"right", width:100,
+      valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
+    },
+    { field: "planEaQty",           headerName: "예정(낱개)",     editable: false, align:"right", width:100,
+      valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
+    },
+    { field: "allotTotQty",           headerName: "할당(총)",   editable: false, align:"right", width:100,
+      valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
+    },
     { field: "allotBoxQty",           headerName: "할당(박스)",   editable: true, align:"right", width:100,
       valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
     },
     { field: "allotEaQty",           headerName: "할당(낱개)",   editable: true, align:"right", width:100,
       valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
     },
-    { field: "obCost",            headerName: "출고단가",   editable: false, align:"right", width:100,
+    { field: "obCost",            headerName: "출고단가",       editable: false, align:"right", width:100,
       valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
     },
-    { field: "obVat",             headerName: "출고VAT",   editable: false, align:"right", width:100,
+    { field: "obVat",             headerName: "출고VAT",        editable: false, align:"right", width:100,
       valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
     },
-    { field: "obAmt",             headerName: "출고금액",   editable: false, align:"right", width:100,
+    { field: "obAmt",             headerName: "출고금액",         editable: false, align:"right", width:100,
       valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
     },
-    { field: "makeLot",           headerName: "제조LOT",   editable: false, align:"left", width:100},
-    { field: "makeYmd",           headerName: "제조일자",   editable: false, align:"left", width:100},
-    { field: "distExpiryYmd",     headerName: "유통기한일자",   editable: false, align:"left", width:100},
-    { field: "lotId",             headerName: "LOT_ID",   editable: false, align:"left", width:100},
+    { field: "makeLot",           headerName: "제조LOT",        editable: false, align:"left", width:150},
+    { field: "makeYmd",           headerName: "제조일자",        editable: false, align:"left", width:150,
+      // valueSetter: (params) => {return GridDateSetField(params, 'dealEndYmd');},
+      renderCell: (params) => <GridDateRenderField params={params} />,
+    },
+    { field: "distExpiryYmd",     headerName: "유통기한일자",     editable: false, align:"left", width:150,
+      // valueSetter: (params) => {return GridDateSetField(params, 'dealEndYmd');},
+      renderCell: (params) => <GridDateRenderField params={params} />,
+    },
+    { field: "lotId",             headerName: "LOT_ID",         editable: false, align:"left", width:100},
     { field: "useYnNm",           headerName: "사용여부",         editable: false, align:"left", width:100},
-    { field: "remark",            headerName: "비고",               editable: false, align:"left", width:300},
+    { field: "remark",            headerName: "비고",            editable: false, align:"left", width:300},
   ];
 
   //조회조건
@@ -142,7 +160,7 @@ export default function OutboundAllot() {
   const [valuesDtl, setValuesDtl] = useState(initDataDtl);
 
   useEffect(() => {
-  }, []);
+  }, [dataList, dataDtlList]);
 
 
   //조회
@@ -195,16 +213,16 @@ export default function OutboundAllot() {
 
 
 
-  //출고지시 클릭(상세)
+  //출고할당 클릭(상세)
   function onClickAllotCompl(){
-    openModal('', '',  '출고지시 하시겠습니까?', 
+    openModal('', '',  '출고할당 하시겠습니까?', 
       () => {
         var rowData = gvGetRowData(dataList, selRowId);
 
         //로케이션 저장
         client.post(`${PRO_URL}/saveAllotCompt`,rowData, {})
           .then(res => {
-            openModal('', 'I', '출고지시 되었습니다.');
+            openModal('', 'I', '출고할당 되었습니다.');
             fnSearch();
           }).catch(error => { 
             console.log('error = '+error); 
@@ -213,17 +231,56 @@ export default function OutboundAllot() {
     );
   }
 
-  //출고지시취소 클릭(상세)
+  //출고할당취소 클릭(상세)
   function onClickAllotComplCncl(){
-    openModal('', '',  '출고지시취소 하시겠습니까?', 
+    openModal('', '',  '출고할당취소 하시겠습니까?', 
       () => {
         var rowData = gvGetRowData(dataList, selRowId);
 
         //로케이션 저장
         client.post(`${PRO_URL}/saveAllotComptCncl`,rowData, {})
           .then(res => {
-            openModal('', 'I', '출고지시취소 되었습니다.');
+            openModal('', 'I', '출고할당취소 되었습니다.');
             fnSearch();
+          }).catch(error => { 
+            console.log('error = '+error); 
+          })
+      }
+    );
+  }
+
+
+  //할당 클릭(상세)
+  function onClickItemAllot(){
+    openModal('', '',  '할당 하시겠습니까?', 
+      () => {
+        const formData = gvGetRowData(dataList, selRowId);
+        formData.data = dtlChkRows;
+
+        //로케이션 저장
+        client.post(`${PRO_URL}/saveAllotByItem`,formData, {})
+          .then(res => {
+            openModal('', 'I', '할당 되었습니다.');
+            fnSearchDtl();
+          }).catch(error => { 
+            console.log('error = '+error); 
+          })
+      }
+    );
+  }
+
+  //할당취소 클릭(상세)
+  function onClickItemAllotCncl(){
+    openModal('', '',  '할당취소 하시겠습니까?', 
+      () => {
+        const formData = gvGetRowData(dataList, selRowId);
+        formData.data = dtlChkRows;
+
+        //로케이션 저장
+        client.post(`${PRO_URL}/saveAllotCnclByItem`,formData, {})
+          .then(res => {
+            openModal('', 'I', '할당취소 되었습니다.');
+            fnSearchDtl();
           }).catch(error => { 
             console.log('error = '+error); 
           })
@@ -293,7 +350,12 @@ export default function OutboundAllot() {
         type={"single"}
       />
 
+
       <ComDeGrid
+        onClickCustom1={onClickItemAllot}
+        onClickCustomNm1={'할당'}
+        onClickCustom2={onClickItemAllotCncl}
+        onClickCustomNm2={'할당취소'}
 
         title={"Outbound Detail List"} //제목
         dataList={dataDtlList} //dataList
@@ -308,7 +370,6 @@ export default function OutboundAllot() {
         onChangeChks={(chkRows)=>{
           if(chkRows.length == 0) return;
           dtlChkRows = chkRows;
-          // console.log(chkRows)
         }}
       />
     </>

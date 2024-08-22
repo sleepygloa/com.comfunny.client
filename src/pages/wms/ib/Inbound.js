@@ -65,7 +65,7 @@ export default function Inbound() {
       {activeTab === 0 && <InboundInq />}
       {activeTab === 1 && <InboundPlan />}
       {activeTab === 2 && <InboundExam />}
-      {activeTab === 3 && <InboundInst title={""} refVal1={"IB"}/>}
+      {activeTab === 3 && <InboundInst title={""} refVal1={"IB_INST"}/>}
     </>
   );
 }

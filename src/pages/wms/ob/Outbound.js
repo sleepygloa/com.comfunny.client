@@ -24,6 +24,7 @@ import {useModal} from "../../../context/ModalContext.js";
 import OutboundInq from "./OutboundInq.js";
 import OutboundPlan from "./OutboundPlan.js";
 import OutboundAllot from "./OutboundAllot.js";
+import OutboundInst from "../st/StockMove.js";
 import OutboundPicking from "./OutboundPicking.js";
 
 export default function Inbound() {
@@ -35,6 +36,7 @@ export default function Inbound() {
   const tabsData = [
     { label: '출고현황', badgeContent: 0 },
     { label: '출고예정', badgeContent: 0 },
+    { label: '출고할당', badgeContent: 0 },
     { label: '출고지시', badgeContent: 0 },
     { label: '출고피킹', badgeContent: 0 },
     { label: '출고상차', badgeContent: 0 },
@@ -67,7 +69,8 @@ export default function Inbound() {
       {activeTab === 0 && <OutboundInq />}
       {activeTab === 1 && <OutboundPlan />}
       {activeTab === 2 && <OutboundAllot />}
-      {activeTab === 3 && <OutboundPicking />}
+      {activeTab === 3 && <OutboundInst title={""} refVal1={"OB_INST"}/>}
+      {activeTab === 4 && <OutboundPicking />}
     </>
   );
 }

@@ -320,9 +320,9 @@ export default function OutboundInst() {
       <ComDeGrid
         onClickSelect={onClickSelect} 
         onClickCustom1={onClickAllotCompl}
-        onClickCustomNm1={'지시완료'}
+        onClickCustomNm1={'할당완료'}
         onClickCustom2={onClickAllotComplCncl}
-        onClickCustomNm2={'지시완료취소'}
+        onClickCustomNm2={'할당완료취소'}
         searchBarChildren={
           <>
             <SchTextField id="obNo" label='출고번호/명'

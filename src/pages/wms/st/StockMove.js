@@ -65,7 +65,7 @@ export default function StockMove(props) {
     // { field: "dcCd",              headerName: "물류창고",      editable: false, align:"left", width:120},
     { field: "dcNm",              headerName: "물류창고",      editable: false, align:"left", width:120},
     // { field: "clientCd",          headerName: "고객사코드",       editable: false, align:"left", width:120},
-    { field: "clientNm",          headerName: "고객사",       editable: false, align:"left", width:120},
+    // { field: "clientNm",          headerName: "고객사",       editable: false, align:"left", width:120},
     { field: "moveNo",            headerName: "재고이동번호",   editable: false, align:"left", width:150},
     // { field: "ibGbnCd",           headerName: "입고구분코드",     editable: false, align:"left", width:120},
     { field: "workYmd",           headerName: "작업일",       editable: false, align:"left", width:150,
@@ -76,9 +76,7 @@ export default function StockMove(props) {
     { field: "moveGbnNm",         headerName: "이동구분명",     editable: false, align:"left", width:100},
     { field: "workStNm",          headerName: "이동상태명",     editable: false, align:"left", width:100},
     
-    { field: "refVal1",           headerName: "참조값1",     editable: false, align:"left", width:100},
-    { field: "refVal2",           headerName: "참조값2",     editable: false, align:"left", width:150},
-    { field: "refVal3",           headerName: "참조값3",     editable: false, align:"left", width:100},
+    // { field: "refVal1",           headerName: "참조값1",     editable: false, align:"left", width:100},
     { field: "remark",            headerName: "비고",       editable: false, align:"left", width:500},
   ];
   //재고이동상세
@@ -112,9 +110,7 @@ export default function StockMove(props) {
 
     { field: "workDt",            headerName: "작업일시",      editable: false,  align:"center", width:100,},
     { field: "workUserId",        headerName: "작업자",       editable: false, align:"center", width:100},
-    { field: "refVal1",           headerName: "참조값1",      editable: false, align:"left", width:100},
-    { field: "refVal2",           headerName: "참조값2",      editable: false, align:"left", width:150},
-    { field: "refVal3",           headerName: "참조값3",      editable: false, align:"right", width:100},
+    // { field: "refVal1",           headerName: "참조값1",      editable: false, align:"left", width:100},
     { field: "remark",            headerName: "비고",               editable: false, align:"left", width:300},
   ];
 
@@ -259,7 +255,7 @@ export default function StockMove(props) {
 
   //로케이션찾기 팝업
   const openPopupFindToLocCd = () => {
-    openModal('FIND_TO_LOC', '로케이션 찾기', <StockMoveLocPop refVal1={"IB_INST"} />, handleAddressUpdate, '800px', '600px');
+    openModal('FIND_TO_LOC', '로케이션 찾기', <StockMoveLocPop refVal1={refVal1} />, handleAddressUpdate, '800px', '600px');
   }
 
   //로케이션찾기 팝업 콜백함수

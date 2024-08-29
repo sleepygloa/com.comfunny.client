@@ -172,6 +172,8 @@ export default function InboundPlan() {
 
   //조회
   const fnSearch = () => {
+    setDataDtlList([]);
+
     var data = {
       ibNo : schValues.ibNo,
       ibPlanYmd : schValues.ibPlanYmd,

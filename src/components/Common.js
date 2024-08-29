@@ -121,7 +121,8 @@ export function gvDataGridAddRowAndStatus(dataList, data, addData){
         const newRow = {
             ...item,
             ...addData,
-            "modFlag" : "I"
+            "modFlag" : "I",
+            "id" : dataList.length + index + 1
         };
         newDataList.push(newRow);  // 새 리스트에 추가
     });

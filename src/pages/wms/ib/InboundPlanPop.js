@@ -333,6 +333,7 @@ export default function InboundPlanPop(props) {
             };
             // Calculate new volume
             newFieldValues.planTotQty = newFieldValues.planBoxQty * newFieldValues.pkqty + newFieldValues.planEaQty;
+            newFieldValues.planQty = newFieldValues.planBoxQty * newFieldValues.pkqty + newFieldValues.planEaQty;
             return newFieldValues;
           }
           return row;

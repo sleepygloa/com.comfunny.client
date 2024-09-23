@@ -34,10 +34,12 @@ import { useCommonData } from "../../../context/CommonDataContext.js";
 
 //Modal
 import {useModal} from "../../../context/ModalContext.js";
+import { a } from 'react-spring';
+import zIndex from '@mui/material/styles/zIndex.js';
 
 export default function InboundPlan() {
-  const {menuTitle} = '제품별 재고조회';
-  const PRO_URL = '/wms/st/stockInqueryByItem';
+  const {menuTitle} = '로케이션별 재고조회';
+  const PRO_URL = '/wms/st/stockInqueryByLoc';
   const {openModal} = useModal();
   const { cmmnCdData, getCmbOfGlobalData } = useCommonData();
 
@@ -55,6 +57,9 @@ export default function InboundPlan() {
     { field: "id",                headerName: "ID",             editable:false, align:"center", width:20},
     { field: "dcNm",              headerName: "물류창고",        editable: false, align:"left", width:120},
     { field: "clientNm",          headerName: "고객사",         editable: false, align:"left", width:120},
+    // { field: "areaNm",             headerName: "구역",         editable: false, align:"left", width:120},
+    // { field: "zoneNm",             headerName: "존",         editable: false, align:"left", width:120},
+    { field: "locCd",             headerName: "로케이션",         editable: false, align:"left", width:120},
     { field: "itemCd",            headerName: "상품코드",       editable: false, align:"left", width:120},
     { field: "itemNm",            headerName: "상품명",        editable: false, align:"left", width:300},
     { field: "itemStNm",          headerName: "상품상태",       editable: false, align:"left", width:120},
@@ -138,27 +143,31 @@ export default function InboundPlan() {
 
   return (
     <>
-      <PageTitle title={"제품별 재고현황"}  />
+      <PageTitle title={"로케이션별 재고현황"}  />
       <ComDeGrid
         onClickSelect={onClickSelect} 
         searchBarChildren={
           <>
-          <SchTextField id="dcCd" label='물류센터'
-            div={"4"}
-            onChange={onChangeSearch} 
-            onKeyDown={onKeyDown} />  
-          <SchTextField id="clientCd" label='고객사'
+            <SchTextField id="dcCd" label='물류센터'
               div={"4"}
               onChange={onChangeSearch} 
               onKeyDown={onKeyDown} />  
-          <SchTextField id="itemCd" label='상품'
-              div={"4"}
-              onChange={onChangeSearch} 
-              onKeyDown={onKeyDown} />  
+            <SchTextField id="clientCd" label='고객사'
+                div={"4"}
+                onChange={onChangeSearch} 
+                onKeyDown={onKeyDown} />  
+            <SchTextField id="itemCd" label='상품'
+                div={"4"}
+                onChange={onChangeSearch} 
+                onKeyDown={onKeyDown} />  
+            <SchTextField id="locCd" label='로케이션'
+                div={"4"}
+                onChange={onChangeSearch} 
+                onKeyDown={onKeyDown} />  
           </>
         }
 
-        title={"StockInqueryByItem List"} //제목
+        title={"StockInqueryByLoc List"} //제목
         dataList={dataList} //dataList
         columns={columns} //컬럼 정의
         height={"500px"}

@@ -34,6 +34,7 @@ import IbInbound from "../pages/wms/ib/Inbound.js";
 //재고
 import StStockMove from "../pages/wms/st/StockMove.js";
 import StStockInqueryByItem from "../pages/wms/st/StockInqueryByItem.js";
+import StStockInqueryByLoc from "../pages/wms/st/StockInqueryByLoc.js";
 
 //출고
 import ObOutbound from "../pages/wms/ob/Outbound.js";
@@ -75,6 +76,7 @@ export default function App() {
 
         <Route exact path="/wms/st/stockMove" render={()=><BlogLayout props={<StStockMove />}></BlogLayout>} />
         <Route exact path="/wms/st/stockInqueryByItem" render={()=><BlogLayout props={<StStockInqueryByItem />}></BlogLayout>} />
+        <Route exact path="/wms/st/stockInqueryByLoc" render={()=><BlogLayout props={<StStockInqueryByLoc />}></BlogLayout>} />
 
         <Route exact path="/wms/ob/outbound" render={()=><BlogLayout props={<ObOutbound />}></BlogLayout>} />
         {/* <Route

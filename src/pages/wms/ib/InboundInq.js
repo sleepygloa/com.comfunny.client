@@ -34,7 +34,7 @@ import {useModal} from "../../../context/ModalContext.js";
 import InboundPlanPop from "./InboundPlanPop.js";
 
 export default function InboundInq() {
-  const {menuTitle} = '입고예정';
+  const {menuTitle} = '입고현황';
   const PRO_URL = '/wms/ib/inboundInq';
   const {openModal} = useModal();
   const { cmmnCdData, getCodesCmbByGroupCode } = useCommonData();

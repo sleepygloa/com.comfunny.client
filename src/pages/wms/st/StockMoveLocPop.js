@@ -46,6 +46,9 @@ export default function StockMoveLocPop(props) {
   ];
 
   useEffect(() => {
+    // Fetch data or adjust state based on activeTab
+    if(dataList.length == 0) fnSearch();
+    
   }, [selRowId, dataList]);
 
 
@@ -97,6 +100,7 @@ export default function StockMoveLocPop(props) {
           columns={columns} //컬럼 정의
           //Event
           onRowClick={(params)=>{setSelRowId(params.id)}}
+          onCellDbClick={(params)=>{setSelRowId(params.id); handleSubmit()}}
           // onCellEditCommit={React.useCallback((params) => {dataList[params.id-1][params.field] = params.value;},[dataList])} //쎌변경시 데이터변경
           
           //Multi

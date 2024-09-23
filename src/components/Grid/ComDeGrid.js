@@ -10,6 +10,13 @@ import { gvGetRowDataListOfChk } from "../Common.js";
 
 export const ComDeGrid = (props) =>{
 
+  const [selectedIds, setSelectedIds] = React.useState([]);
+
+
+  useEffect(() => {
+    //데이터 리스트 변경시 체크박스 초기화
+    setSelectedIds([]);
+  }, [props.dataList]);
   var chkRows = [];
 
   const title = (props.title) ? props.title : "Data List";
@@ -22,6 +29,7 @@ export const ComDeGrid = (props) =>{
   function handleSelectionChange(ids, func) {
     // if(props.setSelRowId) props.setSelRowId(ids);
     chkRows = gvGetRowDataListOfChk(props.dataList, ids)
+    setSelectedIds(ids);
     if(func) func(chkRows);
   }
 
@@ -63,6 +71,8 @@ export const ComDeGrid = (props) =>{
     
               onRowClick={props.onRowClick ? props.onRowClick : null}
               onCellClick={props.onCellClick ? props.onCellClick : null}
+              onCellDoubleClick={props.onCellDbClick ? props.onCellDbClick : null}
+
               // onCellClick={handleGridCellClick}
               // selectionModel={props.selRowId} //쎌선택 변수지정
               onCellEditCommit={props.onCellEditCommit ? props.onCellEditCommit : null} //쎌변경시 데이터변경
@@ -93,7 +103,8 @@ export const ComDeGrid = (props) =>{
               onCellEditCommit={props.onCellEditCommit ? props.onCellEditCommit : null} //쎌변경시 데이터변경
 
               checkboxSelection
-              disableSelectionOnClick
+              disableSelectionOnClick={true}
+              selectionModel={selectedIds}
               onSelectionModelChange={(ids) => {handleSelectionChange(ids, props.onChangeChks); }}
             />
           : ''

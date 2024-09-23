@@ -248,7 +248,9 @@ export default function StockMove(props) {
   //쎌클릭 핸들링
   const handleGridCellClick = React.useCallback((e) => {
     selDtlRowId = e.id;
-    if (e.field === 'toLocCd') {
+    //로케이션 찾기 팝업
+    //TO_LOC_CD 클릭 및 작업상태가 10일때
+    if (e.field === 'toLocCd' && e.row.workStCd == '10') {
       openPopupFindToLocCd();
     }
   }  ,[dataDtlList])

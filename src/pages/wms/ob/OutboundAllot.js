@@ -101,10 +101,10 @@ export default function OutboundInst() {
     { field: "allotTotQty",           headerName: "할당(총)",   editable: false, align:"right", width:100,
       valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
     },
-    { field: "allotBoxQty",           headerName: "할당(박스)",   editable: true, align:"right", width:100,
+    { field: "allotBoxQty",           headerName: "할당(박스)",   editable: false, align:"right", width:100,
       valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
     },
-    { field: "allotEaQty",           headerName: "할당(낱개)",   editable: true, align:"right", width:100,
+    { field: "allotEaQty",           headerName: "할당(낱개)",   editable: false, align:"right", width:100,
       valueFormatter: (params) => gvGridFieldNumberFormatter(params.value),
     },
     { field: "obCost",            headerName: "출고단가",       editable: false, align:"right", width:100,
@@ -261,7 +261,7 @@ export default function OutboundInst() {
         client.post(`${PRO_URL}/saveAllotByItem`,formData, {})
           .then(res => {
             openModal('', 'I', '할당 되었습니다.');
-            fnSearchDtl();
+            fnSearchDtl(gvGetRowData(dataList, selRowId));
           }).catch(error => { 
             console.log('error = '+error); 
           })
@@ -280,7 +280,7 @@ export default function OutboundInst() {
         client.post(`${PRO_URL}/saveAllotCnclByItem`,formData, {})
           .then(res => {
             openModal('', 'I', '할당취소 되었습니다.');
-            fnSearchDtl();
+            fnSearchDtl(gvGetRowData(dataList, selRowId));
           }).catch(error => { 
             console.log('error = '+error); 
           })
@@ -302,6 +302,7 @@ export default function OutboundInst() {
             };
             // Calculate new volume
             newFieldValues.allotTotQty = newFieldValues.allotBoxQty * newFieldValues.pkqty + newFieldValues.allotEaQty;
+            newFieldValues.allotQty = newFieldValues.allotBoxQty * newFieldValues.pkqty + newFieldValues.allotEaQty;
             return newFieldValues;
           }
           return row;

@@ -75,14 +75,9 @@ export function gvGetRowData(data, id){
 
     for(var i = 0; i < data.length; i++){
         if(data[i].id === id){
-
             //키가 TelNo, faxNo 인 경우 값 변경
             if(isNotEmpty(data[i].TelNo)) data[i].TelNo = gvGridFieldFormatPhoneNumber(data[i].TelNo);
             if(isNotEmpty(data[i].FaxNo)) data[i].FaxNo = gvGridFieldFormatFaxNumber(data[i].FaxNo);
-
-            console.log(data[i])
-
-
         return data[i]
         }
     }

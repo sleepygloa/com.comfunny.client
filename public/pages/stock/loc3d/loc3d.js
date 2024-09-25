@@ -79,13 +79,17 @@ var warehouse = function (container){
         container.appendChild( warehouse.renderer.domElement );
 
 
+		warehouse.INTERSECTED;	// 선택된 객체
+	    warehouse.mouse = new THREE.Vector2();
+        warehouse.raycaster = new THREE.Raycaster();
+
         //카메라 컨트롤러 생성
         warehouse.cameraControls = function () {
 			warehouse.controls = new THREE.OrbitControls( warehouse.camera, warehouse.renderer.domElement );
 			warehouse.controls.rotateSpeed = 0.5; 				// 마우스로 카메라를 회전시킬 속도입니다. 기본값(Float)은 1입니다.
 			warehouse.controls.zoomSpeed = 1; 					// 마우스 휠로 카메라를 줌 시키는 속도 입니다. 기본값(Float)은 1입니다.
 			warehouse.controls.panSpeed = 1; 					// 패닝 속도 입니다. 기본값(Float)은 1입니다.
-			warehouse.controls.minDistance = 10; 				// 마우스 휠로 카메라 거리 조작시 최소 값. 기본값(Float)은 0 입니다.
+			warehouse.controls.minDistance = 5; 				// 마우스 휠로 카메라 거리 조작시 최소 값. 기본값(Float)은 0 입니다.
 			warehouse.controls.maxDistance = 2500; 				// 마우스 휠로 카메라 거리 조작시 최대 값. 기본값(Float)은 무제한 입니다.
 			warehouse.controls.minPolarAngle = 0;				// 상하 각도조절 제약
 			warehouse.controls.maxPolarAngle = Math.PI/2;		// 상하 각도조절 제약
@@ -110,278 +114,58 @@ var warehouse = function (container){
         }
         
         //마우스 이벤트 
-        warehouse.onClick = function() {
-            window.addEventListener('click', function(event) {
-                const raycaster = new THREE.Raycaster();
-                const mouse = new THREE.Vector2();
-                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-                mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
-                raycaster.setFromCamera(mouse, warehouse.camera);
-                const intersects = raycaster.intersectObjects(warehouse.scene.children, true);
-                if (intersects.length > 0) {
-                    console.log(intersects[0].object.name);
+        warehouse.onMouseDown = function(e) {
+
+            // 객체를 클릭했을경우 반응
+            event.preventDefault();
+            warehouse.mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+            warehouse.mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+            warehouse.raycaster.setFromCamera( warehouse.mouse, warehouse.camera );
+
+            var intersects = warehouse.raycaster.intersectObjects( warehouse.scene.children );
+            if( intersects.length > 0 ) {
+                // 마우스 왼쪽버튼
+                if( e.button == 0 ){
+                    if( warehouse.INTERSECTED != intersects[ 0 ].object ) {
+                        console.log(intersects[ 0 ].object.type, intersects[ 0 ].object.name)
+                        if( intersects[ 0 ].object.type == 'box'){
+
+                            // 이미 연동되어 있는 객체를 해제
+                            if( warehouse.INTERSECTED && warehouse.INTERSECTED_COVER ) {
+                                warehouse.scene.remove( warehouse.INTERSECTED_COVER );
+                            }
+
+                            // 새로운 객체를 연동
+                            if( intersects[ 0 ].object.type == 'box' ){
+                                warehouse.INTERSECTED = intersects[ 0 ].object;
+                            }
+
+                            // callback 으로 정의된 함수 호출
+                            warehouse.INTERSECTED.callback( intersects[0].object );
+                            
+                            //=============================================================
+                            // 재고객체의 경우 material array 를 사용하면서 성능향상을 위해 전역변수로 설정하여 material 를 부분적으로 컨트롤 할 수 없다
+                            // 그러기에 선택 객체와 동일한 cover 객체를 생성하여 선택효과를 준다.
+                            var cover_geometry = new THREE.BoxGeometry(1, 1, 1);
+                            var cover_object = new THREE.Mesh( cover_geometry, new THREE.MeshBasicMaterial( { color: 0xff0000 } ) );
+                            cover_object.position.x = warehouse.INTERSECTED.position.x;
+                            cover_object.position.y = warehouse.INTERSECTED.position.y;
+                            cover_object.position.z = warehouse.INTERSECTED.position.z;
+                            cover_object.material.opacity = 0.5;			// 투명도
+                            cover_object.material.transparent = true;		// transparent: 투명
+
+                            warehouse.scene.add( cover_object );
+                            
+                            warehouse.INTERSECTED_COVER = cover_object;
+                            //=============================================================
+                        }
+                    }
                 }
-            });
-        }
-
-
-        //키보드 이벤트
-        warehouse.onKeyDown = function() {
-            window.addEventListener('keydown', function(event) {
-                switch (event.key) {
-                    case 'ArrowUp':
-                        warehouse.camera.position.z -= 1;
-                        break;
-                    case 'ArrowDown':
-                        warehouse.camera.position.z += 1;
-                        break;
-                    case 'ArrowLeft':
-                        warehouse.camera.position.x -= 1;
-                        break;
-                    case 'ArrowRight':
-                        warehouse.camera.position.x += 1;
-                        break;
-                }
-            });
-        }
-
-
-
-
-
-        //창고 바닥 생성
-        {
-            const minX = dcData[0].std_loc_x;
-            const maxX = dcData[0].std_width;
-            const minY = dcData[0].std_loc_y;
-            const maxY = dcData[0].std_length;
-
-            createPlaneGeometry(warehouse.scene, minX, maxX, minY, maxY, 0x156289, 'ShowBottom', 0.01)
-
-            // 격자 추가
-            const gridHelper = new THREE.GridHelper(maxX*1.5, 20);
-            gridHelper.position.y = 0.01;
-            warehouse.scene.add(gridHelper);
-        }
-        {
-            //입고구역
-            const minX = areaData[0].std_loc_x;
-            const maxX = areaData[0].std_width;
-            const minY = areaData[0].std_loc_y;
-            const maxY = areaData[0].std_length;
-
-            createPlaneGeometry(warehouse.scene, minX, maxX, minY, maxY, 0xE5E1DA, 'Area', 0.02)
-        }
-        {
-            //보관구역
-            const minX = areaData[1].std_loc_x;
-            const maxX = areaData[1].std_width;
-            const minY = areaData[1].std_loc_y;
-            const maxY = areaData[1].std_length;
-
-            createPlaneGeometry(warehouse.scene, minX, maxX, minY, maxY, 0xFBF9F1, 'Area', 0.02)
-        }
-        {
-            //출고구역
-            const minX = areaData[2].std_loc_x;
-            const maxX = areaData[2].std_width;
-            const minY = areaData[2].std_loc_y;
-            const maxY = areaData[2].std_length;
-
-            createPlaneGeometry(warehouse.scene, minX, maxX, minY, maxY, 0xE5E1DA, 'Area', 0.02)
-        }
-        {
-            //입고대기존
-            const minX = zoneData[0].std_loc_x;
-            const maxX = zoneData[0].std_width;
-            const minY = zoneData[0].std_loc_y;
-            const maxY = zoneData[0].std_length;
-
-            createPlaneGeometry(warehouse.scene, minX, maxX, minY, maxY, 0x3A4D39, 'Zone', 0.04)
-        }
-        {
-            //입고검수존
-            const minX = zoneData[1].std_loc_x;
-            const maxX = zoneData[1].std_width;
-            const minY = zoneData[1].std_loc_y;
-            const maxY = zoneData[1].std_length;
-
-            createPlaneGeometry(warehouse.scene, minX, maxX, minY, maxY, 0x739072, 'Zone', 0.04)
-        }
-        {
-            //보관1
-            const minX = zoneData[2].std_loc_x;
-            const maxX = zoneData[2].std_width;
-            const minY = zoneData[2].std_loc_y;
-            const maxY = zoneData[2].std_length;
-
-            createPlaneGeometry(warehouse.scene, minX, maxX, minY, maxY, 0x8D493A, 'Zone', 0.04)
-        }
-        {
-            //보관2
-            const minX = zoneData[3].std_loc_x;
-            const maxX = zoneData[3].std_width;
-            const minY = zoneData[3].std_loc_y;
-            const maxY = zoneData[3].std_length;
-
-            createPlaneGeometry(warehouse.scene, minX, maxX, minY, maxY, 0x8D493A, 'Zone', 0.04)
-        }
-        {
-            //출고피킹존
-            const minX = zoneData[4].std_loc_x;
-            const maxX = zoneData[4].std_width;
-            const minY = zoneData[4].std_loc_y;
-            const maxY = zoneData[4].std_length;
-
-            createPlaneGeometry(warehouse.scene, minX, maxX, minY, maxY, 0xC8DBBE, 'Zone', 0.04)
-        }
-        {
-            //출고상차존
-            const minX = zoneData[5].std_loc_x;
-            const maxX = zoneData[5].std_width;
-            const minY = zoneData[5].std_loc_y;
-            const maxY = zoneData[5].std_length;
-
-            createPlaneGeometry(warehouse.scene, minX, maxX, minY, maxY, 0xC8DBBE, 'Zone', 0.04)
-        }
-
-
-        {
-            //지게차 로드
-            const loader2 = new THREE.OBJLoader();
-            loader2.load('./images/vr/model/low/forklift/forklift.obj', function (object) {
-                object.scale.set(ModelInfo.forklift_scale_x, ModelInfo.forklift_scale_y, ModelInfo.forklift_scale_z);
-                object.position.set(ModelInfo.gltfX, ModelInfo.gltfY, ModelInfo.gltfZ)
-                warehouse.scene.add(object);
-            }, function (xhr) {
-                // 모델이 로드되는 동안 호출되는 함수
-                console.log(xhr.loaded / xhr.total * 100, '% loaded');
-            }, function (error) {
-                // 모델 로드가 실패했을 때 호출하는 함수                    
-                alert('모델을 로드 중 오류가 발생하였습니다.');
-            });
-        }
-        {
-            const maxX = dcData[0].std_width;
-            const maxY = dcData[0].std_length;
-            const matrix = createMatrixArrData(dcData[0].std_loc_x, maxX, dcData[0].std_loc_y, maxY);
-
-            var locMatrixArr = createMatrixDataFromList(matrix, locData);
-            var locMatrix = createMatrixArrToData(locMatrixArr);
-
-            var validLocArr = getValidDataOfMatrixData(locMatrixArr, 1);
-            //랙 생성
-            var rackGroup = new THREE.Group();
-            rackGroup.name = 'RackGroup';
-            for(let i = 0; i < validLocArr.length; i++){
-                var rack = addShelf({
-                    seq : i+1,
-                    rackX : WarehouseInfo.warehouse_std_x + validLocArr[i].x,
-                    rackZ : WarehouseInfo.warehouse_std_y + validLocArr[i].y,
-                    rackWidth : ModelInfo.rack_size_width,
-                    rackLength : ModelInfo.rack_size_length,
-                    rackFloor : 1,
-                });
-                rackGroup.add(rack);
             }
-            var validLocArrTwo = getValidDataOfMatrixData(locMatrixArr, 2);
-            //랙 생성
-            for(let i = 0; i < validLocArrTwo.length; i++){
-                var rack = addShelf({
-                    seq : i+1,
-                    rackX : WarehouseInfo.warehouse_std_x + validLocArrTwo[i].x,
-                    rackZ : WarehouseInfo.warehouse_std_y + validLocArrTwo[i].y,
-                    rackWidth : ModelInfo.rack_size_width,
-                    rackLength : ModelInfo.rack_size_length,
-                    rackFloor : 2,
-                });
-                rackGroup.add(rack);
-            }
-            var validLocArrThree = getValidDataOfMatrixData(locMatrixArr, 3);
-            //랙 생성
-            for(let i = 0; i < validLocArrThree.length; i++){
-                // console.log(validLocArrTwo[i]);
-                var rack = addShelf({
-                    seq : i+1,
-                    rackX : WarehouseInfo.warehouse_std_x + validLocArrThree[i].x,
-                    rackZ : WarehouseInfo.warehouse_std_y + validLocArrThree[i].y,
-                    rackWidth : ModelInfo.rack_size_width,
-                    rackLength : ModelInfo.rack_size_length,
-                    rackFloor : 3,
-                });
-                rackGroup.add(rack);
-            }
-            warehouse.scene.add(rackGroup);
-            //
         }
 
-
-
-        //바닥 레이어 보기 안보기 설정
-        ShowAll.addEventListener('click', function() {
-            scene.traverse(function(child) {
-                if(child.visible){
-                    child.visible = false;
-                }else{
-                    child.visible = true;
-                }
-            });
-        });
-
-        //바닥 레이어 보기 안보기 설정
-        ShowBottom.addEventListener('click', function() {
-            scene.traverse(function(child) {
-                if(child.name === 'ShowBottom'){
-                    if(child.visible){
-                        child.visible = false;
-                    }else{
-                        child.visible = true;
-                    }
-                }
-            });
-        });
-
-        //구역 레이어 보기 안보기 설정
-        ShowArea.addEventListener('click', function() {
-            scene.traverse(function(child) {
-                if(child.name === 'Area'){
-                    if(child.visible){
-                        child.visible = false;
-                    }else{
-                        child.visible = true;
-                    }
-                }
-            });
-        });
-        //존 레이어 보기 안보기 설정
-        ShowZone.addEventListener('click', function() {
-            scene.traverse(function(child) {
-                if(child.name === 'Zone'){
-                    if(child.visible){
-                        child.visible = false;
-                    }else{
-                        child.visible = true;
-                    }
-                }
-            });
-        });
-        //로케이션랙 레이어 보기 안보기 설정
-        ShowLocationModel.addEventListener('click', function() {
-            scene.traverse(function(child) {
-                if(child.name === 'locationRack'){
-                    if(child.visible){
-                        child.visible = false;
-                    }else{
-                        child.visible = true;
-                    }
-                }
-            });
-        });
+        document.addEventListener( 'mousedown', warehouse.onMouseDown, false );
     })(this);
 }
 
     
-var container = document.querySelector("#loc3dContainer");
-var warehouse = new warehouse(container);
-warehouse.animation();
-warehouse.cameraControls();

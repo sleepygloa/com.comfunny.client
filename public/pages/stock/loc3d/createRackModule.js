@@ -1,4 +1,20 @@
 
+  /** 박스 추가 */
+function addBox(rack) {
+	// 위치
+	let rackPos = {
+		x: rack.x,
+		y: 0.5,
+		z: rack.z,
+	};
+
+	let rackMesh = createBox(rackPos);
+	// let mesh = new THREE.Box3().setFromObject(rackMesh);
+	rackMesh.userData.rackSeq = rack.seq
+	rackMesh.name = "box";
+	return rackMesh;
+}
+
   /** 선반 추가 */
 function addShelf(rack) {
 	// 선반 만들기
@@ -27,9 +43,8 @@ function addShelf(rack) {
 	return rackMesh;
 }
 
-
   /** 선반 추가 */
-  function addFloorShelf(rack) {
+function addFloorShelf(rack) {
 	// 선반 만들기
 	
 	let rackPos = {
@@ -54,7 +69,7 @@ function addShelf(rack) {
 	
 	rackMesh.name = "선반인데요";
 	return rackMesh;
-	}
+}
 
 /** 랙 생성 모듈 함수!! 
  * sizeX => 선반의 가로
@@ -78,7 +93,7 @@ function createRack(sizeX, sizeZ, rackFloor, rackPos) {
 	// MeshBasicMaterial을 MeshPhysicalMaterial로 바꿔볼거에ㅐ용
 	const material = new THREE.MeshPhysicalMaterial({
 		// color:0xf1c2ff
-		color: "#2E2E2E",
+		color: "#efefef",
 		emissive: 0x000000,
 		roughness: 0.5,
 		metalness: 0,
@@ -98,12 +113,10 @@ function createRack(sizeX, sizeZ, rackFloor, rackPos) {
 		clearcoatRoughness: 0,
 		wireframe: false,
 		flatShading: false,
-		opacity: 0.5,
+		opacity: 0.2,
 	})
 
-
 	const boardMesh = new THREE.Mesh(board, board_material);
-
 
 	const pilar1 = new THREE.Mesh(pilar, material);
 	const pilar2 = new THREE.Mesh(pilar, material);
@@ -153,4 +166,33 @@ function createRack(sizeX, sizeZ, rackFloor, rackPos) {
 	// rackUnitGroup.name = "locationRack"
 	rackUnitGroup.position.set(rackPos.x, 0.2, -rackPos.z)
 	return rackUnitGroup;
+}
+
+function createBox(rackPos) {
+
+	const board = new THREE.BoxGeometry(0.8, 0.8, 0.8);
+	const board_material =[
+		new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load('/pages/stock/loc3d/images/vr/imgs/box/box.jpg') }), //front
+		new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load('/pages/stock/loc3d/images/vr/imgs/box/box.jpg') }), //back
+		new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load('/pages/stock/loc3d/images/vr/imgs/box/box.jpg') }), //top
+		new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load('/pages/stock/loc3d/images/vr/imgs/box/box.jpg') }), //bottom
+		new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load('/pages/stock/loc3d/images/vr/imgs/box/box.jpg') }), //right
+		new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load('/pages/stock/loc3d/images/vr/imgs/box/box.jpg') })  //left
+	];
+
+	const boardMesh = new THREE.Mesh(board, board_material);
+	boardMesh.name = "box"
+
+	let rackComponentGroup = new THREE.Group();
+	rackComponentGroup.name = "boxGroup"
+	rackComponentGroup.add(boardMesh);
+
+	const rackUnitGroup = new THREE.Group();
+	rackUnitGroup.add(rackComponentGroup);
+
+	// 수정 필요
+	boardMesh.position.set(rackPos.x-1, 0.6, -rackPos.z+1)
+	// rackUnitGroup.position.set(rackPos.x, 0.2, -rackPos.z)
+	return boardMesh;
+	// return rackUnitGroup;
 }

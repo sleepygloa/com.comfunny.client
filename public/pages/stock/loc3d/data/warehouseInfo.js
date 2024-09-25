@@ -18,7 +18,7 @@ var ModelInfo = {
 
     //바닥위치
     gltfX: 11.5,
-    gltfY: 0.7,
+    gltfY: 0.2,
     gltfZ: 12.25,
 
     //지게차 크기

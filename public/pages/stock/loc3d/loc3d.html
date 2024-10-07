@@ -319,6 +319,7 @@
                         return response.json();
                     })
                     .then(data => {
+                        console.log('success')
                         const maxX = dcData[0].stdWidth;
                         const maxY = dcData[0].stdLength;
                         const matrix = createMatrixArrData(dcData[0].stdLocx, maxX, dcData[0].stdLocy, maxY);

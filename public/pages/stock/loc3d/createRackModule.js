@@ -131,6 +131,10 @@ function createRack(sizeX, sizeZ, rackFloor, rackPos) {
 	const pilarYLen = pilarBox.max.y - pilarBox.min.y;
 	
 
+	// pilar1.position.set(boardBox.min.x, pilarYLen / 2 - pilarYLen * 0.2, boardBox.min.z);
+	// pilar2.position.set(boardBox.max.x, pilarYLen / 2 - pilarYLen * 0.2, boardBox.min.z);
+	// pilar3.position.set(boardBox.max.x, pilarYLen / 2 - pilarYLen * 0.2, boardBox.max.z);
+	// pilar4.position.set(boardBox.min.x, pilarYLen / 2 - pilarYLen * 0.2, boardBox.max.z);
 	pilar1.position.set(boardBox.min.x, boardBox.max.y + pilarYLen / 2 - pilarYLen * 0.2, boardBox.min.z);
 	pilar2.position.set(boardBox.max.x, boardBox.max.y + pilarYLen / 2 - pilarYLen * 0.2, boardBox.min.z);
 	pilar3.position.set(boardBox.max.x, boardBox.max.y + pilarYLen / 2 - pilarYLen * 0.2, boardBox.max.z);
@@ -145,21 +149,35 @@ function createRack(sizeX, sizeZ, rackFloor, rackPos) {
 	// pilar3.material.opacity = 0.5;
 	// pilar4.material.opacity = 0.5;
 
-	let rackComponentGroup = new THREE.Group();
-	const rackUnitGroup = new THREE.Group();
 	
 	boardMesh.name = "locationRack"
-	rackComponentGroup.name = "locationRack"
-	rackComponentGroup.add(boardMesh, pilar1, pilar2, pilar3, pilar4);
 
-	rackUnitGroup.add(rackComponentGroup);
+	//Floor
+	let rackFloorGroup = new THREE.Group();
+	rackFloorGroup.name = "locationRack"
+	rackFloorGroup.add(boardMesh, pilar1, pilar2, pilar3, pilar4);
 
+	//Last
+	let rackFloorLastGroup = new THREE.Group();
+	rackFloorLastGroup.name = "locationRack"
+	rackFloorLastGroup.add(boardMesh);
+
+
+	const rackUnitGroup = new THREE.Group();
 	// 층 입력 받으면 층 수만큼 올리는 코드 작성하기!
-	for (let i = 0; i < rackFloor - 1; i++) {
-		let rackFloorGroup = rackComponentGroup.clone();
-		rackFloorGroup.position.y += 1 //sizeY
-		rackUnitGroup.add(rackFloorGroup);
+	for (let i = 1; i <= rackFloor; i++) {
+
+		//Floor
+		if(i == rackFloor) {
+			rackComponentGroup = rackFloorLastGroup.clone();
+			// rackComponentGroup.position.y += 1 //sizeY
+			rackUnitGroup.add(rackComponentGroup);
+			break;
+		}
+
 		rackComponentGroup = rackFloorGroup.clone();
+		rackUnitGroup.add(rackComponentGroup);
+		rackFloorGroup.position.y += 1 //sizeY
 	}
 
 	// 수정 필요

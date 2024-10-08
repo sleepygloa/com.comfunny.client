@@ -28,12 +28,13 @@ export function gvDateToYYYYMMDD(date){
 //오늘날짜 구하기
 export function gvGetToday(){
     var date = new Date();
-    var year = date.getFullYear();
+    var year = ''+date.getFullYear();
     var month = date.getMonth() + 1;
     var day = date.getDate();
 
-    month = month >= 10 ? month : '0' + month;
-    day = day >= 10 ? day : '0' + day;
+    month = month >= 10 ? ''+month : '0' + month;
+    day = day >= 10 ? ''+day : '0' + day;
+    console.log(year, month, day)
 
     return year + month + day;
 }
@@ -86,8 +87,7 @@ export function gvGetRowData(data, id){
 export function gvSetRowData(data, id, values){
     for(var i = 0; i < data.length; i++){
         if(data[i].id === id){
-            console.log(data[i], id, values)
-        data[i] = values;
+            data[i] = values;
         }
     }
 }

@@ -1,0 +1,8 @@
+version: '3'
+services:
+  react-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"  # 로컬 포트 3000을 Docker 컨테이너의 포트 80에 매핑

@@ -131,14 +131,14 @@ function createRack(sizeX, sizeZ, rackFloor, rackPos) {
 	const pilarYLen = pilarBox.max.y - pilarBox.min.y;
 	
 
-	// pilar1.position.set(boardBox.min.x, pilarYLen / 2 - pilarYLen * 0.2, boardBox.min.z);
-	// pilar2.position.set(boardBox.max.x, pilarYLen / 2 - pilarYLen * 0.2, boardBox.min.z);
-	// pilar3.position.set(boardBox.max.x, pilarYLen / 2 - pilarYLen * 0.2, boardBox.max.z);
-	// pilar4.position.set(boardBox.min.x, pilarYLen / 2 - pilarYLen * 0.2, boardBox.max.z);
-	pilar1.position.set(boardBox.min.x, boardBox.max.y + pilarYLen / 2 - pilarYLen * 0.2, boardBox.min.z);
-	pilar2.position.set(boardBox.max.x, boardBox.max.y + pilarYLen / 2 - pilarYLen * 0.2, boardBox.min.z);
-	pilar3.position.set(boardBox.max.x, boardBox.max.y + pilarYLen / 2 - pilarYLen * 0.2, boardBox.max.z);
-	pilar4.position.set(boardBox.min.x, boardBox.max.y + pilarYLen / 2 - pilarYLen * 0.2, boardBox.max.z);
+	pilar1.position.set(boardBox.min.x, pilarYLen / 2 - pilarYLen * 0.2, boardBox.min.z);
+	pilar2.position.set(boardBox.max.x, pilarYLen / 2 - pilarYLen * 0.2, boardBox.min.z);
+	pilar3.position.set(boardBox.max.x, pilarYLen / 2 - pilarYLen * 0.2, boardBox.max.z);
+	pilar4.position.set(boardBox.min.x, pilarYLen / 2 - pilarYLen * 0.2, boardBox.max.z);
+	// pilar1.position.set(boardBox.min.x, boardBox.max.y + pilarYLen / 2 - pilarYLen * 0.2, boardBox.min.z);
+	// pilar2.position.set(boardBox.max.x, boardBox.max.y + pilarYLen / 2 - pilarYLen * 0.2, boardBox.min.z);
+	// pilar3.position.set(boardBox.max.x, boardBox.max.y + pilarYLen / 2 - pilarYLen * 0.2, boardBox.max.z);
+	// pilar4.position.set(boardBox.min.x, boardBox.max.y + pilarYLen / 2 - pilarYLen * 0.2, boardBox.max.z);
 
 	// pilar1.material.transparent = true;
 	// pilar2.material.transparent = true;
@@ -165,19 +165,19 @@ function createRack(sizeX, sizeZ, rackFloor, rackPos) {
 
 	const rackUnitGroup = new THREE.Group();
 	// 층 입력 받으면 층 수만큼 올리는 코드 작성하기!
-	for (let i = 1; i <= rackFloor; i++) {
+	for (let i = 0; i < rackFloor; i++) {
 
-		//Floor
-		if(i == rackFloor) {
+		if(i < rackFloor-1) {
+			rackComponentGroup = rackFloorGroup.clone();
+			rackUnitGroup.add(rackComponentGroup);
+			rackFloorGroup.position.y += 1 //sizeY
+		}else{
+			//Floor
 			rackComponentGroup = rackFloorLastGroup.clone();
 			// rackComponentGroup.position.y += 1 //sizeY
 			rackUnitGroup.add(rackComponentGroup);
-			break;
 		}
 
-		rackComponentGroup = rackFloorGroup.clone();
-		rackUnitGroup.add(rackComponentGroup);
-		rackFloorGroup.position.y += 1 //sizeY
 	}
 
 	// 수정 필요

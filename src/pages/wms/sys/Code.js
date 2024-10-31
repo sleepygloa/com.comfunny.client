@@ -10,7 +10,7 @@ import { Grid } from "@mui/material";
 import { gvGridDropdownDisLabel, gvGetRowData, gvSeData } from "../../../../src/components/Common";
 
 //Modal
-import useModal from "../../../../src/components/Modal/useModal";
+import {useModal} from "../../../context/ModalContext.js";
 
 // styles
 import useStyles from "../styles";
@@ -81,6 +81,7 @@ const columnsDtl = [
 export default function Code(props) {
   const {menuTitle} = '코드그룹 리스트';
   const {menuDtlTitle} = '코드 리스트';
+  const PRO_URL = '/wms/sys/code';
   const classes = useStyles();
   const {openModal} = useModal();
 
@@ -175,50 +176,40 @@ export default function Code(props) {
       codeGrpNm: "",
       codeGrpDesc: "",
       codeGrpTp: "",
-      useYn: "",
+      useYn: "Y",
     }));
   }
 
   //저장클릭
   function onClickSave(){
-    var rowData = gvGetRowData(dataList, selRowId);
-    console.log('저장',rowData)
-    // openModal(MyModal, {
-    //   title:"",
-    //   content:"저장 하시겠습니까?",
-    //   onSubmit: () => {
-    //     //메뉴리스트 저장
-    //     client.post(`/wms/sys/code/saveCodeGrp`,rowData)
-    //       .then(res => {
-    //         alert('저장되었습니다.');
-    //         fnSearchDtl(values);
-    //       }).catch(error => { 
-    //         console.log('error = '+error); 
-    //       })
-
-    //   }
-    // });
+    openModal('', '',  '저장 하시겠습니까?', 
+      () => {
+        var rowData = gvGetRowData(dataList, selRowId);
+        client.post(`${PRO_URL}/saveCodeGrp`,rowData, {})
+          .then(res => {
+            openModal('', 'I', '저장 되었습니다.');
+            fnSearch();
+          }).catch(error => { 
+            console.log('error = '+error); 
+          })
+      }
+    );
   }
 
   //삭제클릭
   function onClickDel(){
-    var rowData = gvGetRowData(dataList, selRowId);
-    console.log('삭제', rowData)
-    // openModal(MyModal, {
-    //   title:"",
-    //   content:"삭제 하시겠습니까?",
-    //   onSubmit: () => {
-    //     //메뉴리스트 저장
-    //     client.post(`/wms/sys/code/deleteCodeGrp`,rowData,{})
-    //       .then(res => {
-    //         alert('삭제되었습니다.')
-    //         fnSearchDtl(values);
-    //       }).catch(error => { 
-    //         console.log('error = '+error); 
-    //       })
-
-    //   }
-    // });
+    openModal('', '',  '삭제 하시겠습니까?', 
+      () => {
+        var rowData = gvGetRowData(dataList, selRowId);
+        client.post(`${PRO_URL}/deleteCodeGrp`,rowData, {})
+          .then(res => {
+            openModal('', 'I', '삭제 되었습니다.');
+            fnSearch();
+          }).catch(error => { 
+            console.log('error = '+error); 
+          })
+      }
+    );
   }
   //조회 클릭(상세)
   function onClickDtlSelect(){
@@ -237,44 +228,34 @@ export default function Code(props) {
 
   //저장클릭
   function onClickDtlSave(){
-    var rowData = gvGetRowData(dataDtlList, selDtlRowId);
-    console.log('저장',rowData)
-    // openModal(MyModal, {
-    //   title:"",
-    //   content:"저장 하시겠습니까?",
-    //   onSubmit: () => {
-    //     //메뉴리스트 저장
-    //     client.post(`/wms/sys/code/saveCode`,rowData)
-    //       .then(res => {
-    //         alert('저장되었습니다.');
-    //         fnSearchDtl(values);
-    //       }).catch(error => { 
-    //         console.log('error = '+error); 
-    //       })
-
-    //   }
-    // });
+    openModal('', '',  '저장 하시겠습니까?', 
+      () => {
+        var rowData = gvGetRowData(dataDtlList, selDtlRowId);
+        client.post(`${PRO_URL}/saveCode`,rowData, {})
+          .then(res => {
+            openModal('', 'I', '저장 되었습니다.');
+            fnSearchDtl(values);
+          }).catch(error => { 
+            console.log('error = '+error); 
+          })
+      }
+    );
   }
 
   //삭제클릭
   function onClickDtlDel(){
-    var rowData = gvGetRowData(dataDtlList, selDtlRowId);
-    console.log('삭제 클릭',rowData)
-    // openModal(MyModal, {
-    //   title:"",
-    //   content:"삭제 하시겠습니까?",
-    //   onSubmit: () => {
-    //     //메뉴리스트 저장
-    //     client.post(`/wms/sys/code/deleteCode`,rowData,{})
-    //       .then(res => {
-    //         alert('삭제되었습니다.')
-    //         fnSearchDtl(values);
-    //       }).catch(error => { 
-    //         console.log('error = '+error); 
-    //       })
-
-    //   }
-    // });
+    openModal('', '',  '삭제 하시겠습니까?', 
+      () => {
+        var rowData = gvGetRowData(dataDtlList, selDtlRowId);
+        client.post(`${PRO_URL}/deleteCode`,rowData, {})
+          .then(res => {
+            openModal('', 'I', '삭제 되었습니다.');
+            fnSearchDtl(values);
+          }).catch(error => { 
+            console.log('error = '+error); 
+          })
+      }
+    );
   }
   return (
     <>

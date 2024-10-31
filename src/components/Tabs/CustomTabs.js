@@ -6,7 +6,7 @@ import React, {useContext} from 'react';
 //   withRouter,
 // } from "react-router-dom";
 import PropTypes from 'prop-types';
-import { makeStyles } from '@mui/styles';
+import { styled } from '@mui/system';
 // import AppBar from '@mui/material/AppBar';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -83,7 +83,7 @@ function a11yProps(index) {
   };
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = styled((theme) => ({
   root: {
     flexGrow: 1,
     width: '100%',

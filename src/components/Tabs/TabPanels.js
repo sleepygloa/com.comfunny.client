@@ -1,7 +1,7 @@
 import React from 'react';
-import { makeStyles } from '@mui/styles';
+import { styled } from '@mui/system';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = styled((theme) => ({
   root: {
     flexGrow: 1,
     width: `calc(100vw-100px)`,

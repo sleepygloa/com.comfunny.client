@@ -5,11 +5,11 @@ import {
   Typography as TypographyBase,
   Button as ButtonBase,
 } from "@mui/material";
-import { useTheme, makeStyles } from "@mui/styles";
+import { useTheme, styled } from "@mui/system";
 import classnames from "classnames";
 
 // styles
-var useStyles = makeStyles(theme => ({
+var useStyles = styled(theme => ({
   badge: {
     fontWeight: 600,
     height: 16,

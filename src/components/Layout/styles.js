@@ -1,6 +1,6 @@
-import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/system";
 
-export default makeStyles(theme => ({
+export default styled(theme => ({
   root: {
     maxWidth: "100vw",
     height: `calc(100vh-100px)`,

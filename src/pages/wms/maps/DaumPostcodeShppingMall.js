@@ -3,8 +3,6 @@ import { Box, TextField, IconButton, Grid, Button, DialogActions, DialogContent,
 import SearchIcon from '@mui/icons-material/Search';
 import DaumPostcodeCommon from "./DaumPostcodeCommon.js";
 import { useModal } from "../../../context/ModalContext.js";
-import { Map, MapMarker, useKakaoLoader} from "react-kakao-maps-sdk";
-import { KAKAO_API_KEY } from '../../../contraints.js';
 
 function DaumPostcodeShppingMall(props) {
   const { modals, openModal, closeModal, updateModalData, getModalData } = useModal();

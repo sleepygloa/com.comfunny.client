@@ -1,6 +1,6 @@
-import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/system";
 
-export default makeStyles(theme => ({
+export default styled(theme => ({
   container: {
     height: "100vh",
     width: "100vw",

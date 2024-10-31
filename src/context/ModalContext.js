@@ -1,4 +1,4 @@
-import { useState, createContext, useContext } from "react";
+import React, { useState, createContext, useContext } from "react";
 
 // 현재 open된 modal들을 나타냄.
 export const ModalsStateContext = createContext();
@@ -31,8 +31,6 @@ export const ModalsProvider = ({children}) => {
           return newState;
         });
     }
-
-    
     return (
         <ModalsStateContext.Provider value={{modals, openModal, closeModal, updateModalData, getModalData}}>
             {children}

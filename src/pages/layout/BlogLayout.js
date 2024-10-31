@@ -15,7 +15,6 @@ import Header from "../../components/Header/Header";
 import Sb from "../../components/Sidebar/Sb";
 import LoginPop from "../login/LoginPop";
 import Modals from "../../components/Modal/Modals"
-import { useKakaoLoader } from "react-kakao-maps-sdk";
 
 
 export default function BlogLayout({props}) {

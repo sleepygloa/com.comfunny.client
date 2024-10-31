@@ -1,6 +1,6 @@
 import React from "react";
 import { createRoot } from 'react-dom/client';
-import { ThemeProvider } from "@mui/styles";
+import { ThemeProvider } from "@mui/system";
 
 import Themes from "./themes";
 import App from "./components/App";

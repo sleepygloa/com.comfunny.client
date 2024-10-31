@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { makeStyles } from '@mui/styles';
+import { styled } from '@mui/system';
 import { TextField, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 import { formatDate } from '../../Common.js'
 
@@ -11,7 +11,7 @@ import moment from 'moment';
 import { PartyModeSharp } from '@mui/icons-material';
 
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = styled((theme) => ({
   root: {
     height: 264,
     flexGrow: 1,

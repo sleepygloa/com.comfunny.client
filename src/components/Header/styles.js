@@ -1,7 +1,7 @@
-import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/system";
 import { alpha } from "@mui/material/styles";
 
-export default makeStyles(theme => ({
+export default styled(theme => ({
   logotype: {
     color: "white",
     marginLeft: theme.spacing(2.5),

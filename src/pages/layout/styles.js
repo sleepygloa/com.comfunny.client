@@ -1,6 +1,6 @@
-import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/system";
 
-export default makeStyles(theme => ({
+export default styled(theme => ({
   contentsArea: {
     position: "fixed",
     left: "240px",

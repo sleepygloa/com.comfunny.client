@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Redirect } from "react-router-dom";
 
 // components
 import Layout from "./Layout";
@@ -48,7 +48,7 @@ export default function App() {
   
   return (
     <BrowserRouter>
-      <Switch>
+      <Routes>
         <Route exact path="/" render={()=><BlogLayout props={<Dashboard />}></BlogLayout>} />
         <Route exact path="/blog/excel/excelfiletojson" render={()=><BlogLayout props={<ExcelFileToJson />}></BlogLayout>} />
         <Route exact path="/blog/excel/exceldatatojson" render={()=><BlogLayout props={<ExcelDataToJson />}></BlogLayout>} />
@@ -100,7 +100,7 @@ export default function App() {
            render={() => <Redirect to="/app/dashboard" />}
          /> */}
         <Route component={Error} />
-      </Switch>
+      </Routes>
     </BrowserRouter>
   );
 

@@ -1,6 +1,6 @@
-import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/system";
 
-export default makeStyles(theme => ({
+export default styled(theme => ({
   modal: {
     zIndex: 99999,
     position: 'fixed',

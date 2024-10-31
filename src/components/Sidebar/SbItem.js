@@ -7,14 +7,7 @@ import classnames from "classnames";
 import useStyles from "./styles";
 import {ListItemIcon, Button} from "@mui/material";
 
-// context
-// import UserStateContext from "../../context/UserContext";
-
-
-// const UserStateContext = useContext(UserStateContext);
 import { TabContext } from "../../context/TabContext";
-
-
 
 const SbItem = ({ item, depth = 0, isSidebarOpened, nested }) => {
   const [collapsed, setCollapsed] = useState(false);
@@ -27,11 +20,9 @@ const SbItem = ({ item, depth = 0, isSidebarOpened, nested }) => {
   }
   var classes = useStyles();
 
-  // collapsed = true;
-
-  <SbTitle depth={depth}>
-    <SbLink>{item.label}</SbLink>
-  </SbTitle>
+  // <SbTitle depth={depth}>
+  //   <SbLink>{item.label}</SbLink>
+  // </SbTitle>
 
   if(item.children != null && item.children.length > 0) {
     return (

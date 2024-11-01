@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-export const API_URL = process.env.NODE_ENV === 'production' ? 'http://www.comfunnydevelopers.com:8080' : "http://localhost:8080";
-export const CLINET_URL = process.env.NODE_ENV === 'production' ? 'http://sleepygloa.github.io' : "http://localhost:3000";
+export const API_URL = process.env.NODE_ENV === 'production' ? 'http://localhost:8080' : "http://localhost:8080";
+export const CLINET_URL = process.env.NODE_ENV === 'production' ? 'http://localhost:8080' : "http://localhost:3000";
 export const KAKAO_API_KEY =  process.env.NODE_ENV === 'production' ? '2aff35e452cab69b072002d4f3b9b99e' : "2aff35e452cab69b072002d4f3b9b99e";
 export const blogMenu = [
     { menuCd: 220, label: "메인화면", link: "/", thumbnail:"", blog:""},

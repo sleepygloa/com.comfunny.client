@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Location Setup</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+    <script src="js/three.min.js"></script>
+    <script src="js/OrbitControls.js"></script>
+    <script src="js/jquery-1.11.2.min.js"></script>
+    <!-- <script type="module" src="./js/FontLoader.js"></script> -->
+    <!-- <script src="./js/TextGeometry.js"></script> -->
+    <script src="js/OBJLoader.js"></script>
+
+    <script src="data/warehouseInfo.js"></script>
+    <script src="createRackModule.js"></script>
+    <script src="data/data.js"></script>
+
+    
+</head>
+<body>
+    <!-- https://www.turbosquid.com/Search/Index.cfm?keyword=lift&media_typeid=2&min_price=0&max_price=1 -->
+    <!-- 버튼 그룹, 버튼으로 레이어를 보이고 안보이게 설정 -->
+    <button id="ShowAll">전체 Layer(0)</button>
+    <button id="ShowBottom">바닥 Layer(0)</button>
+    <button id="ShowArea">구역 Layer(1)</button>
+    <button id="ShowZone">존 Layer(2)</button>
+    <button id="ShowLocationModel">랙 Layer(9)</button>
+    <div id="loc3dContainer" style="position:relative; height:100%; width: 100%; border: 1px;" ></div>
+    
+<!-- Three Default Setting -->
+</body>
+<!-- API호출 -->
+
+
+<!-- Location 3D 생성 -->
+<script src="loc3d.js"></script>
+
+<script>
+
+    console.debug('data init start');
+    function getVrLocInfo(data) {
+        fetch('http://localhost:8080/wms/vr/selectVrLocInfoList', {
+            method: 'POST',  // 요청 메서드 지정
+            headers: {
+            'Content-Type': 'application/json'  // 요청 헤더에 컨텐츠 타입 지정
+            },
+            body: JSON.stringify(data)  // 보내고자 하는 데이터를 JSON 문자열로 변환
+        })
+        .then(response => {
+            if (!response.ok) {
+            throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // console.log(data)
+
+            dcData = data.dcData;
+            areaData = data.areaData;
+            zoneData = data.zoneData;
+            locData = data.locData;
+
+        })
+        .catch(error => console.error('Error:', error));
+    }
+    getVrLocInfo({key: 'value', id: 123});
+
+    //렌더링 
+    var container = document.querySelector("#loc3dContainer");
+    var warehouse = new warehouse(container);
+    warehouse.animation();
+    warehouse.cameraControls();
+    // warehouse.onMouseDown();
+    let intervalId = null; // 인터벌 ID를 저장할 변수
+    
+    { //바닥 레이어 보기 안보기 설정
+        document.getElementById('ShowAll').addEventListener('click', function() {
+            warehouse.scene.traverse(function(child) {
+                if(child.visible){
+                    child.visible = false;
+                }else{
+                    child.visible = true;
+                }
+            });
+        });    
+    }
+    { //바닥 레이어 보기 안보기 설정
+        document.getElementById('ShowBottom').addEventListener('click', function() {
+            warehouse.scene.traverse(function(child) {
+                if(child.name === 'Bottom'){
+                    if(child.visible){
+                        child.visible = false;
+                    }else{
+                        child.visible = true;
+                    }
+                }
+            });
+        });
+    }
+    { //구역 레이어 보기 안보기 설정
+        document.getElementById('ShowArea').addEventListener('click', function() {
+            warehouse.scene.traverse(function(child) {
+                if(child.name === 'Area'){
+                    if(child.visible){
+                        child.visible = false;
+                    }else{
+                        child.visible = true;
+                    }
+                }
+            });
+        });
+    }
+    { //존 레이어 보기 안보기 설정
+        document.getElementById('ShowZone').addEventListener('click', function() {
+            warehouse.scene.traverse(function(child) {
+                if(child.name === 'Zone'){
+                    if(child.visible){
+                        child.visible = false;
+                    }else{
+                        child.visible = true;
+                    }
+                }
+            });
+        });
+    }
+    { //로케이션랙 레이어 보기 안보기 설정
+        document.getElementById('ShowLocationModel').addEventListener('click', function() {
+            warehouse.scene.traverse(function(child) {
+                if(child.name === 'locationRack'){
+                    if(child.visible){
+                        child.visible = false;
+                    }else{
+                        child.visible = true;
+                    }
+                }
+            });
+        });
+    }
+    
+    setTimeout(function(){
+        console.debug('data init end');
+
+        { //창고 바닥 생성
+            const minX = dcData[0].stdLocx;
+            const maxX = dcData[0].stdWidth;
+            const minY = dcData[0].stdLocy;
+            const maxY = dcData[0].stdLength;
+
+            createPlaneGeometry(warehouse.scene, minX, maxX, minY, maxY, 0x156289, 'ShowBottom', 0.01)
+
+            // 격자 추가
+            const gridHelper = new THREE.GridHelper(maxX*1.5, 20);
+            gridHelper.position.y = 0.01;
+            warehouse.scene.add(gridHelper);
+        }
+        { //입고구역
+            const minX = areaData[0].stdLocx;
+            const maxX = areaData[0].stdWidth;
+            const minY = areaData[0].stdLocy;
+            const maxY = areaData[0].stdLength;
+
+            createPlaneGeometry(warehouse.scene, minX, maxX, minY, maxY, 0xE5E1DA, 'Area', 0.02)
+        }
+        { //보관구역
+            const minX = areaData[1].stdLocx;
+            const maxX = areaData[1].stdWidth;
+            const minY = areaData[1].stdLocy;
+            const maxY = areaData[1].stdLength;
+
+            createPlaneGeometry(warehouse.scene, minX, maxX, minY, maxY, 0xFBF9F1, 'Area', 0.02)
+        }
+        { //출고구역
+            const minX = areaData[2].stdLocx;
+            const maxX = areaData[2].stdWidth;
+            const minY = areaData[2].stdLocy;
+            const maxY = areaData[2].stdLength;
+
+            createPlaneGeometry(warehouse.scene, minX, maxX, minY, maxY, 0xE5E1DA, 'Area', 0.02)
+        }
+        { //입고대기존
+            const minX = zoneData[0].stdLocx;
+            const maxX = zoneData[0].stdWidth;
+            const minY = zoneData[0].stdLocy;
+            const maxY = zoneData[0].stdLength;
+
+            createPlaneGeometry(warehouse.scene, minX, maxX, minY, maxY, 0x3A4D39, 'Zone', 0.04)
+        }
+        { //입고검수존
+            const minX = zoneData[1].stdLocx;
+            const maxX = zoneData[1].stdWidth;
+            const minY = zoneData[1].stdLocy;
+            const maxY = zoneData[1].stdLength;
+
+            createPlaneGeometry(warehouse.scene, minX, maxX, minY, maxY, 0x739072, 'Zone', 0.04)
+        }
+        { //보관1
+            const minX = zoneData[2].stdLocx;
+            const maxX = zoneData[2].stdWidth;
+            const minY = zoneData[2].stdLocy;
+            const maxY = zoneData[2].stdLength;
+
+            createPlaneGeometry(warehouse.scene, minX, maxX, minY, maxY, 0x8D493A, 'Zone', 0.04)
+        }
+        { //보관2
+            const minX = zoneData[3].stdLocx;
+            const maxX = zoneData[3].stdWidth;
+            const minY = zoneData[3].stdLocy;
+            const maxY = zoneData[3].stdLength;
+
+            createPlaneGeometry(warehouse.scene, minX, maxX, minY, maxY, 0x8D493A, 'Zone', 0.04)
+        }
+        { //출고피킹존
+            const minX = zoneData[4].stdLocx;
+            const maxX = zoneData[4].stdWidth;
+            const minY = zoneData[4].stdLocy;
+            const maxY = zoneData[4].stdLength;
+
+            createPlaneGeometry(warehouse.scene, minX, maxX, minY, maxY, 0xC8DBBE, 'Zone', 0.04)
+        }
+        { //출고상차존
+            
+            const minX = zoneData[5].stdLocx;
+            const maxX = zoneData[5].stdWidth;
+            const minY = zoneData[5].stdLocy;
+            const maxY = zoneData[5].stdLength;
+
+            createPlaneGeometry(warehouse.scene, minX, maxX, minY, maxY, 0xC8DBBE, 'Zone', 0.04)
+        }
+
+
+        { //지게차 로드
+            const loader2 = new THREE.OBJLoader();
+            loader2.load('./images/vr/model/low/forklift/forklift.obj', function (object) {
+                object.scale.set(ModelInfo.forklift_scale_x, ModelInfo.forklift_scale_y, ModelInfo.forklift_scale_z);
+                object.position.set(ModelInfo.gltfX, ModelInfo.gltfY, ModelInfo.gltfZ)
+                warehouse.scene.add(object);
+            }, function (xhr) {
+                // 모델이 로드되는 동안 호출되는 함수
+                // console.log(xhr.loaded / xhr.total * 100, '% loaded');
+            }, function (error) {
+                // 모델 로드가 실패했을 때 호출하는 함수                    
+                alert('모델을 로드 중 오류가 발생하였습니다.');
+            });
+        }
+        { //랙 생성
+            const maxX = dcData[0].stdWidth;
+            const maxY = dcData[0].stdLength;
+            const matrix = createMatrixArrData(dcData[0].stdLocx, maxX, dcData[0].stdLocy, maxY);
+
+            var locMatrixArr = createMatrixDataFromList(matrix, locData);
+            var locMatrix = createMatrixArrToData(locMatrixArr);
+
+            var validLocArr = getValidDataOfMatrixData(locMatrixArr, 1);
+            //랙 생성
+            var rackGroup = new THREE.Group();
+            rackGroup.name = 'RackGroup';
+            for(let i = 0; i < validLocArr.length; i++){
+                var rack = addShelf({
+                    seq : i+1,
+                    rackX : WarehouseInfo.warehouse_std_x + validLocArr[i].x,
+                    rackZ : WarehouseInfo.warehouse_std_y + validLocArr[i].y,
+                    rackWidth : ModelInfo.rack_size_width,
+                    rackLength : ModelInfo.rack_size_length,
+                    rackFloor : 1,
+                });
+                rackGroup.add(rack);
+            }
+            var validLocArrTwo = getValidDataOfMatrixData(locMatrixArr, 2);
+            //랙 생성
+            for(let i = 0; i < validLocArrTwo.length; i++){
+                var rack = addShelf({
+                    seq : i+1,
+                    rackX : WarehouseInfo.warehouse_std_x + validLocArrTwo[i].x,
+                    rackZ : WarehouseInfo.warehouse_std_y + validLocArrTwo[i].y,
+                    rackWidth : ModelInfo.rack_size_width,
+                    rackLength : ModelInfo.rack_size_length,
+                    rackFloor : 2,
+                });
+                rackGroup.add(rack);
+            }
+            var validLocArrThree = getValidDataOfMatrixData(locMatrixArr, 3);
+            //랙 생성
+            for(let i = 0; i < validLocArrThree.length; i++){
+                var rack = addShelf({
+                    seq : i+1,
+                    rackX : WarehouseInfo.warehouse_std_x + validLocArrThree[i].x,
+                    rackZ : WarehouseInfo.warehouse_std_y + validLocArrThree[i].y,
+                    rackWidth : ModelInfo.rack_size_width,
+                    rackLength : ModelInfo.rack_size_length,
+                    rackFloor : 3,
+                });
+                rackGroup.add(rack);
+            }
+            warehouse.scene.add(rackGroup);
+            //
+        }
+
+        { //실재고 데이터 조회
+            setTimeout(function(){
+                //실재고 데이터 조회
+                var stockBoxGroup = new THREE.Group();
+                // 데이터를 업데이트하는 함수
+                function getRealStock() {
+                    fetch('http://localhost:8080/wms/vr/selectVrRealStockList', {
+                        method: 'POST',  // 요청 메서드 지정
+                        headers: {
+                        'Content-Type': 'application/json'  // 요청 헤더에 컨텐츠 타입 지정
+                        },
+                        body: JSON.stringify({})  // 보내고자 하는 데이터를 JSON 문자열로 변환
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('success')
+                        const maxX = dcData[0].stdWidth;
+                        const maxY = dcData[0].stdLength;
+                        const matrix = createMatrixArrData(dcData[0].stdLocx, maxX, dcData[0].stdLocy, maxY);
+                        var locMatrixArr = createMatrixMapDataFromList(matrix, data.stockData)
+                        //랙 생성
+                        for(let i = 0; i < locMatrixArr.length; i++){
+                            if(locMatrixArr[i] == 0) continue;
+                            for(let j = 0; j < locMatrixArr[i].length; j++){
+                                if(locMatrixArr[i][j] == 0) continue;
+                                //재고수량이 없으면 패스
+                                if(locMatrixArr[i][j].totQty == null || locMatrixArr[i][j].totQty == 0) continue;
+                                var rack = addBox({
+                                    seq : i+1,
+                                    x : WarehouseInfo.warehouse_std_x + locMatrixArr[i][j].stdLocx,
+                                    z : WarehouseInfo.warehouse_std_y + locMatrixArr[i][j].stdLocy,
+                                });
+                                stockBoxGroup.add(rack);
+                            }
+                        }
+                        warehouse.scene.add(stockBoxGroup);
+
+                    })
+                    .catch(error => console.error('Error:', error));
+                }
+
+                getRealStock();
+
+            }, 5000);
+        }
+    }, 1000);
+
+</script>
+</html>

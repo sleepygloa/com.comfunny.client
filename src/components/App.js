@@ -49,7 +49,10 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route exact path="/" render={()=><BlogLayout props={<Dashboard />}></BlogLayout>} />
+        {/* <Route exact path="/" render={()=><BlogLayout props={<Dashboard />}></BlogLayout>} /> */}
+        <Route path="/" element={<BlogLayout />}>
+          <Route index element={<Dashboard />}/>
+        </Route>
         <Route exact path="/blog/excel/excelfiletojson" render={()=><BlogLayout props={<ExcelFileToJson />}></BlogLayout>} />
         <Route exact path="/blog/excel/exceldatatojson" render={()=><BlogLayout props={<ExcelDataToJson />}></BlogLayout>} />
         <Route exact path="/blog/excel/strarrchangestr" render={()=><BlogLayout props={<StrArrChangeStr />}></BlogLayout>} />

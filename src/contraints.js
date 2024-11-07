@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const API_URL = process.env.NODE_ENV === 'production' ? 'http://58.225.34.157:9808' : "http://localhost:8080";
+export const API_URL = process.env.NODE_ENV === 'production' ? 'http://58.225.34.157:9808' : "http://58.225.34.157:9808";
 export const KAKAO_API_KEY =  process.env.NODE_ENV === 'production' ? '2aff35e452cab69b072002d4f3b9b99e' : "2aff35e452cab69b072002d4f3b9b99e";
 export const blogMenu = [
     { menuCd: 220, label: "메인화면", link: "/", thumbnail:"", blog:""},

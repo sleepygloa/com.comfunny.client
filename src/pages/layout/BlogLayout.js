@@ -4,6 +4,7 @@ import React, {useEffect, useState} from "react";
 import { useLayoutState } from "../../context/LayoutContext";
 import { useUserLoginPop } from "../../context/UserContext";
 import { open, close } from "../../context/ModalContext";
+import { Outlet } from "react-router-dom";
 
 // styles
 import useStyles from "./styles";

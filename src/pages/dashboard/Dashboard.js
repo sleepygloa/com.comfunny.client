@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid'; // UUID 패키지 설치 필요
 import axios from 'axios';
+import { Outlet } from 'react-router-dom';
 
 //Data
 
@@ -66,6 +67,7 @@ export default function Dashboard(props) {
           <button type="button" onClick={() => addItem('image')}>이미지 추가</button>
           <button type="submit">제출</button>
         </form>
+        <Outlet />
     </div>
   );
 }

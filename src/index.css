@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 기본 HTML/Body 스타일 (선택 사항) */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Noto Sans KR', sans-serif; /* 폰트가 없다면 기본 폰트 사용됨 */
+}

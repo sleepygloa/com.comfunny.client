@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<title>Warehouse 3D Monitor</title>
+<meta charset="utf-8">
+<style>
+	body {
+		margin: 0;
+		background-color: #fff;
+	}
+</style>
+<script src="../../threejs/three.min.js"></script>
+<script src="../../threejs/OrbitControls.js"></script>
+<script src="../kleannara/js/jquery-1.11.2.min.js"></script>
+<script src="../kleannara/js/warehouse_m.js"></script>
+<script src="../kleannara/js/conveyor_m.js"></script>
+<!-- <script src="../kleannara/js/equipment.js"></script> -->
+
+</head>
+<body>
+	<div id="main-div" style="position:relative; height:100%; width: 100%;"></div>
+</body>
+<script>
+/******************************************************************************************************
+ * warehouse 객체생성
+ ******************************************************************************************************/
+var container = document.querySelector("#main-div");
+
+var warehouse = new warehouse( container );
+
+warehouse.animation();
+
+warehouse.cameraControls();
+
+var pusher_position_arr = [
+	[-80, 5, -80], [1600, 5, -80], [800, 5, -80]
+];
+
+var cutter_position_arr = [
+	[-200, 10, 660], [40, 10, 660], [280, 10, 660], [520, 10, 660], [840, 10, 660], [1080, 10, 660], [1320, 10, 660], [1560, 10, 660], [1800, 10, 660]
+];
+
+
+function init () {
+
+    // //Pusher 생성
+	// for(var i=0 ; i<pusher_position_arr.length ; i++){
+	// 	var pusher = new pusherGeometry({
+	//     	position: pusher_position_arr[i]
+	//     });
+	    
+	//     pusher.draw();
+	// }
+
+    // //Cutter 생성
+	// for(var i=0 ; i<cutter_position_arr.length ; i++){
+	//     var cutter = new bgCutterGeometry({
+	//     	position: cutter_position_arr[i]
+	//     });
+	    
+	//     cutter.draw();
+	// }
+    
+    // //Mini Crane 생성
+    // var crane = new miniCraneGeometry({
+    // 	position: [-320, 220, -200]
+    // });
+    
+    // crane.draw();
+    
+	// // conveyor_map 정보를 기반으로 컨베이어 생성
+	// setConveyor(-1920, -800, conveyor_map);
+	
+    // 구역명칭 =====================================================================================
+	// addLabel( '밀롤창고', new THREE.Vector3( 320, 0, -240 ), new THREE.Euler( -0.5 * Math.PI, 0, 0 ), 60, 0xeaeaea );
+	// addLabel( '커터대기창고', new THREE.Vector3( 320, 0, 160 ), new THREE.Euler( -0.5 * Math.PI, 0, 0 ), 60, 0xeaeaea );
+	// addLabel( 'R/W#2', new THREE.Vector3( -1480, 80, 780 ), new THREE.Euler( -0.5 * Math.PI, 0, 0 ), 40, 0xeaeaea );
+	// addLabel( 'R/W#3(구)', new THREE.Vector3( -580, 80, 380 ), new THREE.Euler( -0.5 * Math.PI, 0, 0.5 * Math.PI ), 40, 0xeaeaea );
+	// addLabel( 'R/W#3(신)', new THREE.Vector3( -740, 80, -140 ), new THREE.Euler( -0.5 * Math.PI, 0, 0 ), 40, 0xeaeaea );
+}
+
+//지종, 평량, 지폭구분, 지장구분, 입고일자, 밀롤번호
+function drawStok ( papknd, avgwt, rlbttp, rllttp, rcptdt, eaid ) {
+
+	/******************************************************************************************************
+	 * loc, stok 객체생성
+	 ******************************************************************************************************/
+	var param = { client : warehouse.data.client, dc: warehouse.data.dc, biz : warehouse.data.biz
+				, zone : 'M' 
+				, papknd : papknd		// 지종
+				, avgwt : avgwt			// 평량
+				, rlbttp : rlbttp		// 지폭구분
+				, rllttp : rllttp		// 지장구분
+				, rcptdt : rcptdt		// 입고일자
+				, eaid : eaid };  		// 밀롤번호 
+
+	// 1. 3D 창고현황 위치별재고 조회 ====================================================================
+	$.ajax({
+		type: 'post',
+		url: '/wms/st/vr/selectLocxStokFor3DList.do',
+		data: param,
+		dataType: 'json',
+		success: function (json_stok) {
+			
+			for(var i=0 ; i<conveyor_arr.length ; i++){
+				
+    			$.each( json_stok.LIST, function( j, data_stok ) {
+
+    				if( conveyor_arr[i].group == data_stok.loc 
+    					&& parseInt(conveyor_arr[i].number) == parseInt(data_stok.rank) ){
+
+						var roll_Geometry = new rollGeometry ( {
+							position: [conveyor_arr[i].position.x, 45, conveyor_arr[i].position.z],
+	    					eaid: data_stok.eaid,
+							rank: data_stok.rank,
+							sku: data_stok.sku,
+							loc: data_stok.loc,
+							rlbt: data_stok.rlbt,					// 지폭(mm)
+							diameter: data_stok.diameter / 2,		// 지름(반)
+							direction: conveyor_arr[i].direction,	// 방향
+							visible: data_stok.visible,				// 재고표시여부
+							stokstat: data_stok.stokstat,			// 재고상태
+							
+							clickHandler: function ( stok ) {
+								_app.callAppMethod("selectStok", stok);
+							}
+						});
+
+						var stok_object = roll_Geometry.draw();
+    				}
+    			});
+			}
+		},
+		error: function( request, status, exception ) {
+
+		},
+		
+		timeout:50000
+    });
+}
+
+//재고 재조회
+//지종, 평량, 지폭구분, 지장구분, 입고일자, 밀롤번호
+function doSearch ( papknd, avgwt, rlbttp, rllttp, rcptdt, eaid ) {
+
+	// 이미 연동된 객체가 있다면 해제
+	if ( warehouse.INTERSECTED && warehouse.INTERSECTED_COVER ) {
+		warehouse.scene.remove( warehouse.INTERSECTED_COVER );
+	}
+
+	warehouse.INTERSECTED = null;
+	warehouse.INTERSECTED_COVER  = null;
+	
+	// 기존재고객체 삭제
+	var objects = warehouse.scene.children;
+	var remove_stok = [];
+	
+	for(var i=0 ; i<objects.length ; i++){
+		if(objects[i].type == 'stok' || objects[i].type == 'stat'){
+			remove_stok.push(objects[i]);
+		}
+	}
+		
+	for(var i=0 ; i<remove_stok.length ; i++){
+		warehouse.scene.remove( warehouse.scene.getObjectByName( remove_stok[i].name ) );
+	}
+	
+	drawStok ( papknd, avgwt, rlbttp, rllttp, rcptdt, eaid );
+}
+
+/******************************************************************************************************
+ * onload script
+ ******************************************************************************************************/
+$( document ).ready(function() {
+
+    setTimeout(function() {
+    	init();
+
+    }, 1000);
+
+});
+</script>
+</html>

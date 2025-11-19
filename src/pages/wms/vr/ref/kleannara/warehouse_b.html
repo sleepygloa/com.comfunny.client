@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<title>Warehouse 3D Monitor</title>
+<meta charset="utf-8">
+<style>
+	body {
+		margin: 0;
+		background-color: #fff;
+	}
+</style>
+<script src="../threejs/three.min.js"></script>
+<script src="../threejs/OrbitControls.js"></script>
+<script src="../kleannara/js/jquery-1.11.2.min.js"></script>
+<script src="../kleannara/js/warehouse_b.js"></script>
+<script src="../kleannara/js/conveyor_b.js"></script>
+<script src="../kleannara/js/equipment.js"></script>
+
+</head>
+<body>
+	<div id="main-div" style="position:relative; height:100%; width: 100%;"></div>
+</body>
+<script>
+/******************************************************************************************************
+ * warehouse 객체생성
+ ******************************************************************************************************/
+var container = document.querySelector("#main-div");
+
+var warehouse = new warehouse( container );
+
+warehouse.animation();
+
+warehouse.cameraControls();
+
+var loc_arr = [];
+
+var position_arr = [
+	[-1740, 20, 640], [-1300, 20, 640], [-900, 20, 640], [-540, 20, 640], [-140, 20, 640], [300, 20, 640], [780, 20, 640], [1220, 20, 640], [1700, 20, 640]
+];
+
+function init () {
+
+    //Cutter 생성
+	for(var i=0 ; i<position_arr.length ; i++){
+	    var cutter = new cutterGeometry({
+	    	position: position_arr[i]
+	    });
+	    
+	    cutter.draw();
+	}
+
+	// conveyor_map 정보를 기반으로 컨베이어 생성
+	setConveyor(-2080, -640, conveyor_map);
+	
+	/******************************************************************************************************
+	 * loc, stok 객체생성
+	 ******************************************************************************************************/
+	var param = { client : warehouse.data.client, dc: warehouse.data.dc, biz : warehouse.data.biz, zone : 'B' };
+
+	// 1. 3D 창고현황  밀롤창고지역(AREA='B') LOC 조회
+	$.ajax({
+		type: 'post',
+		url: '/wms/st/vr/selectLocFor3DList.do',
+		data: param,
+		dataType: 'json',
+		success: function (json_loc) {
+
+			// Zone 배열만큼 Zone 그리기
+			for(var i=0 ; i<zone_arr.length ; i++){
+				var zone_geometry = new zoneGeometry( i, warehouse.scene );
+				zone_geometry.draw();
+
+				// json_loc Loop
+				$.each(json_loc.LIST, function( j, data_loc ) {
+
+					// Zone 의 해당 Loc
+					if( zone_arr[i].zone == data_loc.zone ){
+
+						var start_x = zone_arr[i].position_x;
+						var start_z = zone_arr[i].position_z;
+
+						var loc_geometry = new locGeometry ( {
+							start_x: start_x,							// 초기좌표
+							start_z: start_z,
+							position: [1, data_loc.loccol, 0],		// 열, 행, 단    *데이터 특성으로 열과 행을 바꿈
+							loc: data_loc.loc,						// loc 데이터
+							locnm: data_loc.locnm,
+							
+							clickHandler: null
+						});
+
+						loc_geometry.draw();
+
+					}
+				});
+			}	
+		},
+		error: function( request, status, exception ) {
+
+		},
+		
+		timeout:50000
+    });
+}
+
+//지종, 평량, 지폭구분, 지장구분, 입고일자, 밀롤번호
+function drawStok ( papknd, avgwt, rlbttp, rllttp, rcptdt, eaid ) {
+	
+	/******************************************************************************************************
+	 * loc, stok 객체생성
+	 ******************************************************************************************************/
+	var param = { client : warehouse.data.client, dc: warehouse.data.dc, biz : warehouse.data.biz
+				, zone : 'B'
+				, papknd : papknd		// 지종
+				, avgwt : avgwt			// 평량
+				, rlbttp : rlbttp		// 지폭구분
+				, rllttp : rllttp		// 지장구분
+				, rcptdt : rcptdt		// 입고일자
+				, eaid : eaid };  		// 밀롤번호
+
+	// 2. 3D 창고현황 위치별재고 조회 ====================================================================
+	$.ajax({
+		type: 'post',
+		url: '/wms/st/vr/selectLocxStokFor3DList.do',
+		data: param,
+		dataType: 'json',
+		success: function ( json_stok ) {
+
+			for(var i=0 ; i<loc_arr.length ; i++){
+
+				var position_z = 360;	// 로케이션이 시작하는 Z 좌표
+   				
+   				// 재고배열 비우기
+   				loc_arr[i].stok_arr = [];
+   				
+				// json_stok Loop
+    			$.each( json_stok.LIST, function( j, data_stok ) {
+
+    				if( loc_arr[i].name == data_stok.loc ){
+
+						var roll_Geometry = new rollGeometry ( {
+							position: [loc_arr[i].position.x, data_stok.diameter / 2, position_z],
+	    					eaid: data_stok.eaid,
+							rank: data_stok.rank,
+							sku: data_stok.sku,
+							loc: data_stok.loc,
+							rlbt: data_stok.rlbt,				// 지폭(mm)
+							diameter: data_stok.diameter / 2,	// 지름(반)
+							visible: data_stok.visible,			// 재고표시여부
+							stokstat: data_stok.stokstat,		// 재고상태
+							
+							clickHandler: function ( stok_arr ) {
+								_app.callAppMethod("selectLocation", stok_arr);
+							}
+						});
+
+						var stok_object = roll_Geometry.draw();
+						// Location 객체에 Stok 객체 바인딩
+						loc_arr[i].stok_arr.push( stok_object );
+
+						// 다음 Roll y좌표
+						position_z = position_z - data_stok.diameter;
+    				}
+    			});
+			}
+		},
+		error: function( request, status, exception ) {
+
+		},
+		
+		timeout:50000
+    });
+	//====================================================================
+}
+
+//재고 재조회
+//지종, 평량, 지폭구분, 지장구분, 입고일자, 밀롤번호
+function doSearch ( papknd, avgwt, rlbttp, rllttp, rcptdt, eaid ) {
+
+	// 이미 연동된 객체가 있다면 해제
+	if ( warehouse.INTERSECTED && warehouse.INTERSECTED_COVER ) {
+		warehouse.scene.remove( warehouse.INTERSECTED_COVER );
+	}
+
+	warehouse.INTERSECTED = null;
+	warehouse.INTERSECTED_COVER  = null;
+	
+	// 기존재고객체 삭제
+	var objects = warehouse.scene.children;
+	var remove_stok = [];
+	
+	for(var i=0 ; i<objects.length ; i++){
+		if(objects[i].type == 'stok' || objects[i].type == 'stat'){
+			remove_stok.push(objects[i]);
+		}
+	}
+		
+	for(var i=0 ; i<remove_stok.length ; i++){
+		warehouse.scene.remove( warehouse.scene.getObjectByName( remove_stok[i].name ) );
+	}
+	
+	drawStok ( papknd, avgwt, rlbttp, rllttp, rcptdt, eaid );
+}
+
+/******************************************************************************************************
+ * onload script
+ ******************************************************************************************************/
+$( document ).ready(function() {
+
+    setTimeout(function() {
+    	init();
+
+    }, 1000);
+
+});
+</script>
+</html>

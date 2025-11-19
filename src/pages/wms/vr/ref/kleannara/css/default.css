@@ -1,0 +1,391 @@
+
+/* default */
+body,
+html { width: 100%; height: 100%; color:#fff;
+	font-family: "Noto Sans", "HelveticaNeue-Light", "AppleSDGothicNeo-Light", "留묒�怨좊뵓", "malgun gothic", "AppleGothic", "�룍��", "dotum", sans-serif;
+}
+*{ box-sizing:border-box; }
+h1, h2, h3, h4, h5, h6{
+	font-weight: 400;
+}
+
+iframe{ width:100%; height: 100%; border:none; }
+.fc_red{color: #f82b30;}
+.fc_blue{color: #3d7ec0;}
+
+.ratioSet {width: 100%;position: relative;display: inline-block;z-index: 1;}
+.clientMain .ratio-5x3 { padding-bottom: 59.576%; }
+.ratio-5x3 { padding-bottom: 75%; }
+.ratio-4x3 {  padding-bottom: 67%;  }
+.ratioObject {position: absolute;top: 0;right: 0;bottom: 0;left: 0;width: 100%;height: 100%;z-index: 100; background-size: cover; z-index: 1;}
+.ratioObject.bg100p{}
+
+.logo{
+	height: 40px;
+	width: 100%;
+	background:url(../img/logo.png) no-repeat;
+	margin-bottom: 39px;
+}
+.logoSub{
+	height: 40px;
+	width: 100%;
+	background:url(../img/logoSub.png) no-repeat 50% 0;
+}
+.loginBody{
+	background:url(../img/loginBg.jpg) no-repeat;
+	background-size:100% 100%;
+}
+.loginSet{
+	width: 100%;
+	height: 100%;
+	position: relative;
+}
+.loginBox{
+	position: absolute;
+	width: 360px;
+	height: 272px;
+	top: 50%;
+	left: 50%;
+	margin-left: -180px;
+	margin-top: -152px;
+}
+
+.loginBox input{
+	background-color: #fff;
+	color:#757575;
+	font-size: 16px;
+	height: 56px;
+	width: 100%;
+	padding:20px;
+	border-radius: 8px;
+	margin-bottom: 5px;
+	border:none;
+}
+
+.loginBox input[type=password]{
+	margin-bottom: 10px;
+}
+.loginBox button{
+	background-color: #3d7ec0;
+	color:#fff;
+	border-radius: 8px;
+	height: 66px;
+	width: 100%;
+	border:none;
+}
+
+
+.userBody{
+	background: #06080b;
+}
+.wrap{
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+.container{ margin-left: -10px; margin-right: -10px; max-width: 1440px; min-width: 1240px; margin:0 auto; padding:0 5px; }
+.container:before, .container:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+.headGroup{ margin-left: -10px; margin-right: -10px; max-width: 1440px; min-width: 1240px; margin:0 auto; padding:0 5px;  text-align: center; position: relative;}
+.headGroup:before, .headGroup:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+
+.container .item{
+	width: 50%;
+	padding: 5px;
+	float: left;
+	position: relative;
+}
+.admin .item:nth-child(1),
+.admin .item:nth-child(2),
+.admin .chatListSet>div,
+.container .item:nth-child(3),
+.container .item:nth-child(4){ padding-top: 0; }
+
+.startOn{
+	width: 200px;
+	height: 100px;
+	margin:0 auto 30px auto;
+	background: url(../img/start_no.png) 0 0 no-repeat;
+}
+
+.active .startOn,
+.on .startOn {
+	background: url(../img/start_on.png) 0 0 no-repeat;
+}
+
+
+.noVideo { 
+	text-align: center; 
+	position: absolute; 
+	width: 100%;
+}
+.noVideo h2{
+	color: #353c4d;
+	font-size: 30px;
+	line-height: 70px;
+	height: 75px;
+	letter-spacing: -2px;
+	padding:0 33px;
+	margin-bottom: 40px;
+	text-transform: uppercase;
+	text-align: left;
+}
+@media (max-width: 520px){
+	.noVideo h2{ margin-bottom: 10px;}
+	.startOn{margin-bottom: 10px;}
+}
+
+.noVideo.on h2,
+.noVideo.active h2{
+		color:#3d7ec0;
+}
+
+.noVideo button{
+	border:2px solid #353c4d;
+	background: none;
+	color:#353c4d;
+	border-radius: 8px;
+	height: 56px;
+	width: 200px;
+	font-size: 20px;
+}
+
+.noVideo.on button,
+.noVideo.active button,
+.noVideo button:hover,
+.noVideo button:focus,
+.noVideo button:active{
+	border-color: #3d7ec0;
+	background-color: #3d7ec0;
+	color:#fff;
+}
+.videoListSet .ratio-5x3 {  
+	border-radius: 5px;
+	overflow: hidden;
+	background-color: #12161f;
+	position: relative;
+}
+.videoListSet iframe{position: absolute; left: 0; top: 0;}
+
+.videoListSet .videoBtnSet { position: absolute; bottom: 30px; width: 100%; height:56px; margin:0 auto; text-align: center; }
+.videoListSet .videoBtns{display: inline-block; background-color: #1b212d; border-radius: 10px; padding:0 25px; width: 90%;}
+.videoListSet .videoBtns h3{display: inline-block; line-height: 56px; font-size: 20px; float: left; }
+.videoListSet .videoBtns h3:before{ content:''; display: inline-block;vertical-align: middle; width: 30px; height: 30px; background: url(../img/videoBtns.png) no-repeat 0 -4px;  }
+.videoListSet .videoBtns button{ font-size: 20px; border:none; text-decoration: underline; color:#3d7ec0; line-height: 50px; background: none; }
+
+/* userSet */
+.chatListSet { font-weight: 300; }
+.chatListSet h2 { 
+	font-size: 18px; font-weight: 400; color: #3d7ec0;
+	line-height: 40px; text-transform: uppercase; text-align: left;
+	margin-bottom: 24px; 
+	height: 49px;
+	border-bottom:1px solid #1b202c;
+}
+.chatListSet .userInfo { border-radius: 5px }
+.chatListSet h2.userInfoNm { padding-left: 20px; height: 45px; }
+
+
+.chatListSet>div{  float: left; padding: 5px; }
+
+.chatListSet .userInfo { width: 20%; height: 850px; padding-left: 30px; text-align: center; background-color: #12161f; }
+.chatListSet.user02 .userInfo{ padding-left: 0; padding-right: 0; }
+.chatListSet.user02 .userInfo ul{ padding-left: 20px; padding-right: 20px; }
+.userInfo ul li{
+	margin-bottom: 20px;
+}
+
+.chatListSet .chatSet.parent{ margin: 0; padding: 0 0 0 10px; background: none; }
+.chatListSet .chatSet.parent .chatBox{ margin: 0; padding: 0; background-color: #12161f;  }
+.chatListSet .chatSet.parent h2{padding-top: 5px; padding-left: 30px;}
+.chatListSet .chatSet {width: 79.5%; height: 850px; margin-left: 0.5%; background-color: #12161f; border-radius: 5px; }
+.chatBox{
+	padding-left: 1%;
+	padding-right: 1%;
+	float: left;
+	width: 100%;
+}
+
+.chatSet{ position:absolute; top:0px; left:0px; } #position: relative; height: 100%; }
+.chatSet ul{
+	padding-top: 18px;
+}
+.admChat .chatSet .scrollY{ height: 674px; }
+.chatSet .scrollY{
+	height: 600px;
+	overflow-y: auto;
+	padding: 20px;
+}
+.chatSet li{
+	position: relative;
+	padding-left: 60px;
+	margin-bottom: 15px;
+	padding-right: 60px;
+}
+.chatSet li.my{
+	text-align: right;
+	position: relative;
+	padding-left: 60px;
+	margin-bottom: 15px;
+}
+.chatSet li.my:before{
+	position: absolute;
+	left: auto;
+	right: 0;
+}
+.chatSet li:before{
+	content:'';
+	position: absolute;
+	width: 40px;
+	height: 40px;
+	background: url(../img/ico_chat.png) 0 0 no-repeat;
+	left: 0;
+}
+.chatSet span{
+	color: #4b5263;
+}
+.chatSet i{
+	font-style: normal;
+	display: block;
+	clear: both;
+	margin-bottom: 18px;
+}
+.chatSet p{
+	display: inline-block;
+	padding:12px;
+	background: #1b212d;
+	font-size: 18px;
+	border-radius: 5px;
+	position: relative;
+	max-width: 600px;
+}
+.chatSet p:before{
+	content:'�뼹';
+	position: absolute;
+	top: -8px;
+	left: -7px;
+	color:#1b212d;
+}
+
+.chatSet .my p{
+	background: #353c4d;
+}
+.chatSet .my p:before{
+	top: -8px;
+	left: auto;
+	right: -7px;
+	color:#353c4d;
+}
+
+.chatSet .Admin .name, 
+.chatSet .Admin p{
+	color: #3d7ec0 !important;
+}
+
+@media (max-width: 400px){
+	.chatSet li:before{ width: 20px; height: 20px; background-size: cover; }
+	.chatSet .scrollY{padding: 10px;}
+	.chatSet li.my{ padding-left: 0; padding-right: 25px;}
+	.chatSet li.you{ padding-right: 0; padding-left: 25px;}
+}
+
+.chatListSet.adminSet div.videoListSet{ width: 80%;}
+.chatListSet.adminSet .item h2{ margin-top: 13px; margin-bottom: 70px; font-size: 30px; padding-left: 26px; }
+.chatListSet.adminSet .ratio-5x3{padding-bottom: 75.405%;}
+.chatListSet.adminSet .chatSet { width: 20%; margin-left: 0; padding: 0;}
+.chatListSet.adminSet .chatSet ul{padding-top: 0;}
+.chatListSet.adminSet .chatSet li:before{ display: none; }
+.chatListSet.adminSet .chatSet li{ padding-left: 10px;padding-right: 10px; }
+.chatListSet.adminSet .chatSet p{font-size: 16px;}
+.chatListSet.adminSet .chatSet i{margin-bottom: 10px;}
+.chatListSet.adminSet .messageSet{padding-left: 0;}
+.chatListSet.adminSet .videoPlayBx .item h2{ margin-bottom: 54px; color:#353c4d; }
+.chatListSet.adminSet .startOn{ width: 200px; height: 120px; margin:0 auto 30px auto; background: url(../img/videobg.png) 0 0 no-repeat; }
+
+/* admin 03 */
+.HeadH1{ position: absolute; left: 0; top: 7px; text-transform: uppercase; padding-left: 30px; color: #3d7ec0; font-size: 14px; display: inline-block;}
+.chatListSet.adminGameSet div.videoListSet{ width: 80%; padding-top: 0;}
+
+.deviceSet{position: relative; width: 100%; height: 100%; vertical-align: middle; display: flex; align-items: center; justify-content: center; }
+.deviceSet .item {width: 100%; height: 420px;}
+.deviceSet .item h2{ margin-top: 0; margin-bottom: 10px; padding-top: 10px; height: 40px; font-size: 18px; padding-left: 17px; color: #fff; text-transform: none; line-height: 24px; position: absolute; top: 0;}
+.deviceSet .item h2:before{content:''; width: 20px; height: 30px; margin-right: 10px; background: url(../img/icoGame.png) 0 0 no-repeat; vertical-align: middle; display: inline-block;}
+.deviceSet .ratioSet{height: 100%; background-color: #12161f; border-radius: 5px;}
+.deviceSet .ratio-5x3{padding-bottom: 0; background: #12161f;}
+.deviceSet .chatSet { width: 20%; margin-left: 0; }
+.deviceSet .chatSet ul{padding-top: 0;}
+.deviceSet .chatSet li:before{ display: none; }
+.deviceSet .chatSet li{ padding-left: 10px;padding-right: 10px; }
+.deviceSet .chatSet p{font-size: 16px;}
+.deviceSet .chatSet i{margin-bottom: 10px;}
+.deviceSet .messageSet{padding-left: 0;}
+.deviceSet .videoPlayBx .item h2{ margin-bottom: 0; height: 50px; }
+.deviceSet .gameItem{ height: 320px; position: relative; background: url(../img/videobg.png) 50% 50% no-repeat;}
+
+
+.videoPlayBx img{width: 100%;}
+.recordSet{ width: 20%; height: 850px; padding: 0;float: left;}
+.recordData{  }
+.chatListSet>div.recordSet { padding: 0; background-color: #12161f; border-radius: 5px; height: 846px;}
+.recordBox h2{padding-left: 20px; padding-top: 10px; margin-bottom: 6px !important; font-size: 18px; text-transform: uppercase; }
+.recordSet .recordVideos{ width: 100%; height: 215px; background: url(../img/videobg.png) 50% 50% no-repeat; margin-bottom: 18px; }
+.recordCtrl { text-align: left; }
+.recordCtrl button{ display: block; margin-bottom: 10px; width: 100%; border:none; height: 55px; background-color: #3d7ec0; color: #fff; border-radius: 10px}
+.recordCtrl button.recStop{ background-color: #353c4d; }
+.recordCtrl input{ display: block; margin-bottom: 10px; width: 100%; border:none; height: 35px; background-color: #353c4d; color: #fff; border-radius: 10px; padding:10px;}
+.recordSet {  background-color: #12161f; }
+.recordInfo {text-align: left; font-size: 14px; text-transform: uppercase; padding:12px 0; background-color: #1b202c; margin-bottom: 20px; }
+.recordInfo dl{ padding-left: 16%; line-height: 24px; }
+.recordInfo dt, 
+.recordInfo dd{display: inline-block;}
+.recordInfo dt{width: 33%;}
+
+
+/* game 04 */
+.gameHorizon { float: left; width: 79%; margin-right: 0.4%; }
+.gameHorizonSet .item{ width: 25%; position: relative; }
+.gameHorizonSet .ratioSet{ background-color: #12161f; border-radius: 5px;}
+.gameHorizonSet .recordSet{  }
+.gameHorizonSet iframe{position: absolute; width: 100%; height: 100%;}
+h2.sTitle{ margin-top: 0; margin-bottom: 10px; padding-top: 10px; height: 40px; font-size: 18px; padding-left: 17px; color: #fff; text-transform: none; line-height: 24px;}
+h2.sTitle:before{content:''; width: 20px; height: 30px; margin-right: 10px; background: url(../img/icoGame.png) 0 0 no-repeat; vertical-align: middle; display: inline-block;}
+.ratio-8x20{position: relative;padding-bottom: 312%; }
+.gameItemHorizon{width: 100%; position: absolute; top: 50%; margin-top: -69%;}
+.gameItemHorizon img{width: 100%;}
+
+
+.status{
+	padding-left: 38px;
+	clear: both;
+	margin-bottom: 16px;
+	color:#545d72;
+}
+.messageSet{
+}
+.messageSet .header{
+	height: 50px;
+	padding-top: 5px;
+	padding-left: 22px;
+	padding-right: 22px;
+	background-color: #1b212d;
+	box-shadow: 5px 2px 6px 5px rgba(0,0,0,.2);
+	position: relative;
+	z-index: 10;
+}
+.messageSet .header .icoChat{ display: inline-block; width: 40px; height: 40px; background: url(../img/icoChatT.png) no-repeat; }
+.messageSet .header .icoDelete{ display: inline-block; float: right; border:none; width: 40px; height: 40px; background: url(../img/ico_trash.png) no-repeat; }
+
+.messageSet textarea{
+	position: relative;
+	z-index: 5;
+	width: 100%;
+	height: 110px;
+	padding:20px;
+	color:#000;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+}
+
+.noImage{
+	background: url(../img/noimage.gif) no-repeat;
+}
+

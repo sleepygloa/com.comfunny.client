@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ESNext", // 최신 JavaScript 문법으로 컴파일
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true, // (Vite가 빌드를 처리하므로 TypeScript는 컴파일 결과물(.js)을 만들지 않음)
+    "jsx": "react-jsx", // 최신 React JSX 변환 사용
+
+    /* Linting */
+    "strict": true, // (가장 엄격한 타입 체크 활성화 - 강력 권장)
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+
+    /* Module path aliases (선택 사항) */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"] // (예: "@/components/Button"처럼 절대 경로 사용 가능)
+    }
+  },
+  "include": ["src", "vite.config.ts"], // (TypeScript가 검사할 파일 대상)
+  "references": [{ "path": "./tsconfig.node.json" }] // (Vite 설정을 위한 분리)
+}

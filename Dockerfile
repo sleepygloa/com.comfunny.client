@@ -13,7 +13,7 @@ COPY . .
 RUN npm run build
 
 # 2단계: 실행 (Production Stage)
-FROM nginx:stable-alpine
+FROM nginx:alpine
 
 # 빌드 단계에서 생성된 결과물(dist)을 Nginx의 서빙 디렉토리로 복사
 COPY --from=builder /app/dist /usr/share/nginx/html

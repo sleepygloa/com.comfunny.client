@@ -4,13 +4,14 @@ import React, { useState } from 'react';
 import HeroSection from './homepage/components/HeroSection';
 import AboutSection from './homepage/components/AboutSection';
 import TechStackSection from './homepage/components/TechStackSection';
-import CareerTreeSection from './homepage/components/CareerTreeSection'; // 새로 만든 섹션 추가!
+import SkillMatrixSection from './homepage/components/SkillMatrixSection';
+import CareerTreeSection from './homepage/components/CareerTreeSection';
 import PortfolioSection from './homepage/components/PortfolioSection';
 import ServicesSection from './homepage/components/ServicesSection';
+import JobMatchingSection from './homepage/components/JobMatchingSection';
 import ContactInfoSection from './homepage/components/ContactInfoSection';
 
-// [ICONS]
-// ... (기존 아이콘 코드 유지) ...
+// [ICONS] 헤더와 푸터에서 사용하는 아이콘만 남김
 const iconDefaults: React.SVGProps<SVGSVGElement> = {
   xmlns: "http://www.w3.org/2000/svg",
   width: "24",
@@ -29,6 +30,8 @@ const IconMenu: React.FC<React.SVGProps<SVGSVGElement>> = (p) => (<svg {...iconP
 const IconX: React.FC<React.SVGProps<SVGSVGElement>> = (p) => (<svg {...iconProps(p)}><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>);
 
 // [LAYOUT] Header & Footer
+// (나중에 src/components/layout 폴더로 분리하면 더 좋습니다)
+
 const Header: React.FC<{ onMobileMenuToggle: () => void; isMobileMenuOpen: boolean, onHomeClick: () => void }> = ({ onMobileMenuToggle, isMobileMenuOpen, onHomeClick }) => {
   const navItems = [
     { name: '홈', href: '#' },
@@ -97,12 +100,19 @@ const Footer: React.FC = () => (
   </footer>
 );
 
+// ==========================================
+// Main Component
+// ==========================================
+
 const CompanyHomepage: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  // TechStackSection과 PortfolioSection 간의 필터 연동 상태
   const [selectedTech, setSelectedTech] = useState<string | null>(null);
 
   return (
     <div className="font-sans antialiased text-slate-900 bg-white scroll-smooth selection:bg-blue-100 selection:text-blue-900">
+      
       <Header 
         isMobileMenuOpen={isMobileMenuOpen} 
         onMobileMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
@@ -112,19 +122,30 @@ const CompanyHomepage: React.FC = () => {
       <main>
         <HeroSection />
         <AboutSection />
+        
+        {/* TechStack과 Portfolio는 서로 연동되므로 상태를 공유합니다. */}
         <TechStackSection 
             selectedTech={selectedTech} 
             onSelectTech={setSelectedTech} 
         />
-        {/* 여기에 CareerTreeSection 배치 */}
-        <CareerTreeSection />
+        {/* PortfolioSection 내부에서 모달 처리 */}
         <PortfolioSection 
             selectedTech={selectedTech}
             onSelectProject={(id) => {
                 console.log("Selected Project ID:", id);
             }}
         />
+        
+        <SkillMatrixSection />
+
+        <CareerTreeSection />
+        
+        
         <ServicesSection />
+        
+        {/* 채용 매칭 시뮬레이터 추가 */}
+        <JobMatchingSection />
+        
         <ContactInfoSection />
       </main>
       

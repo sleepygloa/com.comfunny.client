@@ -1,9 +1,5 @@
 import React from 'react';
 
-// [아이콘] 필요한 아이콘을 import 하거나, 공통 아이콘 파일에서 가져오세요.
-// import { IconArrowDown } from '../../../components/icons';
-
-// (편의를 위해 여기에 아이콘을 포함해 두었습니다. 실제로는 공통 파일에서 import 하는 것을 추천합니다.)
 const IconArrowDown: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
     <line x1="12" y1="5" x2="12" y2="19" />

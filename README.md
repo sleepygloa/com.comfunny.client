@@ -63,3 +63,24 @@ react-datepicker : https://reactdatepicker.com/
 react-datepicker sameple blog : https://doooodle932.tistory.com/150
 floating-ui : https://floating-ui.com/
 threejs-obj-turbosquid : https://www.turbosquid.com/Search/Index.cfm?keyword=lift&media_typeid=2&min_price=0&max_price=1
+
+
+
+#### 11. AI Prompt
+[프로젝트 개요]
+- 기술 스택: React, Vite, TypeScript, Tailwind CSS
+- 배포: Docker Compose (Nginx + React App)
+- 구조:
+  - / (루트): 회사 홈페이지 (src/pages/homepage/CompanyHomepage.tsx)
+  - /portal: WMS 시스템 (src/components/App.tsx)
+- 상태 관리: Context API (UserContext, LayoutContext 등)
+- 데이터: src/data/portfolioData.ts 에서 통합 관리 중
+
+[현재 구현 상황]
+- 홈페이지는 Hero, About, TechStack, Portfolio, Service, Contact 섹션으로 컴포넌트 분리됨.
+- 포트폴리오 섹션은 모달로 상세 내용을 보여줌.
+- 기술 스택 섹션은 뱃지와 매트릭스 테이블 형태로 구현됨.
+- 채용 매칭 시뮬레이터(JobMatchingSection) 구현됨.
+
+[요청 사항]
+이 상황에서 [새로운 기능]을 추가하려고 해.

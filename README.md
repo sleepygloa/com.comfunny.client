@@ -68,19 +68,44 @@ threejs-obj-turbosquid : https://www.turbosquid.com/Search/Index.cfm?keyword=lif
 
 #### 11. AI Prompt
 [프로젝트 개요]
-- 기술 스택: React, Vite, TypeScript, Tailwind CSS
-- 배포: Docker Compose (Nginx + React App)
-- 구조:
-  - / (루트): 회사 홈페이지 (src/pages/homepage/CompanyHomepage.tsx)
-  - /portal: WMS 시스템 (src/components/App.tsx)
-- 상태 관리: Context API (UserContext, LayoutContext 등)
-- 데이터: src/data/portfolioData.ts 에서 통합 관리 중
+- 프로젝트명: Comfunny Developers (회사 홈페이지 & WMS 통합 포탈)
+- 개발자: 김선호 (10년 8개월 경력의 Java/SI/SM 개발자)
+- 기술 스택: React (Vite), TypeScript, Tailwind CSS, Material-UI, Docker
+- 데이터 소스: src/data/portfolioData.ts 파일에서 모든 경력 및 포트폴리오 데이터를 통합 관리 중.
+- 백엔드/API: http://localhost:8080/api (Axios 기반)와 연동 예정.
+- Git Repo: https://github.com/sleepygloa/com.comfunny.client (최신 커밋 상태)
 
-[현재 구현 상황]
-- 홈페이지는 Hero, About, TechStack, Portfolio, Service, Contact 섹션으로 컴포넌트 분리됨.
-- 포트폴리오 섹션은 모달로 상세 내용을 보여줌.
-- 기술 스택 섹션은 뱃지와 매트릭스 테이블 형태로 구현됨.
-- 채용 매칭 시뮬레이터(JobMatchingSection) 구현됨.
+[시스템 구조 및 라우팅]
+- 프로젝트 진입점: src/main.tsx (Vite Entry Point)
+- 라우팅 라이브러리: react-router-dom
+- URL 분기:
+  - / (루트): 회사 홈페이지 (CompanyHomepage) - Tailwind CSS 전용
+  - /portal/*: WMS 통합 포탈 (WmsPortalWithProviders) - MUI + Context 적용
 
-[요청 사항]
-이 상황에서 [새로운 기능]을 추가하려고 해.
+[홈페이지 (CompanyHomepage) 주요 구현 사항]
+- 구조: 모든 섹션이 src/pages/homepage/components/ 폴더에 분리됨.
+- 포트폴리오:
+  - 이력서 기반의 실제 프로젝트 데이터(CJ대한통운, 청주산단 WMS 등) 반영.
+  - 모달 팝업을 통해 Challenge/Solution/Tech Stack 상세 내용 제공.
+- 기술 스택:
+  - TechStackSection: Backend, Frontend 등 카테고리별로 그룹화되어 라인형 뱃지로 표시.
+  - SkillMatrixSection: 경력 데이터를 활용하여 프로젝트 x 기술 스택 매트릭스 표를 동적 생성.
+- JobMatchingSection: 채용 공고(JD) 텍스트를 붙여넣으면 내 이력과 비교하여 매칭 점수 및 개발자 메시지를 보여주는 시뮬레이터 기능 구현.
+
+[WMS 통합 포탈 (App.tsx) 주요 구현 사항]
+- 기능: WMS 외에 Dev Tools, Office Board, Playground 영역으로 확장됨.
+- Dev Tools (구현 완료):
+  - JSON to XML Converter
+  - Excel File to JSON (파일 업로드)
+  - Excel Data to JSON (클립보드 붙여넣기)
+  - String Replacer
+  - YouTube Downloader (시뮬레이션)
+  - Base64 Encoder / Decoder
+  - Text Diff Checker (텍스트 비교)
+  - API Tester (Axios 요청 시뮬레이터)
+
+[최종 요청 사항 및 다음 목표]
+- 모든 핵심 유틸리티 컴포넌트는 src/pages/blog/ 폴더에 .tsx 파일로 존재함.
+- 현재 모든 컴포넌트가 올바른 데이터를 바라보는지 확인 완료됨.
+
+다음 목표는 [여기에 새로운 요청 사항을 적어주세요. 예: WMS 기능(기준정보) 구현 시작, 또는 JWT Debugger 유틸리티 추가 등].

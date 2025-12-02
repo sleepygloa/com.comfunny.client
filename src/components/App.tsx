@@ -18,6 +18,44 @@ import ExcelFileToJson from '../pages/blog/ExcelFileToJson'; // default export�
 import StrArrChangeStr from '../pages/blog/StrArrChangeStr'; // default export로 변경됨
 import YouTubeDownloader from '../pages/blog/YouTubeDownloader';
 
+//시스템
+import Code from '../pages/wms/sys/Code';
+import Scheduler from '../pages/wms/sys/Scheduler';
+
+//기준정보
+import Biz from '../pages/wms/sd/Biz';
+import Client from '../pages/wms/sd/Client';
+import Dc from '../pages/wms/sd/Dc';
+import Item from '../pages/wms/sd/Item';
+import ItemClass from '../pages/wms/sd/ItemClass';
+import ItemUom from '../pages/wms/sd/ItemUom';
+import Area from '../pages/wms/sd/Area';
+import LocationManagement from '../pages/wms/sd/Loc';
+import Store from '../pages/wms/sd/Store';
+import Supplier from '../pages/wms/sd/Supplier';
+import Zone from '../pages/wms/sd/Zone';
+
+//입고
+import InboundPlan from '../pages/wms/ib/InboundPlan';
+import InboundExam from '../pages/wms/ib/InboundExam';
+import InboundInq from '../pages/wms/ib/InboundInq';
+
+//재고
+import StockMove from '../pages/wms/st/StockMove';
+import StockInqByItem from '../pages/wms/st/StockInqByItem';
+import StockInqByLoc from '../pages/wms/st/stockInqByLoc';
+
+//출고
+import OutboundPlan from '../pages/wms/ob/OutboundPlan';
+import OutboundAllot from '../pages/wms/ob/OutboundAllot';
+import OutboundInq from '../pages/wms/ob/OutboundInq';
+
+
+
+import { sub } from 'date-fns';
+
+
+
 // --- 아이콘 유틸리티 ---
 const iconDefaults = { width: 20, height: 20, strokeWidth: 2 };
 const Icon = ({ Icon, ...props }: any) => <Icon {...iconDefaults} {...props} />;
@@ -100,10 +138,34 @@ const MENU_ITEMS = [
     icon: Warehouse,
     subItems: [
       { name: 'Dashboard', path: '/portal/wms/dashboard' },
-      { name: '기준정보', path: '/portal/wms/master' },
-      { name: '입고관리', path: '/portal/wms/inbound' },
-      { name: '재고관리', path: '/portal/wms/stock' },
-      { name: '출고관리', path: '/portal/wms/outbound' },
+      { name: '기준정보', subItems: [
+        { name: '사업장 관리', path: '/portal/wms/sd/biz' },
+        { name: '창고 관리', path: '/portal/wms/sd/dc' },
+        { name: '구역 관리', path: '/portal/wms/sd/area' },
+        { name: '존 관리', path: '/portal/wms/sd/zone' },
+        { name: '로케이션 관리', path: '/portal/wms/sd/loc' },
+        { name: '고객사 관리', path: '/portal/wms/sd/client' },
+        { name: '품목 관리', path: '/portal/wms/sd/item' },
+        { name: '품목 분류 관리', path: '/portal/wms/sd/itemClass' },
+        { name: '품목 단위 관리', path: '/portal/wms/sd/itemUom' },
+        { name: '배송처 관리', path: '/portal/wms/sd/store' },
+      ]},
+      { name: '입고관리', subItems: [
+        { name: '입고예정', path: '/portal/wms/inboundPlan' },
+        { name: '입고검수', path: '/portal/wms/inboundExam' },
+        { name: '입고현황', path: '/portal/wms/inboundInq' },
+      ]},
+      { name: '재고관리', subItems: [
+        { name: '재고이동', path: '/portal/wms/stock/stockMove' },
+        { name: '로케이션별 재고조회', path: '/portal/wms/stock/stockInqByLoc' },
+        { name: '제품별 재고조회', path: '/portal/wms/stock/stockInqByItem' },
+      ]},
+      { name: '출고관리', subItems: [
+        { name: '출고예정', path: '/portal/wms/outboundPlan' },
+        { name: '출고지시', path: '/portal/wms/outboundAllot' },
+        { name: '출고현황', path: '/portal/wms/outboundInq' },
+      ] 
+      },
     ] 
   },
   {
@@ -179,7 +241,7 @@ const SidebarItem = ({ item, depth = 0 }: any) => {
         )}
       </div>
       {hasSub && (
-        <div className={`overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-96' : 'max-h-0'}`}>
+        <div className={`overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-[2000px]' : 'max-h-0'}`}>
           <div className="bg-slate-50/50 py-1">
             {item.subItems.map((sub: any) => (
               <SidebarItem key={sub.name} item={sub} depth={depth + 1} />
@@ -274,11 +336,34 @@ export default function App() {
             <Route path="/" element={<PortalDashboard />} />
             <Route path="wms/dashboard" element={<WmsDashboard />} />
             
+            <Route path="wms/sys/code" element={<Code />} />
+            <Route path="wms/sys/scheduler" element={<Scheduler />} />
+            
             {/* 2. WMS System Pages */}
-            <Route path="wms/master" element={<PagePlaceholder title="기준정보 관리" desc="품목, 거래처, 로케이션 관리 화면" />} />
-            <Route path="wms/inbound" element={<PagePlaceholder title="입고 관리" desc="입고 예정, 검수, 적치 작업 화면" />} />
-            <Route path="wms/stock" element={<PagePlaceholder title="재고 관리" desc="실시간 재고 조회 및 조정 화면" />} />
-            <Route path="wms/outbound" element={<PagePlaceholder title="출고 관리" desc="주문 접수, 피킹, 패킹, 출고 화면" />} />
+            <Route path="wms/sd/biz" element={<Biz />} />
+            <Route path="wms/sd/dc" element={<Dc />} />
+            <Route path="wms/sd/area" element={<Area />} />
+            <Route path="wms/sd/zone" element={<Zone />} />
+            <Route path="wms/sd/loc" element={<LocationManagement />} />
+            <Route path="wms/sd/client" element={<Client />} />
+            <Route path="wms/sd/item" element={<Item />} />
+            <Route path="wms/sd/itemClass" element={<ItemClass />} />
+            <Route path="wms/sd/itemUom" element={<ItemUom />} />
+            <Route path="wms/sd/store" element={<Store />} />
+            <Route path="wms/sd/supplier" element={<Supplier />} />
+
+
+            <Route path="wms/ib/inboundPlan" element={<InboundPlan />} />
+            <Route path="wms/ib/inboundExam" element={<InboundExam />} />
+            <Route path="wms/ib/inboundInq" element={<InboundInq />} />
+
+            <Route path="wms/st/stockMove" element={<StockMove />} />
+            <Route path="wms/st/stockInqByLoc" element={<StockInqByLoc />} />
+            <Route path="wms/st/stockInqByItem" element={<StockInqByItem />} />
+
+            <Route path="wms/ob/outboundPlan" element={<OutboundPlan />} />
+            <Route path="wms/ob/outboundAllot" element={<OutboundAllot />} />
+            <Route path="wms/ob/outboundInq" element={<OutboundInq />} />
 
             {/* 3. Office Board Pages */}
             <Route path="board/notice" element={<PagePlaceholder title="공지사항" desc="사내 주요 공지사항 게시판" />} />

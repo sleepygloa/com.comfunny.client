@@ -7,6 +7,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
 
+// 스타일 컴포넌트
 const PageTitleContainer = styled("div")({
   display: "flex",
   justifyContent: "space-between",
@@ -38,7 +39,12 @@ const StyledButtonGroup = styled(ButtonGroup)({
   },
 });
 
-export function PageTitle({ title }) {
+// PageTitle Props 인터페이스
+interface PageTitleProps {
+  title: string;
+}
+
+export function PageTitle({ title }: PageTitleProps) {
   return (
     <PageTitleContainer>
       <Typography variant="h5" sx={{ fontWeight: "bold", color: "#333" }}>
@@ -48,7 +54,25 @@ export function PageTitle({ title }) {
   );
 }
 
-export function SearchBar(props) {
+// SearchBar Props 인터페이스
+interface SearchBarProps {
+  onClickSelect?: () => void;
+  onClickAdd?: () => void;
+  onClickSave?: () => void;
+  onClickDel?: () => void;
+  onClickUpload?: () => void;
+  onClickCustom1?: () => void;
+  onClickCustom2?: () => void;
+  onClickCustom3?: () => void;
+  onClickCustom4?: () => void;
+  onClickCustomNm1?: string;
+  onClickCustomNm2?: string;
+  onClickCustomNm3?: string;
+  onClickCustomNm4?: string;
+  children?: React.ReactNode;
+}
+
+export function SearchBar(props: SearchBarProps) {
   const {
     onClickSelect,
     onClickAdd,
@@ -67,7 +91,7 @@ export function SearchBar(props) {
   } = props;
 
   return (
-    <StyledBox component="form" noValidate autoComplete="off">
+    <StyledBox component="form"  >
       <Box>{children}</Box>
       <StyledButtonGroup size="small" aria-label="button group">
         {onClickSelect && (

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import DaumPostcode from 'react-daum-postcode';
-import { useMediaQuery, useTheme, Dialog, DialogActions, DialogContent, DialogTitle, Button, Divider } from '@mui/material';
-import { useModal } from "../../../context/ModalContext.js";
+import { DialogActions, DialogContent, Button } from '@mui/material';
+import { useModal } from "../../../context/ModalContext"; // .js 제거
 
+// 테마 객체
 const themeObj = {
   bgColor: '#FFFFFF', //바탕 배경색
   pageBgColor: '#FFFFFF', //페이지 배경색
@@ -10,9 +11,15 @@ const themeObj = {
   emphTextColor: '#222222', //강조 글자색
 };
 
-export default function DaumPostcodeCommon(props){
-  const { modals, closeModal } = useModal();
-  const key = 'FIND_CMMN_POST'
+// Props 인터페이스
+interface DaumPostcodeCommonProps {
+  onComplete?: (data: any) => void;
+  onClose?: () => void;
+}
+
+export default function DaumPostcodeCommon(props: DaumPostcodeCommonProps) {
+  const { closeModal } = useModal();
+  const key = 'FIND_CMMN_POST';
 
   return (
     <>
@@ -21,10 +28,10 @@ export default function DaumPostcodeCommon(props){
           theme={themeObj}
           onComplete={props.onComplete}
           onClose={props.onClose}
+          style={{ width: '100%', height: '400px' }} // 높이 지정 필요할 수 있음
         />
       </DialogContent>
       <DialogActions>
-          {/* <Button onClick={() => handleSubmit(key)}>확인</Button> */}
           <Button onClick={() => closeModal(key)}>닫기</Button>
       </DialogActions>
     </>

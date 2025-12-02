@@ -1,27 +1,27 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React from "react";
 import { TextField } from "@mui/material";
-import numeral from 'numeral';
 
 // 값이 undefined, null, '' 인지 체크
-export function isEmpty(value) {
+export function isEmpty(value: any): boolean {
     return value === undefined || value === null || value === '';
 }
-export function isNotEmpty(value) {
+
+export function isNotEmpty(value: any): boolean {
     return !isEmpty(value);
 }
 
 // 날짜 변환 YYYYMMDD -> YYYY-MM-DD
-export function gvDateToYYYY_MM_DD(date) {    
+export function gvDateToYYYY_MM_DD(date: string): string {    
     return isEmpty(date) ? '' : `${date.substring(0, 4)}-${date.substring(4, 6)}-${date.substring(6, 8)}`;
 }
 
 // 날짜 변환 YYYY-MM-DD -> YYYYMMDD
-export function gvDateToYYYYMMDD(date) {
+export function gvDateToYYYYMMDD(date: string): string {
     return isEmpty(date) ? '' : date.replace(/-/g, '');
 }
 
 // 오늘 날짜 구하기
-export function gvGetToday() {
+export function gvGetToday(): string {
     const date = new Date();
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -30,7 +30,7 @@ export function gvGetToday() {
 }
 
 // 날짜 포맷 변환
-export function formatDate(date) {
+export function formatDate(date: string | Date | number): string {
     const d = new Date(date);
     const year = d.getFullYear();
     const month = String(d.getMonth() + 1).padStart(2, '0');
@@ -39,7 +39,7 @@ export function formatDate(date) {
 }
 
 // 그리드 선택한 행의 데이터 조회
-export function gvGetRowData(data, id) {
+export function gvGetRowData(data: any[], id: number | string): any {
     if (isEmpty(id) || id === -1) {
         alert('선택된 데이터가 없습니다.');
         return false;
@@ -52,18 +52,18 @@ export function gvGetRowData(data, id) {
             return item;
         }
     }
+    return null;
 }
 
 // 그리드의 체크한 행의 데이터리스트 조회
-export function gvGetRowDataListOfChk(data, ids) {
-    
+export function gvGetRowDataListOfChk(data: any[], ids: (number | string)[]): any[] {
     return data.filter(item => {
         return ids.includes(item.id);
     });
 }
 
 // 그리드의 행 추가 및 신규 상태 추가
-export function gvDataGridAddRowAndStatus(dataList, data, addData) {
+export function gvDataGridAddRowAndStatus(dataList: any[], data: any[], addData: any): any[] {
     const newDataList = [...dataList];
     data.forEach((item, index) => {
         const newRow = {
@@ -77,18 +77,20 @@ export function gvDataGridAddRowAndStatus(dataList, data, addData) {
     return newDataList;
 }
 
-//그리드 드랍다운 label 보이기
-export const gvGridDropdownDisLabel = ({ value, field, api }) => {
+// 그리드 드랍다운 label 보이기
+export const gvGridDropdownDisLabel = ({ value, field, api }: { value: any, field: string, api: any }): string => {
+    if (!api || typeof api.getColumn !== 'function') return value;
+
     const colDef = api.getColumn(field);
     const option = colDef.valueOptions
-        ? colDef.valueOptions.find((params) => value === params.value)
+        ? colDef.valueOptions.find((params: any) => value === params.value)
         : {};
     return option && option.label ? option.label : '';
 };
 
 
 // 핸드폰 번호 포맷
-export const gvGridFieldFormatPhoneNumber = (value) => {
+export const gvGridFieldFormatPhoneNumber = (value: string): string => {
     if (!value) return '';
     const phoneNumber = value.replace(/[^\d]/g, '');
     const phoneNumberLength = phoneNumber.length;
@@ -98,7 +100,7 @@ export const gvGridFieldFormatPhoneNumber = (value) => {
 };
 
 // 팩스 번호 포맷
-export const gvGridFieldFormatFaxNumber = (value) => {
+export const gvGridFieldFormatFaxNumber = (value: string): string => {
     if (!value) return '';
     const phoneNumber = value.replace(/[^\d]/g, '');
     const phoneNumberLength = phoneNumber.length;
@@ -115,18 +117,25 @@ export const gvGridFieldFormatFaxNumber = (value) => {
 };
 
 // 숫자 포맷
-export const gvGridFieldNumberFormatter = (prop) => {
-    return isEmpty(prop.value) ? '' : numeral(prop.value).format('0,0');
+export const gvGridFieldNumberFormatter = (prop: { value: any }): string => {
+    return isEmpty(prop.value) ? '' : Number(prop.value).toLocaleString();
 };
 
-// 이메일 포맷 검증 및 입력 처리
-export const gvGridFieldEmailInput = ({ api, value, id, field }) => {
-    const onChangeHandle = (event) => {
+// 이메일 포맷 검증 및 입력 처리 컴포넌트
+interface EmailInputProps {
+    api: any;
+    value: string;
+    id: number | string;
+    field: string;
+}
+
+export const gvGridFieldEmailInput: React.FC<EmailInputProps> = ({ api, value, id, field }) => {
+    const onChangeHandle = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
         api.setEditCellValue({ id, field, value: value }, event);
     };
 
-    const onBlurHandle = (event) => {
+    const onBlurHandle = (event: React.FocusEvent<HTMLInputElement>) => {
         const { value } = event.target;
         if (value === '') return;
         const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
@@ -136,9 +145,9 @@ export const gvGridFieldEmailInput = ({ api, value, id, field }) => {
         }
     };
 
-    const onKeyDownHandle = (event) => {
+    const onKeyDownHandle = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
-            onBlurHandle(event);
+            (event.target as HTMLInputElement).blur();
         }
     };
 
@@ -152,9 +161,13 @@ export const gvGridFieldEmailInput = ({ api, value, id, field }) => {
         />
     );
 };
+
 // 숫자 필드 편집 전 처리 함수
-export function gvGridFieldNumberPreEdit(params) {
-    let value = params.props.value;
+// [수정] params 타입을 any로 변경하여 GridPreProcessEditCellProps와의 타입 불일치 해결
+export function gvGridFieldNumberPreEdit(params: any): any {
+    // DataGrid 버전에 따라 params 구조가 다를 수 있음 (params.props 또는 params 자체에 value 존재)
+    const props = params.props || params; 
+    let value = props.value;
   
     // 기본값이 undefined 또는 null일 경우 0으로 설정
     if (value === undefined || value === null) {
@@ -164,35 +177,30 @@ export function gvGridFieldNumberPreEdit(params) {
       value = parseFloat(value.toString().replace(/,/g, ''));
     }
   
-    // 변환된 숫자를 반환
-    return { ...params, value };
-  }
+    // 변환된 value를 포함한 props 반환
+    return { ...props, value };
+}
   
 // 숫자 필드의 문자열을 파싱하여 숫자 형식으로 변환하는 함수
-export function gvGridFieldNumberParser(value) {
-    // 숫자가 아닐 경우 0으로 변환
+export function gvGridFieldNumberParser(value: any): number {
     if (!value) return 0;
-    
-    // 쉼표 등 불필요한 문자를 제거하고 숫자로 변환
     const parsedValue = parseFloat(value.toString().replace(/,/g, ''));
-    
-    // 숫자가 아닐 경우 0 반환, 숫자인 경우 변환된 숫자 반환
     return isNaN(parsedValue) ? 0 : parsedValue;
-  }
+}
   
-
 // gvSetDropdownData: 콤보박스에서 사용할 수 있도록 데이터를 변환합니다.
-export const gvSetDropdownData = (data) => {
+export const gvSetDropdownData = (data: any[]): { value: any, label: string }[] => {
     return data.map(item => ({
         value: item.code,
         label: item.name,
     }));
 };
-// gvSetLevelDropdownData: 1단계 레벨 구조로 데이터를 변환하여 특정 상위 분류에 맞는 하위 분류 데이터를 제공합니다.
-export const gvSetLevelDropdownData = (data) => {
-    const result = {};
+
+// gvSetLevelDropdownData: 1단계 레벨 구조로 데이터를 변환
+export const gvSetLevelDropdownData = (data: any[]): Record<string, { value: any, label: string }[]> => {
+    const result: Record<string, { value: any, label: string }[]> = {};
     data.forEach(item => {
-        const parentCode = item.parentCode; // 상위 분류 코드
+        const parentCode = item.parentCode || item.ref1; // parentCode 또는 ref1 사용
         if (!result[parentCode]) {
             result[parentCode] = [];
         }
@@ -204,18 +212,20 @@ export const gvSetLevelDropdownData = (data) => {
     return result;
 };
 
-
-// gvSetLevel2DropdownData: 2단계 레벨 구조로 데이터를 변환하여 특정 상위 분류가 선택되면 하위 분류가 맞춰 표시되도록 합니다.
-export const gvSetLevel2DropdownData = (data) => {
-    const result = {};
+// gvSetLevel2DropdownData: 2단계 레벨 구조로 데이터를 변환
+export const gvSetLevel2DropdownData = (data: any[]): Record<string, Record<string, { value: any, label: string }[]>> => {
+    const result: Record<string, Record<string, { value: any, label: string }[]>> = {};
     data.forEach(item => {
-        if (!result[item.parentCode]) {
-            result[item.parentCode] = {};
+        const parent = item.parentCode || item.ref1;
+        const subParent = item.subParentCode || item.ref2;
+
+        if (!result[parent]) {
+            result[parent] = {};
         }
-        if (!result[item.parentCode][item.subParentCode]) {
-            result[item.parentCode][item.subParentCode] = [];
+        if (!result[parent][subParent]) {
+            result[parent][subParent] = [];
         }
-        result[item.parentCode][item.subParentCode].push({
+        result[parent][subParent].push({
             value: item.code,
             label: item.name,
         });

@@ -1,43 +1,52 @@
 import React, { useEffect, useState, useCallback } from "react";
+import { GridColDef, GridRenderCellParams, GridValueFormatterParams } from '@mui/x-data-grid';
+
+// context
+import { useCommonData } from "../../../context/CommonDataContext";
+import { useModal } from "../../../context/ModalContext";
 
 // components
-import PageTitle from "../../../components/PageTitle/PageTitle.js";
+import PageTitle from "../../../components/PageTitle/PageTitle";
 import { SearchBar } from "../../../components/SearchBar/SearchBar";
-import { SchTextField } from "../../../components/SearchBar/CmmnTextField.js";
-import { client } from '../../../contraints.js';
-import { gvGridDropdownDisLabel, gvGetRowData } from "../../../components/Common.js";
-import { ComDeGrid } from "../../../components/Grid/ComDeGrid.js";
-import { useCommonData } from "../../../context/CommonDataContext.js";
-import { useModal } from "../../../context/ModalContext.js";
+import { SchTextField } from "../../../components/SearchBar/CmmnTextField";
+// [수정] 오타 수정 및 확장자 제거
+import { client } from '../../../constraints';
+import { 
+  gvGridDropdownDisLabel, 
+  gvGetRowData 
+} from "../../../components/Common";
+import { ComDeGrid } from "../../../components/Grid/ComDeGrid";
 
-// 필드 정보를 관리하는 객체
-const fieldLabels = {
-  clientCd: '고객사',
-  itemCd: '상품코드',
-  itemClassCd: '상품분류코드',
-  largeClassCd: '대분류코드',
-  largeClassNm: '대분류명',
-  middleClassCd: '중분류코드',
-  middleClassNm: '중분류명',
-  smallClassCd: '소분류코드',
-  smallClassNm: '소분류명',
-  remark: '비고',
-  useYn: '사용여부',
-};
+// --- 데이터 타입 정의 ---
+interface ItemClassData {
+  id: number;
+  clientCd: string;
+  itemClassCd: string;
+  largeClassCd: string;
+  largeClassNm: string;
+  middleClassCd: string;
+  middleClassNm: string;
+  smallClassCd: string;
+  smallClassNm: string;
+  useYn: string;
+  remark: string;
+  [key: string]: any;
+}
 
 export default function ItemClassManagement() {
   const PRO_URL = '/wms/sd/itemClass';
   const { openModal } = useModal();
   const { getCmbOfGlobalData } = useCommonData();
 
-  const [selRowId, setSelRowId] = useState(-1);
-  const [dataList, setDataList] = useState([]);
-  const [clientCdCmb, setClientCdCmb] = useState([]);
-  const [useYnCmb, setUseYnCmb] = useState([]);
+  const [selRowId, setSelRowId] = useState<number>(-1);
+  const [dataList, setDataList] = useState<ItemClassData[]>([]);
+  const [clientCdCmb, setClientCdCmb] = useState<any[]>([]);
+  const [useYnCmb, setUseYnCmb] = useState<any[]>([]);
   const [schValues, setSchValues] = useState({ codeCd: "" });
 
-  const initData = {
-    id: dataList.length + 1,
+  // 초기 데이터 값
+  const initData: ItemClassData = {
+    id: 0, // 초기값 (추가 시 재설정)
     clientCd: '',
     itemClassCd: '',
     largeClassCd: '',
@@ -50,14 +59,26 @@ export default function ItemClassManagement() {
     remark: '',
   };
 
+  const [values, setValues] = useState<ItemClassData>(initData);
+
   useEffect(() => {
     if (clientCdCmb.length === 0) setClientCdCmb(getCmbOfGlobalData("CLIENT_CD", ''));
     if (useYnCmb.length === 0) setUseYnCmb(getCmbOfGlobalData('CMMN_CD', 'USE_YN'));
-  }, [clientCdCmb, useYnCmb]);
+  }, [clientCdCmb, useYnCmb, getCmbOfGlobalData]);
 
-  const columns = [
+  // 컬럼 정의
+  const columns: GridColDef[] = [
     { field: "id", headerName: "ID", align: "center", width: 20 },
-    { field: "clientCd", headerName: "고객사코드", editable: true, align: "center", type: "singleSelect", valueFormatter: gvGridDropdownDisLabel, valueOptions: clientCdCmb },
+    { 
+      field: "clientCd", 
+      headerName: "고객사코드", 
+      editable: true, 
+      align: "center", 
+      type: "singleSelect", 
+      valueFormatter: gvGridDropdownDisLabel, 
+      valueOptions: clientCdCmb,
+      width: 120 
+    },
     { field: "itemClassCd", headerName: "상품분류코드", editable: false, align: "left", width: 100 },
     { field: "largeClassCd", headerName: "대분류코드", editable: true, align: "left", width: 100 },
     { field: "largeClassNm", headerName: "대분류명", editable: true, align: "left", width: 100 },
@@ -65,25 +86,37 @@ export default function ItemClassManagement() {
     { field: "middleClassNm", headerName: "중분류명", editable: true, align: "left", width: 100 },
     { field: "smallClassCd", headerName: "소분류코드", editable: true, align: "left", width: 100 },
     { field: "smallClassNm", headerName: "소분류명", editable: true, align: "left", width: 100 },
-    { field: "useYn", headerName: "사용여부", editable: true, align: "center", type: "singleSelect", valueFormatter: gvGridDropdownDisLabel, valueOptions: useYnCmb },
+    { 
+      field: "useYn", 
+      headerName: "사용여부", 
+      editable: true, 
+      align: "center", 
+      type: "singleSelect", 
+      valueFormatter: gvGridDropdownDisLabel, 
+      valueOptions: useYnCmb 
+    },
     { field: "remark", headerName: "비고", editable: true, align: "left", width: 300 },
   ];
 
-  const onChangeSearch = (event, id) => {
-    setSchValues({ ...schValues, [id]: event });
+  const onChangeSearch = (event: any, id?: string) => {
+    if (id) {
+      setSchValues({ ...schValues, [id]: event });
+    }
   };
 
   const fnSearch = () => {
     const data = { codeCd: schValues.codeCd };
     client.post(`${PRO_URL}/selectItemClassList`, data)
-      .then(res => setDataList(res.data))
-      .catch(error => console.log('error = ', error));
+      .then((res) => setDataList(res.data))
+      .catch((error) => console.log('error = ', error));
   };
 
   const onClickSelect = fnSearch;
 
   const onClickAdd = () => {
-    setDataList(prevDataList => [...prevDataList, { ...initData, id: prevDataList.length + 1 }]);
+    const newId = dataList.length > 0 ? Math.max(...dataList.map(d => d.id)) + 1 : 1;
+    const newRow = { ...initData, id: newId };
+    setDataList((prevDataList) => [...prevDataList, newRow]);
   };
 
   const onClickSave = () => {
@@ -96,7 +129,7 @@ export default function ItemClassManagement() {
           alert('저장되었습니다.');
           fnSearch();
         })
-        .catch(error => console.log('error = ', error));
+        .catch((error) => console.log('error = ', error));
     });
   };
 
@@ -110,7 +143,7 @@ export default function ItemClassManagement() {
           alert('삭제되었습니다.');
           fnSearch();
         })
-        .catch(error => console.log('error = ', error));
+        .catch((error) => console.log('error = ', error));
     });
   };
 
@@ -121,18 +154,23 @@ export default function ItemClassManagement() {
     }
     openModal('', '', '선택한 행을 복사 하시겠습니까?', () => {
       const rowData = gvGetRowData(dataList, selRowId);
-      const copyData = { ...rowData, id: dataList.length + 1, itemClassCd: '' };
-      setDataList(prevDataList => [...prevDataList, copyData]);
+      // ID는 새로 생성하고, 상품분류코드는 초기화
+      const newId = dataList.length > 0 ? Math.max(...dataList.map(d => d.id)) + 1 : 1;
+      const copyData = { ...rowData, id: newId, itemClassCd: '' };
+      setDataList((prevDataList) => [...prevDataList, copyData]);
     });
   };
 
-  const handleGridCellClick = (e) => {
+  const handleGridCellClick = (e: any) => {
+    setValues(e.row);
     setSelRowId(e.row.id);
   };
 
   const handleEditCellChangeCommitted = useCallback(
-    ({ id, field, value }) => {
-      setDataList(prevDataList => prevDataList.map(row => (row.id === id ? { ...row, [field]: value } : row)));
+    ({ id, field, value }: any) => {
+      setDataList((prevDataList) => 
+        prevDataList.map((row) => (row.id === id ? { ...row, [field]: value } : row))
+      );
     },
     []
   );
@@ -141,7 +179,7 @@ export default function ItemClassManagement() {
     <>
       <PageTitle title="상품분류 관리" />
       <SearchBar onClickSelect={onClickSelect} onClickAdd={onClickAdd} onClickSave={onClickSave} onClickDel={onClickDel} onClickCustom1={onClickCopy} onClickCustomNm1="복사">
-        <SchTextField id="codeCd" label="코드/명" div="3" onChange={onChangeSearch} />
+        <SchTextField id="codeCd" label="코드/명" onChange={onChangeSearch} />
       </SearchBar>
 
       <ComDeGrid

@@ -10,19 +10,21 @@ import {
   DialogContent,
   DialogActions,
   Button,
+  SelectChangeEvent,
 } from '@mui/material';
 
 // Common imports
-import { client } from '../../../contraints.js';
-import { useModal } from "../../../context/ModalContext.js";
+// [수정] 오타 수정 및 확장자 제거
+import { client } from '../../../constraints';
+import { useModal } from "../../../context/ModalContext";
 import {
   gvSetDropdownData,
   gvSetLevelDropdownData,
   gvSetLevel2DropdownData,
-} from "../../../components/Common.js";
+} from "../../../components/Common";
 
 // Field labels
-const fieldLabels = {
+const fieldLabels: Record<string, string> = {
   dcCd: '물류센터',
   areaCd: '구역코드',
   zoneCd: '지역코드',
@@ -34,12 +36,27 @@ const fieldLabels = {
   levCdTo: '단(To)'
 };
 
+// FormData 타입 정의
+interface LocMultiRegFormData {
+  dcCd: string;
+  areaCd: string;
+  zoneCd: string;
+  linCdFrom: string;
+  linCdTo: string;
+  rowCdFrom: string;
+  rowCdTo: string;
+  levCdFrom: string;
+  levCdTo: string;
+  [key: string]: string; // 인덱스 시그니처 추가 (동적 접근용)
+}
+
 function LocMultiReg() {
   const key = 'LOG_MULTI_REG';
   const PRO_URL = '/wms/sd/loc';
   const { openModal, closeModal, updateModalData, getModalData } = useModal();
-  const [errors, setErrors] = useState({});
-  const [formData, setFormData] = useState({
+  
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [formData, setFormData] = useState<LocMultiRegFormData>({
     dcCd: '',
     areaCd: '',
     zoneCd: '',
@@ -51,11 +68,12 @@ function LocMultiReg() {
     levCdTo: ''
   });
 
-  const [dcCmb, setDcCmb] = useState([]);
-  const [dcAreaCmb, setDcAreaCmb] = useState([]);
-  const [dcAreaZoneCmb, setDcAreaZoneCmb] = useState([]);
+  const [dcCmb, setDcCmb] = useState<any[]>([]);
+  const [dcAreaCmb, setDcAreaCmb] = useState<any>({});
+  const [dcAreaZoneCmb, setDcAreaZoneCmb] = useState<any>({});
 
-  const handleChange = (e) => {
+  // Select 및 TextField 변경 핸들러 통합
+  const handleChange = (e: SelectChangeEvent<string> | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     const error = validateInput(name, value);
 
@@ -71,7 +89,8 @@ function LocMultiReg() {
       [name]: error
     }));
 
-    updateModalData(key, { ...getModalData(key), [name]: value });
+    // 모달 데이터 업데이트 (필요시)
+    // updateModalData(key, { ...getModalData(key), [name]: value });
   };
 
   useEffect(() => {
@@ -82,7 +101,7 @@ function LocMultiReg() {
 
   const fnSearchDc = async () => {
     try {
-      const res = await client.post(`${PRO_URL}/selectDcList`);
+      const res = await client.post(`${PRO_URL}/selectDcList`, {});
       setDcCmb(gvSetDropdownData(res.data));
     } catch (error) {
       console.error('Error fetching DC list:', error);
@@ -91,7 +110,7 @@ function LocMultiReg() {
 
   const fnSearchDcArea = async () => {
     try {
-      const res = await client.post(`${PRO_URL}/selectDcAreaList`);
+      const res = await client.post(`${PRO_URL}/selectDcAreaList`, {});
       setDcAreaCmb(gvSetLevelDropdownData(res.data));
     } catch (error) {
       console.error('Error fetching DC area list:', error);
@@ -100,25 +119,32 @@ function LocMultiReg() {
 
   const fnSearchDcAreaZone = async () => {
     try {
-      const res = await client.post(`${PRO_URL}/selectDcAreaZoneList`);
+      const res = await client.post(`${PRO_URL}/selectDcAreaZoneList`, {});
       setDcAreaZoneCmb(gvSetLevel2DropdownData(res.data));
     } catch (error) {
       console.error('Error fetching DC area zone list:', error);
     }
   };
 
-  const validateInput = (id, value) => {
+  const validateInput = (id: string, value: string) => {
     if (id === 'dcCd' || id === 'areaCd' || id === 'zoneCd') return '';
-    if (!/^(0[1-9]|[1-9]\d)$/.test(value)) {
-      return "형식에 맞게 입력하세요 (예: 01, 02, ...)";
+    
+    // 숫자 2자리 형식 검사 (01, 02 ...)
+    if (!/^(0[1-9]|[1-9]\d)$/.test(value) && value !== '') {
+      return "형식에 맞게 입력하세요 (예: 01, 02 ...)";
     }
 
     const baseId = id.replace('From', '').replace('To', '');
     const fromId = `${baseId}From`;
     const toId = `${baseId}To`;
 
-    const fromValue = id.includes('From') ? value : formData[fromId];
-    const toValue = id.includes('To') ? value : formData[toId];
+    // From/To 비교 로직
+    // 현재 입력 중인 값이 From이면 기존 To값과 비교, 반대면 반대로 비교
+    let fromValue = formData[fromId];
+    let toValue = formData[toId];
+
+    if (id.includes('From')) fromValue = value;
+    if (id.includes('To')) toValue = value;
 
     if (fromValue && toValue && fromValue > toValue) {
       return `${fieldLabels[id]}의 From 값은 To 값보다 작거나 같아야 합니다.`;
@@ -129,13 +155,19 @@ function LocMultiReg() {
 
   const handleSubmit = () => {
     const requiredFields = ['dcCd', 'areaCd', 'zoneCd', 'linCdFrom', 'linCdTo', 'rowCdFrom', 'rowCdTo', 'levCdFrom', 'levCdTo'];
-    const hasErrors = requiredFields.some((field) => !formData[field]);
-
-    if (hasErrors) {
-      requiredFields.forEach((field) => {
-        if (!formData[field]) openModal('', 'I', `${fieldLabels[field]}을 입력해주세요.`);
-      });
+    
+    // 필수값 체크
+    const emptyField = requiredFields.find(field => !formData[field]);
+    if (emptyField) {
+      openModal('', 'I', `${fieldLabels[emptyField]}을(를) 입력해주세요.`);
       return;
+    }
+
+    // 유효성 에러 체크
+    const hasErrors = Object.values(errors).some(err => err !== '');
+    if (hasErrors) {
+       openModal('', 'I', '입력값을 확인해주세요.');
+       return;
     }
 
     openModal('', '', '저장 하시겠습니까?', async () => {
@@ -180,7 +212,7 @@ function LocMultiReg() {
                 onChange={handleChange}
                 disabled={!formData.dcCd}
               >
-                {(dcAreaCmb[formData.dcCd] || []).map((item) => (
+                {(dcAreaCmb[formData.dcCd] || []).map((item: any) => (
                   <MenuItem key={item.value} value={item.value}>
                     {item.label}
                   </MenuItem>
@@ -197,7 +229,7 @@ function LocMultiReg() {
                 onChange={handleChange}
                 disabled={!formData.areaCd}
               >
-                {(dcAreaZoneCmb[formData.dcCd]?.[formData.areaCd] || []).map((item) => (
+                {(dcAreaZoneCmb[formData.dcCd]?.[formData.areaCd] || []).map((item: any) => (
                   <MenuItem key={item.value} value={item.value}>
                     {item.label}
                   </MenuItem>
@@ -206,26 +238,40 @@ function LocMultiReg() {
             </FormControl>
             <Grid container spacing={2}>
               {['linCd', 'rowCd', 'levCd'].map((cd) => (
-                <Grid item xs={6} key={cd}>
-                  <TextField
-                    label={`${fieldLabels[`${cd}From`]}`}
-                    variant="outlined"
-                    value={formData[`${cd}From`]}
-                    onChange={handleChange}
-                    fullWidth
-                    name={`${cd}From`}
-                    error={!!errors[`${cd}From`]}
-                    helperText={errors[`${cd}From`]}
-                  />
-                </Grid>
+                <React.Fragment key={cd}>
+                    <Grid item xs={6}>
+                    <TextField
+                        label={`${fieldLabels[`${cd}From`]}`}
+                        variant="outlined"
+                        value={formData[`${cd}From`]}
+                        onChange={handleChange}
+                        fullWidth
+                        name={`${cd}From`}
+                        error={!!errors[`${cd}From`]}
+                        helperText={errors[`${cd}From`]}
+                    />
+                    </Grid>
+                    <Grid item xs={6}>
+                    <TextField
+                        label={`${fieldLabels[`${cd}To`]}`}
+                        variant="outlined"
+                        value={formData[`${cd}To`]}
+                        onChange={handleChange}
+                        fullWidth
+                        name={`${cd}To`}
+                        error={!!errors[`${cd}To`]}
+                        helperText={errors[`${cd}To`]}
+                    />
+                    </Grid>
+                </React.Fragment>
               ))}
             </Grid>
           </Grid>
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleSubmit}>확인</Button>
-        <Button onClick={() => closeModal(key)}>닫기</Button>
+        <Button onClick={handleSubmit} variant="contained" color="primary">확인</Button>
+        <Button onClick={() => closeModal(key)} variant="outlined" color="secondary">닫기</Button>
       </DialogActions>
     </>
   );

@@ -1,29 +1,55 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { Box, Typography, IconButton } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
+import { GridColDef, GridRenderCellParams, GridValueFormatterParams } from '@mui/x-data-grid';
 
-// context
-import { useCommonData } from "../../../context/CommonDataContext.js";
-import { useModal } from "../../../context/ModalContext.js";
+// context (확장자 생략 가능)
+import { useCommonData } from "../../../context/CommonDataContext";
+import { useModal } from "../../../context/ModalContext";
 
 // components
 import PageTitle from "../../../components/PageTitle/PageTitle";
-import { SearchBar } from "../../../components/SearchBar/SearchBar";
-import { SchTextField } from "../../../components/SearchBar/CmmnTextField.js";
-import { client } from '../../../contraints.js';
+// SearchBar 등은 프로젝트 구조에 따라 import 경로 확인 필요
+import { SchTextField } from "../../../components/SearchBar/CmmnTextField"; // 오타 수정됨 (CmmnTextFiel -> CmmnTextField)
+import { client } from '../../../constraints'; // 오타 수정됨 (contraints -> constraints)
 import {
   gvGridDropdownDisLabel,
   gvGridFieldFormatFaxNumber,
   gvGridFieldFormatPhoneNumber,
   gvGetRowData,
-} from "../../../components/Common.js";
-import DaumPostcodeShppingMall from "../maps/DaumPostcodeShppingMall.js";
-import { ComDeGrid } from "../../../components/Grid/ComDeGrid.js";
+} from "../../../components/Common";
+import DaumPostcodeShppingMall from "../maps/DaumPostcodeShppingMall";
+import { ComDeGrid } from "../../../components/Grid/ComDeGrid";
+
+// 데이터 타입 정의
+interface DcData {
+  id: number;
+  dcCd: string;
+  dcNm: string;
+  bizNo: string;
+  bizNm: string;
+  deliveryNm?: string;
+  zip?: string;
+  jibunAddr?: string;
+  roadAddr?: string;
+  detailAddr?: string;
+  lat?: string;
+  lon?: string;
+  telNo: string;
+  faxNo: string;
+  useYn: string;
+  etcNo1?: string;
+  etcNo2?: string;
+  etcTp1?: string;
+  etcTp2?: string;
+  [key: string]: any;
+}
 
 // 스타일 적용한 DataGrid 컬럼
-const columns = [
+const columns: GridColDef[] = [
   { field: "id", headerName: "ID", align: "center", width: 60 },
-  { field: "bizCd", headerName: "사업자코드", editable: true, align: "left", width: 180 },
+  { field: "dcCd", headerName: "물류창고코드", editable: true, align: "left", width: 180 },
+  { field: "dcNm", headerName: "물류창고명", editable: true, align: "left", width: 250 },
   { field: "bizNo", headerName: "사업자번호", editable: true, align: "left", width: 120 },
   { field: "bizNm", headerName: "사업자명", editable: true, align: "left", width: 250 },
   /* 주소 시작 */
@@ -33,7 +59,7 @@ const columns = [
     editable: false,
     align: "left",
     width: 180,
-    renderCell: (params) => (
+    renderCell: (params: GridRenderCellParams) => (
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
         <Typography variant="body2">{params.value}</Typography>
         <IconButton size="small"><SearchIcon /></IconButton>
@@ -53,7 +79,7 @@ const columns = [
     editable: true,
     align: "left",
     width: 120,
-    valueFormatter: (params) => gvGridFieldFormatPhoneNumber(params.value),
+    valueFormatter: (params: GridValueFormatterParams) => gvGridFieldFormatPhoneNumber(params.value),
   },
   {
     field: "faxNo",
@@ -61,7 +87,7 @@ const columns = [
     editable: true,
     align: "left",
     width: 120,
-    valueFormatter: (params) => gvGridFieldFormatFaxNumber(params.value),
+    valueFormatter: (params: GridValueFormatterParams) => gvGridFieldFormatFaxNumber(params.value),
   },
   {
     field: "useYn",
@@ -79,40 +105,41 @@ const columns = [
   { field: "etcTp2", headerName: "기타유형2", editable: true, align: "left", width: 80 },
 ];
 
-export default function Biz() {
-  const PRO_URL = '/wms/sd/biz';
+export default function Dc() {
+  const PRO_URL = '/wms/sd/dc';
   const { openModal } = useModal();
-  const { getCmbOfGlobalData } = useCommonData();
+  // const { getCmbOfGlobalData } = useCommonData(); // 사용하지 않는 변수는 주석 처리
 
-  const [dataList, setDataList] = useState([]);
-  const [selRowId, setSelRowId] = useState(-1);
-  const [callbackDelivery, setCallbackDelivery] = useState(null);
+  const [dataList, setDataList] = useState<DcData[]>([]);
+  const [selRowId, setSelRowId] = useState<number>(-1);
+  const [callbackDelivery, setCallbackDelivery] = useState<any>(null);
   const [schValues, setSchValues] = useState({ codeCd: "" });
-  const [values, setValues] = useState({
-    id: dataList.length + 1,
-    bizCd: '',
-    bizNo: "",
-    bizNm: "",
-    ceoNm: "",
-    postNo: "",
-    basicAddr: "",
-    detailAddr: "",
-    bizTp: "",
-    bizKnd: "",
-    telNo: "",
-    faxNo: "",
-    contactNm: "",
-    contactTelNo: "",
-    contactEmail: "",
-    countryCd: "",
-    cityCd: "",
-    userCol1: "",
-    userCol2: "",
-    userCol3: "",
-    userCol4: "",
-    userCol5: "",
-    remark: "",
-    useYn: "Y",
+  const [values, setValues] = useState<DcData>({
+    id: 0, // 초기값 설정
+    dcCd: '',
+    dcNm: '',
+    bizNo: '',
+    bizNm: '',
+    ceoNm: '',
+    postNo: '',
+    basicAddr: '',
+    detailAddr: '',
+    bizTp: '',
+    bizKnd: '',
+    telNo: '',
+    faxNo: '',
+    contactNm: '',
+    contactTelNo: '',
+    contactEmail: '',
+    countryCd: '',
+    cityCd: '',
+    userCol1: '',
+    userCol2: '',
+    userCol3: '',
+    userCol4: '',
+    userCol5: '',
+    remark: '',
+    useYn: 'Y',
   });
 
   useEffect(() => {
@@ -128,13 +155,15 @@ export default function Biz() {
     }
   }, [callbackDelivery, dataList, selRowId]);
 
-  const onChangeSearch = (event, id) => {
-    setSchValues({ ...schValues, [id]: event });
+  const onChangeSearch = (value: string, id?: string) => {
+    if (id) {
+      setSchValues({ ...schValues, [id]: value });
+    }
   };
 
   const fnSearch = () => {
     const data = { codeCd: schValues.codeCd };
-    client.post(`${PRO_URL}/selectList`, data)
+    client.post(`${PRO_URL}/selectDcList`, data)
       .then((res) => {
         setDataList(res.data);
       })
@@ -142,7 +171,10 @@ export default function Biz() {
   };
 
   const onClickAdd = () => {
-    setDataList((prevDataList) => [...prevDataList, { ...values, id: prevDataList.length + 1 }]);
+    // 새 행 추가 시 고유 ID 생성 로직 필요 (여기서는 간단히 length + 1)
+    const newId = dataList.length > 0 ? Math.max(...dataList.map(d => d.id)) + 1 : 1;
+    const newRow = { ...values, id: newId };
+    setDataList((prevDataList) => [...prevDataList, newRow]);
   };
 
   const onClickSave = () => {
@@ -150,7 +182,7 @@ export default function Biz() {
     if (!rowData) return;
 
     openModal('', '', '저장 하시겠습니까?', () => {
-      client.post(`${PRO_URL}/save`, rowData)
+      client.post(`${PRO_URL}/saveDc`, rowData)
         .then(() => {
           alert('저장되었습니다.');
           fnSearch();
@@ -164,7 +196,7 @@ export default function Biz() {
     if (!rowData) return;
 
     openModal('', '', '삭제 하시겠습니까?', () => {
-      client.post(`${PRO_URL}/delete`, rowData)
+      client.post(`${PRO_URL}/deleteDc`, rowData)
         .then(() => {
           alert('삭제되었습니다.');
           fnSearch();
@@ -173,7 +205,7 @@ export default function Biz() {
     });
   };
 
-  const handleGridCellClick = (e) => {
+  const handleGridCellClick = (e: any) => {
     setValues(e.row);
     setSelRowId(e.row.id);
     if (e.field === 'deliveryNm') {
@@ -186,7 +218,7 @@ export default function Biz() {
   };
 
   const handleEditCellChangeCommitted = useCallback(
-    ({ id, field, value }) => {
+    ({ id, field, value }: any) => {
       setDataList((prevDataList) =>
         prevDataList.map((row) => (row.id === id ? { ...row, [field]: value } : row))
       );
@@ -196,13 +228,19 @@ export default function Biz() {
 
   return (
     <>
-      <PageTitle title="사업자 관리" />
-      <SearchBar onClickSelect={fnSearch} onClickAdd={onClickAdd} onClickSave={onClickSave} onClickDel={onClickDel}>
-        <SchTextField id="codeCd" label="코드/명" div="3" onChange={onChangeSearch} />
-      </SearchBar>
+      <PageTitle title="물류창고 관리" />
 
       <ComDeGrid
-        title="Biz List"
+        onClickSelect={fnSearch}
+        onClickAdd={onClickAdd}
+        onClickSave={onClickSave}
+        onClickDel={onClickDel}
+        searchBarChildren={
+          <>
+            <SchTextField id="codeCd" label="코드/명" onChange={onChangeSearch} />
+          </>
+        }
+        title="Dc List"
         dataList={dataList}
         columns={columns}
         type="single"

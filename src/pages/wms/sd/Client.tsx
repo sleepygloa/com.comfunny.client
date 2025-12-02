@@ -1,41 +1,74 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Box, Typography, IconButton, Grid } from "@mui/material";
+import { Box, Typography, IconButton } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
+import { GridColDef, GridRenderCellParams, GridValueFormatterParams, GridRenderEditCellParams } from '@mui/x-data-grid';
 
 // context
-import { useCommonData } from "../../../context/CommonDataContext.js";
-import { useModal } from "../../../context/ModalContext.js";
+import { useCommonData } from "../../../context/CommonDataContext";
+import { useModal } from "../../../context/ModalContext";
 
 // components
-import PageTitle from "../../../components/PageTitle/PageTitle.js";
-import { SchTextField } from "../../../components/SearchBar/CmmnTextField.js";
-import { client } from '../../../contraints.js';
+import PageTitle from "../../../components/PageTitle/PageTitle";
+import { SearchBar } from "../../../components/SearchBar/SearchBar";
+import { SchTextField } from "../../../components/SearchBar/CmmnTextField";
+// [수정] 오타 수정 및 확장자 제거
+import { client } from '../../../constraints';
 import { 
   gvGridDropdownDisLabel, 
   gvGetRowData, 
-  gvSeData, 
-  gvSetRowData,
   gvGridFieldEmailInput, // 이메일 포맷
-  gvGridFieldFormatPhoneNumber, gvGridFieldParsePhoneNumber, gvGridFieldInputPhoneNumber, // 핸드폰번호 포맷
-  gvGridFieldFormatFaxNumber, gvGridFieldParseFaxNumber, gvGridFieldInputFaxNumber, // 팩스번호 포맷
-} from "../../../components/Common.js";
-import { ComDeGrid } from "../../../components/Grid/ComDeGrid.js";
+  gvGridFieldFormatPhoneNumber, 
+  gvGridFieldFormatFaxNumber, 
+} from "../../../components/Common";
+import { ComDeGrid } from "../../../components/Grid/ComDeGrid";
 
-//NaverMap
-import DaumPostcodeShppingMall from "../maps/DaumPostcodeShppingMall.js";
+// NaverMap (DaumPostcode)
+import DaumPostcodeShppingMall from "../maps/DaumPostcodeShppingMall";
+
+// --- 데이터 타입 정의 ---
+interface ClientData {
+  id: number;
+  clientCd: string;
+  clientNm: string;
+  bizNo: string;
+  bizNm: string;
+  ceoNm: string;
+  telNo: string;
+  faxNo: string;
+  contactNm: string;
+  contactTelNo: string;
+  contactEmail: string;
+  useYn: string;
+  userCol1: string;
+  userCol2: string;
+  userCol3: string;
+  userCol4: string;
+  userCol5: string;
+  remark: string;
+  // 주소 및 추가 정보
+  deliveryNm?: string;
+  zip?: string;
+  jibunAddr?: string;
+  roadAddr?: string;
+  detailAddr?: string;
+  lat?: string;
+  lon?: string;
+  bizTp?: string;
+  bizKnd?: string;
+  [key: string]: any;
+}
 
 // 고객사 관리 화면 컴포넌트
-export default function Client(props) {
-  const { menuTitle } = '고객사 리스트';
+export default function Client() {
   const PRO_URL = '/wms/sd/client';
   const { openModal } = useModal();
   const { getCmbOfGlobalData } = useCommonData();
 
   // 사용 여부 콤보박스 데이터 상태
-  const [useYnCmb, setUseYnCmb] = useState([]); 
+  const [useYnCmb, setUseYnCmb] = useState<any[]>([]); 
   
   // 그리드의 컬럼 정의
-  const columns = [
+  const columns: GridColDef[] = [
     { field: "id", headerName: "ID", align: "center", width: 20 },
     { field: "clientCd", headerName: "고객사코드", editable: false, align: "left", width: 100 },
     { field: "clientNm", headerName: "고객사명", editable: true, align: "left", width: 250 },
@@ -45,10 +78,10 @@ export default function Client(props) {
     { field: "ceoNm", headerName: "대표자", editable: true, align: "left", width: 100 },
     /* 주소 시작 */
     { field: "deliveryNm", headerName: "배송처명", editable: false, align: "left", width: 200,
-      renderCell: (params) => (
+      renderCell: (params: GridRenderCellParams) => (
         <Box sx={{ display: 'flex', justifyContent: 'space-between', width: 1, alignItems: 'center' }}>
           <Typography variant="body2">{params.value}</Typography>
-          <IconButton><SearchIcon /></IconButton>
+          <IconButton size="small"><SearchIcon /></IconButton>
         </Box>
     )},
     { field: "zip", headerName: "우편번호", editable: false, align: "left", width: 100 },
@@ -62,18 +95,18 @@ export default function Client(props) {
     { field: "bizKnd", headerName: "업종(사업자종류)", editable: true, align: "left", width: 100 },
     // 전화번호 포맷 설정
     { field: "telNo", headerName: "전화번호", editable: true, align: "left", width: 150,
-      valueFormatter: (params) => gvGridFieldFormatPhoneNumber(params.value),
+      valueFormatter: (params: GridValueFormatterParams) => gvGridFieldFormatPhoneNumber(params.value),
     },
     // 팩스번호 포맷 설정
     { field: "faxNo", headerName: "팩스", editable: true, align: "left", width: 150,
-      valueFormatter: (params) => gvGridFieldFormatFaxNumber(params.value),
+      valueFormatter: (params: GridValueFormatterParams) => gvGridFieldFormatFaxNumber(params.value),
     },
     { field: "contactNm", headerName: "담당자명", editable: true, align: "left", width: 100 },
     { field: "contactTelNo", headerName: "담당자전화번호", editable: true, align: "left", width: 150,
-      valueFormatter: (params) => gvGridFieldFormatPhoneNumber(params.value),
+      valueFormatter: (params: GridValueFormatterParams) => gvGridFieldFormatPhoneNumber(params.value),
     },
     { field: "contactEmail", headerName: "담당자이메일", editable: true, align: "left", width: 150,
-      renderEditCell: (params) => gvGridFieldEmailInput(params)
+      renderEditCell: (params: GridRenderEditCellParams) => gvGridFieldEmailInput({ ...params, value: params.value ?? "" })
     },
     { field: "useYn", headerName: "사용여부", editable: true, align: "center", type: "singleSelect", 
       valueFormatter: gvGridDropdownDisLabel,
@@ -87,14 +120,14 @@ export default function Client(props) {
     { field: "remark", headerName: "비고", editable: true, align: "left", width: 300 },
   ];
 
-  const [selRowId, setSelRowId] = useState(-1); // 선택된 행 ID 상태
-  const [dataList, setDataList] = useState([]); // 고객사 리스트 데이터
-  const [callbackDelivery, setCallbackDelivery] = useState(null); // 주소 콜백 데이터 상태
+  const [selRowId, setSelRowId] = useState<number>(-1); // 선택된 행 ID 상태
+  const [dataList, setDataList] = useState<ClientData[]>([]); // 고객사 리스트 데이터
+  const [callbackDelivery, setCallbackDelivery] = useState<any>(null); // 주소 콜백 데이터 상태
   const [schValues, setSchValues] = useState({ codeCd: "" }); // 조회 조건 상태
 
   // 입력 상태 설정 초기값
-  const initData = {
-    id: dataList.length + 1,
+  const initData: ClientData = {
+    id: 0, // 초기값 (추가 시 재설정)
     clientCd: "",
     clientNm: "",
     bizNo: "",
@@ -114,15 +147,17 @@ export default function Client(props) {
     remark: "",
   };
 
-  const [values, setValues] = useState(initData); // 선택된 행의 데이터 관리
+  const [values, setValues] = useState<ClientData>(initData); // 선택된 행의 데이터 관리
 
   // 조회 조건 변경 핸들러
-  const onChangeSearch = (event, id) => {
-    setSchValues({ ...schValues, [id]: event });
+  const onChangeSearch = (value: string, id?: string) => {
+    if (id) {
+      setSchValues({ ...schValues, [id]: value });
+    }
   };
 
   // Enter 키 입력 시 조회 수행
-  const onKeyDown = (e) => {
+  const onKeyDown = (e: any) => {
     if (e.keyCode === 13) {
       e.preventDefault();
       fnSearch();
@@ -139,7 +174,10 @@ export default function Client(props) {
 
   // 신규 데이터 추가
   const onClickAdd = () => {
-    setDataList(dataList => [...dataList, { ...initData, id: dataList.length + 1 }]);
+    // 고유 ID 생성
+    const newId = dataList.length > 0 ? Math.max(...dataList.map(d => d.id)) + 1 : 1;
+    const newRow = { ...initData, id: newId };
+    setDataList(prev => [...prev, newRow]);
   };
 
   // 데이터 저장
@@ -173,7 +211,7 @@ export default function Client(props) {
   };
 
   // 그리드 셀 클릭 핸들링
-  const handleGridCellClick = (e) => {
+  const handleGridCellClick = (e: any) => {
     setValues(e.row);
     setSelRowId(e.row.id);
     if (e.field === 'deliveryNm') {
@@ -187,16 +225,16 @@ export default function Client(props) {
   };
 
   // 주소 콜백 데이터 업데이트
-  const handleAddressUpdate = (addressData) => {
+  const handleAddressUpdate = (addressData: any) => {
     setCallbackDelivery(addressData);
   };
 
   // 셀 데이터 변경 처리
   const handleEditCellChangeCommitted = useCallback(
-    ({ id, field, value }) => {
-      setDataList(dataList.map((row) => (row.id === id ? { ...row, [field]: value } : row)));
+    ({ id, field, value }: any) => {
+      setDataList(prevData => prevData.map((row) => (row.id === id ? { ...row, [field]: value } : row)));
     },
-    [dataList]
+    []
   );
 
   // 데이터 로드 및 콤보박스 초기 설정
@@ -218,17 +256,12 @@ export default function Client(props) {
     <>
       <PageTitle title={'고객사 리스트 '} />
 
+      <SearchBar onClickSelect={fnSearch} onClickAdd={onClickAdd} onClickSave={onClickSave} onClickDel={onClickDel}>
+        <SchTextField id="codeCd" label="코드/명" onChange={onChangeSearch}  />
+      </SearchBar>
+
       <ComDeGrid
-        onClickSelect={fnSearch}
-        onClickAdd={onClickAdd}
-        onClickSave={onClickSave}
-        onClickDel={onClickDel}
-        searchBarChildren={
-          <>
-            <SchTextField id="codeCd" label="코드/명" div="3" onChange={onChangeSearch} onKeyDown={onKeyDown} />
-          </>
-        }
-        title={"Client List"}
+        title="Client List"
         dataList={dataList}
         columns={columns}
         onCellClick={handleGridCellClick}

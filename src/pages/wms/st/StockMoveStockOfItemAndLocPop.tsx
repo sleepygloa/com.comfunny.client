@@ -102,7 +102,7 @@ export default function StockMoveStockOfItemAndLocPop(props: StockMoveStockOfIte
             columns={columns}
             type="single"
             onRowClick={(params) => setSelRowId(params.id)}
-            onCellDoubleClick={() => {
+            onCellDoubleClick={(params) => {
                // 더블클릭 처리 로직 (handleSubmit과 유사하게 처리 권장)
                // 여기서는 handleSubmit 호출로 간소화 (state 업데이트 타이밍 주의 필요)
                // setSelRowId 후 바로 호출 시 이전 state일 수 있으므로 params.row 사용 권장

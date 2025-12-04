@@ -202,7 +202,7 @@ export default function Scheduler() {
               setSelRowId(params.id);
               setValues(params.row as SchedulerData);
           }}
-          rowSelectionModel={selRowId !== -1 ? [selRowId] : []}
+          selectionModel={selRowId !== -1 ? [selRowId] : []}
           onCellEditCommit={handleCellEditCommit}
         />
       </Box>

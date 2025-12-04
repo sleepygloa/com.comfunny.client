@@ -65,8 +65,7 @@ export default function StockMoveLocPop(props: StockMoveLocPopProps) {
     if (modals && modals[key]) {
         const modalInfo = modals[key];
         if (modalInfo.callback && typeof modalInfo.callback === 'function') {
-            const result = modalInfo.callback(selectedData);
-            if (result === false) return;
+            modalInfo.callback(selectedData);
         }
     }
     closeModal(key);

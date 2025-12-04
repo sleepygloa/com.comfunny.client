@@ -3,15 +3,14 @@ import { Box, Typography, IconButton } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 import { GridColDef, GridRenderCellParams, GridValueFormatterParams } from '@mui/x-data-grid';
 
-// context (확장자 생략 가능)
-import { useCommonData } from "../../../context/CommonDataContext";
+// context
 import { useModal } from "../../../context/ModalContext";
 
 // components
 import PageTitle from "../../../components/PageTitle/PageTitle";
-// SearchBar 등은 프로젝트 구조에 따라 import 경로 확인 필요
-import { SchTextField } from "../../../components/SearchBar/CmmnTextField"; // 오타 수정됨 (CmmnTextFiel -> CmmnTextField)
-import { client } from '../../../constraints'; // 오타 수정됨 (contraints -> constraints)
+import { SearchBar } from "../../../components/SearchBar/SearchBar";
+import { SchTextField } from "../../../components/SearchBar/CmmnTextField";
+import { client } from '../../../constraints';
 import {
   gvGridDropdownDisLabel,
   gvGridFieldFormatFaxNumber,
@@ -42,6 +41,22 @@ interface DcData {
   etcNo2?: string;
   etcTp1?: string;
   etcTp2?: string;
+  ceoNm: string;
+  postNo: string;
+  basicAddr: string;
+  bizTp: string;
+  bizKnd: string;
+  contactNm: string;
+  contactTelNo: string;
+  contactEmail: string;
+  countryCd: string;
+  cityCd: string;
+  userCol1: string;
+  userCol2: string;
+  userCol3: string;
+  userCol4: string;
+  userCol5: string;
+  remark: string;
   [key: string]: any;
 }
 
@@ -62,7 +77,7 @@ const columns: GridColDef[] = [
     renderCell: (params: GridRenderCellParams) => (
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
         <Typography variant="body2">{params.value}</Typography>
-        <IconButton size="small"><SearchIcon /></IconButton>
+        <IconButton size="small"><SearchIcon fontSize="small" /></IconButton>
       </Box>
     ),
   },
@@ -70,8 +85,6 @@ const columns: GridColDef[] = [
   { field: "jibunAddr", headerName: "지번주소", editable: false, align: "left", width: 250 },
   { field: "roadAddr", headerName: "도로명주소", editable: false, align: "left", width: 250 },
   { field: "detailAddr", headerName: "상세주소", editable: false, align: "left", width: 250 },
-  { field: "lat", headerName: "위도", editable: false, align: "left", width: 150 },
-  { field: "lon", headerName: "경도", editable: false, align: "left", width: 150 },
   /* 주소 끝 */
   {
     field: "telNo",
@@ -101,21 +114,19 @@ const columns: GridColDef[] = [
   },
   { field: "etcNo1", headerName: "기타번호1", editable: true, align: "left", width: 80 },
   { field: "etcNo2", headerName: "기타번호2", editable: true, align: "left", width: 80 },
-  { field: "etcTp1", headerName: "기타유형1", editable: true, align: "left", width: 80 },
-  { field: "etcTp2", headerName: "기타유형2", editable: true, align: "left", width: 80 },
+  { field: "remark", headerName: "비고", editable: true, align: "left", width: 200 },
 ];
 
 export default function Dc() {
   const PRO_URL = '/wms/sd/dc';
   const { openModal } = useModal();
-  // const { getCmbOfGlobalData } = useCommonData(); // 사용하지 않는 변수는 주석 처리
 
   const [dataList, setDataList] = useState<DcData[]>([]);
   const [selRowId, setSelRowId] = useState<number>(-1);
   const [callbackDelivery, setCallbackDelivery] = useState<any>(null);
   const [schValues, setSchValues] = useState({ codeCd: "" });
   const [values, setValues] = useState<DcData>({
-    id: 0, // 초기값 설정
+    id: 0, 
     dcCd: '',
     dcNm: '',
     bizNo: '',
@@ -171,7 +182,6 @@ export default function Dc() {
   };
 
   const onClickAdd = () => {
-    // 새 행 추가 시 고유 ID 생성 로직 필요 (여기서는 간단히 length + 1)
     const newId = dataList.length > 0 ? Math.max(...dataList.map(d => d.id)) + 1 : 1;
     const newRow = { ...values, id: newId };
     setDataList((prevDataList) => [...prevDataList, newRow]);
@@ -184,7 +194,7 @@ export default function Dc() {
     openModal('', '', '저장 하시겠습니까?', () => {
       client.post(`${PRO_URL}/saveDc`, rowData)
         .then(() => {
-          alert('저장되었습니다.');
+          // alert('저장되었습니다.');
           fnSearch();
         })
         .catch((error) => console.log('error = ', error));
@@ -198,17 +208,17 @@ export default function Dc() {
     openModal('', '', '삭제 하시겠습니까?', () => {
       client.post(`${PRO_URL}/deleteDc`, rowData)
         .then(() => {
-          alert('삭제되었습니다.');
+          // alert('삭제되었습니다.');
           fnSearch();
         })
         .catch((error) => console.log('error = ', error));
     });
   };
 
-  const handleGridCellClick = (e: any) => {
-    setValues(e.row);
-    setSelRowId(e.row.id);
-    if (e.field === 'deliveryNm') {
+  const handleGridCellClick = (params: any) => {
+    setValues(params.row);
+    setSelRowId(params.row.id);
+    if (params.field === 'deliveryNm') {
       openPopupFindAddress();
     }
   };
@@ -227,26 +237,29 @@ export default function Dc() {
   );
 
   return (
-    <>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', p: 2 }}>
       <PageTitle title="물류창고 관리" />
 
-      <ComDeGrid
-        onClickSelect={fnSearch}
-        onClickAdd={onClickAdd}
-        onClickSave={onClickSave}
+      <SearchBar 
+        onClickSelect={fnSearch} 
+        onClickAdd={onClickAdd} 
+        onClickSave={onClickSave} 
         onClickDel={onClickDel}
-        searchBarChildren={
-          <>
-            <SchTextField id="codeCd" label="코드/명" onChange={onChangeSearch} />
-          </>
-        }
-        title="Dc List"
-        dataList={dataList}
-        columns={columns}
-        type="single"
-        onCellClick={handleGridCellClick}
-        onCellEditCommit={handleEditCellChangeCommitted}
-      />
-    </>
+      >
+        <SchTextField id="codeCd" label="코드/명" onChange={onChangeSearch} />
+      </SearchBar>
+
+      <Box sx={{ flex: 1, mt: 2, minHeight: 0 }}>
+        <ComDeGrid
+          title="Dc List"
+          dataList={dataList}
+          columns={columns}
+          type="single"
+          onCellClick={handleGridCellClick}
+          onCellEditCommit={handleEditCellChangeCommitted}
+          height="100%"
+        />
+      </Box>
+    </Box>
   );
 }

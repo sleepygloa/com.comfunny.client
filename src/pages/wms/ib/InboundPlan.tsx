@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { Box } from "@mui/material"; // Box import 추가
 import { GridColDef, GridRenderCellParams, GridValueFormatterParams } from '@mui/x-data-grid';
 
 // components
+import PageTitle from "../../../components/PageTitle/PageTitle";
+import { SearchBar } from "../../../components/SearchBar/SearchBar";
 import { SchTextField, GridDateRenderField, SchDateField, FieldRow } from "../../../components/SearchBar/CmmnTextField";
 import { ComDeGrid } from "../../../components/Grid/ComDeGrid";
 
 // Common
-import { client } from '../../../constraints'; // 오타 수정 constraints
+import { client } from '../../../constraints'; 
 import { 
   gvGridFieldNumberFormatter,
   gvGetToday
@@ -17,7 +20,6 @@ import { useCommonData } from "../../../context/CommonDataContext";
 
 // Modal
 import { useModal } from "../../../context/ModalContext";
-// InboundPlanPop 컴포넌트가 있다고 가정 (없다면 주석 처리 필요)
 // import InboundPlanPop from "./InboundPlanPop"; 
 
 // --- 인터페이스 정의 ---
@@ -88,7 +90,6 @@ export default function InboundPlan() {
   // 핸들링하고 있는 rowData 저장
   const initData: Partial<InboundPlanData> = {
     id: dataList.length + 1,
-    // useYn: "Y", // 데이터 타입에 없음, 필요시 추가
   }
 
   const [values, setValues] = useState<Partial<InboundPlanData>>(initData);
@@ -102,11 +103,11 @@ export default function InboundPlan() {
     { field: "ibGbnNm", headerName: "입고구분", editable: false, align: "left", width: 120 },
     { field: "ibProgStNm", headerName: "입고진행상태", editable: false, align: "left", width: 100 },
     { 
-      field: "ibPlanYmd", headerName: "입고예정일자", editable: false, align: "left", width: 150,
+      field: "ibPlanYmd", headerName: "입고예정일자", editable: false, align: "left", width: 100,
       renderCell: (params: GridRenderCellParams) => <GridDateRenderField params={params} />,
     },
     { 
-      field: "ibYmd", headerName: "입고일자", editable: false, align: "left", width: 150,
+      field: "ibYmd", headerName: "입고일자", editable: false, align: "left", width: 100,
       renderCell: (params: GridRenderCellParams) => <GridDateRenderField params={params} />,
     },
     { field: "supplierNm", headerName: "공급처", editable: false, align: "left", width: 100 },
@@ -120,9 +121,9 @@ export default function InboundPlan() {
     { field: "ibDetailSeq", headerName: "순번", editable: false, align: "right", width: 60 },
     { field: "ibProgStNm", headerName: "진행상태", editable: false, align: "left", width: 100 },
     { field: "itemCd", headerName: "상품코드", editable: false, align: "left", width: 100 },
-    { field: "itemNm", headerName: "상품명", editable: false, align: "left", width: 300 },
+    { field: "itemNm", headerName: "상품명", editable: false, align: "left", width: 200 },
     { field: "itemStNm", headerName: "상품상태", editable: false, align: "left", width: 100 },
-    { field: "pkqty", headerName: "입수", editable: false, align: "center", width: 100 },
+    { field: "pkqty", headerName: "입수", editable: false, align: "center", width: 80 },
     { 
       field: "planTotQty", headerName: "예정(총)", editable: false, align: "right", width: 100,
       valueFormatter: (params: GridValueFormatterParams) => gvGridFieldNumberFormatter(params),
@@ -141,18 +142,18 @@ export default function InboundPlan() {
       field: "ibAmt", headerName: "입고금액", editable: false, align: "right", width: 100,
       valueFormatter: (params: GridValueFormatterParams) => gvGridFieldNumberFormatter(params),
     },
-    { field: "makeLot", headerName: "제조LOT", editable: false, align: "left", width: 150 },
+    { field: "makeLot", headerName: "제조LOT", editable: false, align: "left", width: 100 },
     { 
-      field: "makeYmd", headerName: "제조일자", editable: false, align: "left", width: 150,
+      field: "makeYmd", headerName: "제조일자", editable: false, align: "left", width: 100,
       renderCell: (params: GridRenderCellParams) => <GridDateRenderField params={params} />,
     },
     { 
-      field: "distExpiryYmd", headerName: "유통기한일자", editable: false, align: "left", width: 150,
+      field: "distExpiryYmd", headerName: "유통기한일자", editable: false, align: "left", width: 100,
       renderCell: (params: GridRenderCellParams) => <GridDateRenderField params={params} />,
     },
-    { field: "lotId", headerName: "LOT_ID", editable: false, align: "left", width: 150 },
+    { field: "lotId", headerName: "LOT_ID", editable: false, align: "left", width: 100 },
     { field: "useYnNm", headerName: "사용여부", editable: false, align: "left", width: 100 },
-    { field: "remark", headerName: "비고", editable: false, align: "left", width: 300 },
+    { field: "remark", headerName: "비고", editable: false, align: "left", width: 200 },
   ];
 
   // 조회조건 변경 핸들러
@@ -188,9 +189,7 @@ export default function InboundPlan() {
         setDataList(list);
 
         if(list.length > 0){
-          // 첫 번째 행 자동 선택
-          // setSelRowId(list[0].id); // ID 기반 선택
-          // fnSearchDtl(list[0]);
+          // 첫 번째 행 자동 선택 로직 등 추가 가능
         }
       }).catch(error => { 
         console.log('error = '+error); 
@@ -199,7 +198,6 @@ export default function InboundPlan() {
 
   // 상세 조회
   const fnSearchDtl = (rowData: InboundPlanData) => {
-    // setSelRowId(rowData.id); // 호출하는 쪽에서 처리하거나 여기서 처리
     client.post(`${PRO_URL}/selectInboundPlanDetailList`, rowData)
       .then(res => {
         const list: InboundPlanDetailData[] = res.data;
@@ -220,49 +218,57 @@ export default function InboundPlan() {
 
   // 신규 클릭 (입고예정 팝업)
   const onClickAdd = () => {
-    // 팝업 컴포넌트 (InboundPlanPop)가 구현되어 있어야 합니다.
-    // 임시로 alert 처리하거나 실제 컴포넌트 연결
     // openModal('INBOUND_PLAN_POP', '입고예정 팝업', <InboundPlanPop />, handleInboundPlanUpdate, '1200px', '750px');
-    alert("입고예정 등록 팝업 준비 중입니다.");
+    openModal('', '알림', "입고예정 등록 팝업 준비 중입니다.");
   }
 
-  // 입고예정팝업 콜백함수
   const handleInboundPlanUpdate = (props: any) => {
     fnSearch();
   };
 
   return (
-    <>
-      <ComDeGrid
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', p: 2 }}>
+      <PageTitle title={menuTitle} />
+      
+      <SearchBar 
         onClickSelect={onClickSelect} 
         onClickAdd={onClickAdd} 
-        searchBarChildren={
-          <FieldRow>
-            <SchTextField id="ibNo" label="입고번호/명" onChange={onChangeSearch} />
-            <SchDateField id="ibPlanYmd" label="입고예정일" selected={schValues.ibPlanYmd} onChange={onChangeSearch} />
-          </FieldRow>
-        }
+      >
+        <FieldRow>
+          <SchTextField id="ibNo" label="입고번호/명" onChange={onChangeSearch}  />
+          <SchDateField id="ibPlanYmd" label="입고예정일" selected={schValues.ibPlanYmd} onChange={onChangeSearch} />
 
-        title={"Inbound List"}
-        dataList={dataList}
-        columns={columns}
-        height={"250px"}
-        onRowClick={(params) => {
-            setSelRowId(params.id); 
-            fnSearchDtl(params.row as InboundPlanData);
-        }}
-        type={"single"}
-      />
+        </FieldRow>
+      </SearchBar>
 
-      <ComDeGrid
-        title={"Inbound Detail List"}
-        dataList={dataDtlList}
-        columns={columnsDtl}
-        onRowClick={(params) => {
-            setSelDtlRowId(params.id);
-        }}
-        type={"single"}
-      />
-    </>
+      {/* 마스터 그리드 영역 */}
+      <Box sx={{ height: '40%', mt: 2 }}>
+        <ComDeGrid
+          title={"Inbound List"}
+          dataList={dataList}
+          columns={columns}
+          onRowClick={(params) => {
+              setSelRowId(params.id); 
+              fnSearchDtl(params.row as InboundPlanData);
+          }}
+          type={"single"}
+          height="100%"
+        />
+      </Box>
+
+      {/* 디테일 그리드 영역 */}
+      <Box sx={{ flex: 1, mt: 2, minHeight: 0 }}>
+        <ComDeGrid
+          title={"Inbound Detail List"}
+          dataList={dataDtlList}
+          columns={columnsDtl}
+          onRowClick={(params) => {
+              setSelDtlRowId(params.id);
+          }}
+          type={"single"}
+          height="100%"
+        />
+      </Box>
+    </Box>
   );
 }

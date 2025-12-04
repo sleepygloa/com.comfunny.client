@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { DataGrid, GridColDef, GridRowId, GridValueFormatterParams } from "@mui/x-data-grid";
-import { Grid } from "@mui/material";
+import { DataGrid, GridColDef, GridRowId } from "@mui/x-data-grid";
+import { Box, Grid } from "@mui/material"; // Box 추가
 
 // Components
 import PageTitle from "../../../components/PageTitle/PageTitle";
@@ -8,7 +8,7 @@ import { SearchBar } from "../../../components/SearchBar/SearchBar";
 import { SchTextField } from "../../../components/SearchBar/CmmnTextField";
 
 // Common
-import { client } from '../../../constraints'; // 오타 수정 constraints
+import { client } from '../../../constraints'; 
 import { gvGridDropdownDisLabel, gvGetRowData } from "../../../components/Common";
 import { useModal } from "../../../context/ModalContext";
 
@@ -33,7 +33,6 @@ interface SchedulerData {
 
 // 콤보박스 데이터
 const useYnCmb = [{ value: "Y", label: "사용" }, { value: "N", label: "미사용" }];
-// const delYnCmb = [{ value: "Y", label: "삭제" }, { value: "N", label: "미삭제" }]; // 사용 안됨
 
 export default function Scheduler() {
   const menuTitle = '스케쥴 리스트';
@@ -142,7 +141,7 @@ export default function Scheduler() {
     openModal('', '', '저장 하시겠습니까?', () => {
         client.post(`/wms/sys/scheduler/saveScheduler`, rowData)
           .then(res => {
-            // alert('저장되었습니다.'); // ModalContext 사용 시 보통 alert 대신 모달 메시지 사용
+            // alert('저장되었습니다.');
             fnSearch();
           }).catch(error => { 
             console.log('error = ' + error); 
@@ -167,7 +166,6 @@ export default function Scheduler() {
 
   // 셀 수정 커밋 핸들러
   const handleCellEditCommit = useCallback((params: any) => {
-    // params: GridCellEditCommitParams (v5)
     setDataList((prevList) => prevList.map((row) => {
       if (row.id === params.id) {
         return { ...row, [params.field]: params.value };
@@ -177,38 +175,37 @@ export default function Scheduler() {
   }, []);
 
   return (
-    <>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', p: 2 }}>
       <PageTitle title={menuTitle} />
+      
       <SearchBar
         onClickSelect={onClickSelect} 
         onClickAdd={onClickAdd} 
-        onClickSave={onClickSave}
-        onClickDel={onClickDel}>
-          <SchTextField 
-            id="codeCd" 
-            label='코드/명'
-            onChange={onChangeSearch} 
-          />    
+        onClickSave={onClickSave} 
+        onClickDel={onClickDel}
+      >
+        <SchTextField 
+          id="codeCd" 
+          label='코드/명'
+          onChange={onChangeSearch} 
+        />    
       </SearchBar>
       
-      <Grid container spacing={4}>
-        <Grid item xs={12} style={{ height: 750, width: '100%' }}>
-          <DataGrid
-            // title={"Scheulder List"} // DataGrid에는 title prop이 없음 (커스텀 구현 필요 시 ComDeGrid 사용 권장)
-            rows={dataList}
-            columns={columns}
-            headerHeight={30}
-            rowHeight={28}
-            onRowClick={(params) => {
-                setSelRowId(params.id);
-                setValues(params.row as SchedulerData);
-            }}
-            // selectionModel={selRowId} // v5 prop
-            selectionModel={selRowId !== -1 ? [selRowId] : []} // v6 대응
-            onCellEditCommit={handleCellEditCommit}
-          />
-        </Grid>
-      </Grid>
-    </>
+      {/* DataGrid 영역 */}
+      <Box sx={{ flex: 1, mt: 2, minHeight: 0, width: '100%' }}>
+        <DataGrid
+          rows={dataList}
+          columns={columns}
+          headerHeight={30}
+          rowHeight={28}
+          onRowClick={(params) => {
+              setSelRowId(params.id);
+              setValues(params.row as SchedulerData);
+          }}
+          rowSelectionModel={selRowId !== -1 ? [selRowId] : []}
+          onCellEditCommit={handleCellEditCommit}
+        />
+      </Box>
+    </Box>
   );
 }

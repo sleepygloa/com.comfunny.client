@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { GridColDef, GridRenderCellParams, GridValueFormatterParams } from '@mui/x-data-grid';
+import { Box } from "@mui/material"; // Box import 추가
+import { GridColDef } from '@mui/x-data-grid';
 
 // components
 import PageTitle from "../../../components/PageTitle/PageTitle";
 import { SearchBar } from "../../../components/SearchBar/SearchBar";
 import { SchTextField } from "../../../components/SearchBar/CmmnTextField";
-// [수정] 오타 수정 및 확장자 제거
 import { client } from '../../../constraints';
 import { useCommonData } from "../../../context/CommonDataContext";
 import { gvGridDropdownDisLabel, gvGetRowData } from "../../../components/Common";
@@ -17,7 +17,7 @@ interface ItemUomData {
   id: number;
   clientCd: string;
   itemCd: string;
-  itemNm?: string; // 조회 시 조인되어 나올 수 있음
+  itemNm?: string;
   stdUomCd: string;
   convUomCd: string;
   convUomQty: string | number;
@@ -43,7 +43,7 @@ export default function ItemUomManagement() {
 
   // 초기 데이터 값
   const initData: ItemUomData = {
-    id: 0, // 초기값 (추가 시 재설정)
+    id: 0, 
     clientCd: '',
     itemCd: '',
     stdUomCd: '',
@@ -136,7 +136,7 @@ export default function ItemUomManagement() {
     openModal('', '', '저장 하시겠습니까?', () => {
       client.post(`${PRO_URL}/saveItemUom`, rowData)
         .then(() => {
-          alert('저장되었습니다.');
+          // alert('저장되었습니다.');
           fnSearch();
         })
         .catch((error) => console.log('error = ', error));
@@ -150,15 +150,15 @@ export default function ItemUomManagement() {
     openModal('', '', '삭제 하시겠습니까?', () => {
       client.post(`${PRO_URL}/deleteItemUom`, rowData)
         .then(() => {
-          alert('삭제되었습니다.');
+          // alert('삭제되었습니다.');
           fnSearch();
         })
         .catch((error) => console.log('error = ', error));
     });
   };
 
-  const handleGridCellClick = (e: any) => {
-    setSelRowId(e.row.id);
+  const handleGridCellClick = (params: any) => {
+    setSelRowId(params.row.id);
   };
 
   const handleEditCellChangeCommitted = useCallback(
@@ -171,21 +171,29 @@ export default function ItemUomManagement() {
   );
 
   return (
-    <>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', p: 2 }}>
       <PageTitle title="상품단위 관리" />
-      <SearchBar onClickSelect={onClickSelect} onClickAdd={onClickAdd} onClickSave={onClickSave} onClickDel={onClickDel}>
+      
+      <SearchBar 
+        onClickSelect={onClickSelect} 
+        onClickAdd={onClickAdd} 
+        onClickSave={onClickSave} 
+        onClickDel={onClickDel}
+      >
         <SchTextField id="codeCd" label="코드/명" onChange={onChangeSearch} />
       </SearchBar>
 
-      <ComDeGrid
-        title="Item Uom List"
-        dataList={dataList}
-        columns={columns}
-        height="750px"
-        type="single"
-        onCellClick={handleGridCellClick}
-        onCellEditCommit={handleEditCellChangeCommitted}
-      />
-    </>
+      <Box sx={{ flex: 1, mt: 2, minHeight: 0 }}>
+        <ComDeGrid
+          title="Item Uom List"
+          dataList={dataList}
+          columns={columns}
+          type="single"
+          onCellClick={handleGridCellClick}
+          onCellEditCommit={handleEditCellChangeCommitted}
+          height="100%"
+        />
+      </Box>
+    </Box>
   );
 }

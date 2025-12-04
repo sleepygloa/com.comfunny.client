@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Box, Typography } from "@mui/material";
-import { GridColDef, GridRenderCellParams, GridValueFormatterParams, GridCellParams } from '@mui/x-data-grid';
+import { Box } from "@mui/material"; // Box import 추가
+import { GridColDef } from '@mui/x-data-grid';
 
 import { useCommonData } from "../../../context/CommonDataContext";
 import { useModal } from "../../../context/ModalContext";
@@ -122,23 +122,23 @@ export default function Item() {
     { field: "keepTempeGbnCd", headerName: "보관온도", editable: true, align: "center", type: "singleSelect", valueFormatter: gvGridDropdownDisLabel, valueOptions: keepTempeGbnCdCmb, width: 100 },
     
     // 숫자형 데이터
-    { field: "horizontal", headerName: "가로(mm)", editable: true, align: "right", type: "number", width: 80, valueFormatter: gvGridFieldNumberFormatter, valueParser: gvGridFieldNumberParser, preProcessEditCellProps: gvGridFieldNumberPreEdit },
-    { field: "vertical", headerName: "세로(mm)", editable: true, align: "right", type: "number", width: 80, valueFormatter: gvGridFieldNumberFormatter, valueParser: gvGridFieldNumberParser, preProcessEditCellProps: gvGridFieldNumberPreEdit },
-    { field: "height", headerName: "높이(mm)", editable: true, align: "right", type: "number", width: 80, valueFormatter: gvGridFieldNumberFormatter, valueParser: gvGridFieldNumberParser, preProcessEditCellProps: gvGridFieldNumberPreEdit },
+    { field: "horizontal", headerName: "가로(mm)", editable: true, align: "right", type: "number", width: 80, valueFormatter: gvGridFieldNumberFormatter, valueParser: gvGridFieldNumberParser, preProcessEditCellProps: gvGridFieldNumberPreEdit as any },
+    { field: "vertical", headerName: "세로(mm)", editable: true, align: "right", type: "number", width: 80, valueFormatter: gvGridFieldNumberFormatter, valueParser: gvGridFieldNumberParser, preProcessEditCellProps: gvGridFieldNumberPreEdit as any },
+    { field: "height", headerName: "높이(mm)", editable: true, align: "right", type: "number", width: 80, valueFormatter: gvGridFieldNumberFormatter, valueParser: gvGridFieldNumberParser, preProcessEditCellProps: gvGridFieldNumberPreEdit as any },
     { field: "cbm", headerName: "CBM", editable: false, align: "right", type: "number", width: 80, valueFormatter: gvGridFieldNumberFormatter },
-    { field: "weight", headerName: "중량(kg)", editable: true, align: "right", type: "number", width: 80, valueFormatter: gvGridFieldNumberFormatter, valueParser: gvGridFieldNumberParser, preProcessEditCellProps: gvGridFieldNumberPreEdit },
+    { field: "weight", headerName: "중량(kg)", editable: true, align: "right", type: "number", width: 80, valueFormatter: gvGridFieldNumberFormatter, valueParser: gvGridFieldNumberParser, preProcessEditCellProps: gvGridFieldNumberPreEdit as any },
     
     { field: "minUomCd", headerName: "최소단위", editable: true, align: "center", type: "singleSelect", valueFormatter: gvGridDropdownDisLabel, valueOptions: minUomCdCmb, width: 80 },
-    { field: "inBoxQty", headerName: "박스입수", editable: true, align: "right", type: "number", width: 80, valueFormatter: gvGridFieldNumberFormatter, valueParser: gvGridFieldNumberParser, preProcessEditCellProps: gvGridFieldNumberPreEdit },
-    { field: "inPltQty", headerName: "팔레트입수", editable: true, align: "right", type: "number", width: 80, valueFormatter: gvGridFieldNumberFormatter, valueParser: gvGridFieldNumberParser, preProcessEditCellProps: gvGridFieldNumberPreEdit },
+    { field: "inBoxQty", headerName: "박스입수", editable: true, align: "right", type: "number", width: 80, valueFormatter: gvGridFieldNumberFormatter, valueParser: gvGridFieldNumberParser, preProcessEditCellProps: gvGridFieldNumberPreEdit as any },
+    { field: "inPltQty", headerName: "팔레트입수", editable: true, align: "right", type: "number", width: 80, valueFormatter: gvGridFieldNumberFormatter, valueParser: gvGridFieldNumberParser, preProcessEditCellProps: gvGridFieldNumberPreEdit as any },
     
     { field: "setItemYn", headerName: "세트여부", editable: true, align: "center", type: "singleSelect", valueFormatter: gvGridDropdownDisLabel, valueOptions: setItemYnCmb, width: 80 },
     { field: "vatYn", headerName: "과세여부", editable: true, align: "center", type: "singleSelect", valueFormatter: gvGridDropdownDisLabel, valueOptions: vatYnCmb, width: 80 },
     
-    { field: "dayAvgOutQty", headerName: "일평균출고", editable: true, align: "right", type: "number", width: 90, valueFormatter: gvGridFieldNumberFormatter, valueParser: gvGridFieldNumberParser, preProcessEditCellProps: gvGridFieldNumberPreEdit },
-    { field: "safeDay", headerName: "안전재고일수", editable: true, align: "right", type: "number", width: 90, valueFormatter: gvGridFieldNumberFormatter, valueParser: gvGridFieldNumberParser, preProcessEditCellProps: gvGridFieldNumberPreEdit },
-    { field: "safeQty", headerName: "안전재고수량", editable: true, align: "right", type: "number", width: 90, valueFormatter: gvGridFieldNumberFormatter, valueParser: gvGridFieldNumberParser, preProcessEditCellProps: gvGridFieldNumberPreEdit },
-    { field: "replenishQty", headerName: "보충기준수량", editable: true, align: "right", type: "number", width: 90, valueFormatter: gvGridFieldNumberFormatter, valueParser: gvGridFieldNumberParser, preProcessEditCellProps: gvGridFieldNumberPreEdit },
+    { field: "dayAvgOutQty", headerName: "일평균출고", editable: true, align: "right", type: "number", width: 90, valueFormatter: gvGridFieldNumberFormatter, valueParser: gvGridFieldNumberParser, preProcessEditCellProps: gvGridFieldNumberPreEdit as any },
+    { field: "safeDay", headerName: "안전재고일수", editable: true, align: "right", type: "number", width: 90, valueFormatter: gvGridFieldNumberFormatter, valueParser: gvGridFieldNumberParser, preProcessEditCellProps: gvGridFieldNumberPreEdit as any },
+    { field: "safeQty", headerName: "안전재고수량", editable: true, align: "right", type: "number", width: 90, valueFormatter: gvGridFieldNumberFormatter, valueParser: gvGridFieldNumberParser, preProcessEditCellProps: gvGridFieldNumberPreEdit as any },
+    { field: "replenishQty", headerName: "보충기준수량", editable: true, align: "right", type: "number", width: 90, valueFormatter: gvGridFieldNumberFormatter, valueParser: gvGridFieldNumberParser, preProcessEditCellProps: gvGridFieldNumberPreEdit as any },
 
     { field: "useYn", headerName: "사용여부", editable: true, align: "center", type: "singleSelect", valueFormatter: gvGridDropdownDisLabel, valueOptions: useYnCmb, width: 80 },
     { field: "remark", headerName: "비고", editable: true, align: "left", width: 200 },
@@ -196,7 +196,7 @@ export default function Item() {
     openModal('', '', '저장 하시겠습니까?', () => {
       client.post(`${PRO_URL}/saveItem`, rowData)
         .then(() => {
-          alert('저장되었습니다.');
+          // alert('저장되었습니다.');
           fnSearch();
         })
         .catch((error) => console.log('error = ', error));
@@ -210,7 +210,7 @@ export default function Item() {
     openModal('', '', '삭제 하시겠습니까?', () => {
       client.post(`${PRO_URL}/deleteItem`, rowData)
         .then(() => {
-          alert('삭제되었습니다.');
+          // alert('삭제되었습니다.');
           fnSearch();
         })
         .catch((error) => console.log('error = ', error));
@@ -230,9 +230,9 @@ export default function Item() {
     setDataList(prev => [...prev, copyData]);
   };
 
-  const handleGridCellClick = (e: any) => {
-    setValues(e.row);
-    setSelRowId(e.row.id);
+  const handleGridCellClick = (params: any) => {
+    setValues(params.row);
+    setSelRowId(params.row.id);
   };
 
   const handleEditCellChangeCommitted = useCallback(
@@ -260,23 +260,30 @@ export default function Item() {
   );
 
   return (
-    <>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', p: 2 }}>
       <PageTitle title="상품 관리" />
-      <SearchBar onClickSelect={onClickSelect} onClickAdd={onClickAdd} onClickSave={onClickSave} onClickDel={onClickDel}>
+      <SearchBar 
+        onClickSelect={onClickSelect} 
+        onClickAdd={onClickAdd} 
+        onClickSave={onClickSave} 
+        onClickDel={onClickDel}
+        onClickCustom1={onClickCopy}
+        onClickCustomNm1="복사"
+      >
         <SchTextField id="codeCd" label="코드/명" onChange={onChangeSearch} />
       </SearchBar>
 
-      <ComDeGrid
-        title="Item List"
-        dataList={dataList}
-        columns={columns}
-        height="750px"
-        type="single"
-        onCellClick={handleGridCellClick}
-        onCellEditCommit={handleEditCellChangeCommitted}
-        onClickCustom1={onClickCopy}
-        onClickCustomNm1="복사"
-      />
-    </>
+      <Box sx={{ flex: 1, mt: 2, minHeight: 0 }}>
+        <ComDeGrid
+          title="Item List"
+          dataList={dataList}
+          columns={columns}
+          type="single"
+          onCellClick={handleGridCellClick}
+          onCellEditCommit={handleEditCellChangeCommitted}
+          height="100%"
+        />
+      </Box>
+    </Box>
   );
 }

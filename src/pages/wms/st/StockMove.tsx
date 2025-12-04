@@ -1,15 +1,16 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { GridColDef, GridRenderCellParams, GridValueFormatterParams, GridRowId } from '@mui/x-data-grid';
 import { Box, IconButton, Typography } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 
 // Components
 import PageTitle from "../../../components/PageTitle/PageTitle";
+import { SearchBar } from "../../../components/SearchBar/SearchBar";
 import { SchTextField, SchDateField, GridDateRenderField, FieldRow } from "../../../components/SearchBar/CmmnTextField";
 import { ComDeGrid } from "../../../components/Grid/ComDeGrid";
 
 // Common
-import { client } from '../../../constraints'; // 오타 수정 contraints -> constraints
+import { client } from '../../../constraints'; 
 import { 
   gvGridFieldNumberPreEdit, 
   gvGridFieldNumberFormatter, 
@@ -21,9 +22,9 @@ import {
 // Modal
 import { useModal } from "../../../context/ModalContext";
 
-// Popup (컴포넌트가 있다고 가정)
-// import StockMovePop from "./StockMovePop";
-// import StockMoveLocPop from "./StockMoveLocPop";
+// Popup
+import StockMovePop from "./StockMovePop";
+import StockMoveLocPop from "./StockMoveLocPop";
 
 // --- 인터페이스 정의 ---
 
@@ -51,7 +52,7 @@ interface StockMoveDetailData {
   confQty: number;
   lotId: string;
   remark: string;
-  pkqty?: number; // 체크박스 로직 등에서 사용될 수 있음
+  pkqty?: number;
   [key: string]: any;
 }
 
@@ -67,34 +68,25 @@ interface StockMoveProps {
 }
 
 export default function StockMove(props: StockMoveProps) {
-  // Constants and URLs
   const menuTitle = '재고이동';
   const PRO_URL = '/wms/st/stockMove';
   const { openModal } = useModal();
   const refVal1 = (props.refVal1 ? props.refVal1 : "MV");
 
   // States
-  const [dataList, setDataList] = useState<StockMoveData[]>([]); // Main data list
-  const [dataDtlList, setDataDtlList] = useState<StockMoveDetailData[]>([]); // Detail data list
-  const [selRowId, setSelRowId] = useState<GridRowId | null>(null); // Selected row ID
-  const [selDtlRowId, setSelDtlRowId] = useState<GridRowId | null>(null); // Selected detail row ID
-  const [dtlChkRows, setDtlChkRows] = useState<GridRowId[]>([]); // Checked rows in detail grid
+  const [dataList, setDataList] = useState<StockMoveData[]>([]); 
+  const [dataDtlList, setDataDtlList] = useState<StockMoveDetailData[]>([]);
+  const [selRowId, setSelRowId] = useState<GridRowId | null>(null);
+  const [selDtlRowId, setSelDtlRowId] = useState<GridRowId | null>(null);
+  const [dtlChkRows, setDtlChkRows] = useState<GridRowId[]>([]);
   const [schValues, setSchValues] = useState<SearchValues>({
     moveNo: "",
     workYmd: gvGetToday(),
   }); 
 
-  // Handlers for search inputs
   const onChangeSearch = (value: any, id?: string) => {
     if (id) {
         setSchValues({ ...schValues, [id]: value });
-    }
-  };
-
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      fnSearch();
     }
   };
 
@@ -121,10 +113,10 @@ export default function StockMove(props: StockMoveProps) {
     { 
       field: "toLocCd", headerName: "TO로케이션", width: 150, align: "left",
       renderCell: (params: GridRenderCellParams) => (
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: 1, alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
           <Typography variant="body2">{params.value}</Typography>
-          <IconButton onClick={() => handleLocSearch(params.row)}>
-            <SearchIcon />
+          <IconButton size="small" onClick={() => handleLocSearch(params.row)}>
+            <SearchIcon fontSize="small" />
           </IconButton>
         </Box>
       ),
@@ -149,7 +141,6 @@ export default function StockMove(props: StockMoveProps) {
     { field: "remark", headerName: "비고", width: 300, align: "left" },
   ];
 
-  // Fetch data list
   const fnSearch = useCallback(() => {
     const data = { ...schValues, refVal1: refVal1 };
     client.post(`${PRO_URL}/selectStockMoveList`, data)
@@ -157,9 +148,7 @@ export default function StockMove(props: StockMoveProps) {
         const list: StockMoveData[] = res.data;
         setDataList(list);
         if (list.length > 0) {
-            // 첫 행 선택 및 상세 조회
-            // setSelRowId(list[0].id);
-            fnSearchDtl(list[0]);
+             // 필요시 첫 행 자동 선택
         } else {
             setDataDtlList([]);
         }
@@ -167,7 +156,6 @@ export default function StockMove(props: StockMoveProps) {
       .catch(console.error);
   }, [schValues, refVal1]);
 
-  // Fetch detail list
   const fnSearchDtl = useCallback((rowData: StockMoveData) => {
     setSelRowId(rowData.id);
     client.post(`${PRO_URL}/selectStockMoveDetailList`, rowData)
@@ -175,7 +163,6 @@ export default function StockMove(props: StockMoveProps) {
       .catch(console.error);
   }, []);
 
-  // Edit cell handler
   const handleEditCellChangeCommitted = useCallback(
     ({ id, field, value }: { id: GridRowId, field: string, value: any }) => {
       const updatedList = dataDtlList.map((row) =>
@@ -186,21 +173,17 @@ export default function StockMove(props: StockMoveProps) {
     [dataDtlList]
   );
 
-  // Open location search popup
   const handleLocSearch = (row: StockMoveDetailData) => {
-    // StockMoveLocPop 컴포넌트 필요
-    /*
-    openModal('FIND_TO_LOC', '로케이션 찾기', <StockMoveLocPop refVal1={refVal1} />, (data) => {
-      const updatedList = dataDtlList.map((r) =>
-        r.id === row.id ? { ...r, toLocCd: data.locCd } : r
-      );
-      setDataDtlList(updatedList);
+    openModal('FIND_TO_LOC', '로케이션 찾기', <StockMoveLocPop refVal1={refVal1} />, (data: any) => {
+      if (data) {
+        const updatedList = dataDtlList.map((r) =>
+          r.id === row.id ? { ...r, toLocCd: data.locCd } : r
+        );
+        setDataDtlList(updatedList);
+      }
     }, '600px', '600px');
-    */
-    alert("로케이션 찾기 팝업 준비 중입니다.");
   };
 
-  // Stock move confirm
   const onClickStockMoveConfirm = () => {
     const rowData = dataList.find((row) => row.id === selRowId);
     if (!rowData) return;
@@ -219,10 +202,8 @@ export default function StockMove(props: StockMoveProps) {
     });
   };
 
-  // 재고이동 처리 (상세)
   const onClickDtlStockMoveProc = () => {
     const data = gvGetRowDataListOfChk(dataDtlList, dtlChkRows);
-    
     if (data.length === 0) {
         openModal('', 'A', '선택된 데이터가 없습니다.');
         return;
@@ -230,9 +211,7 @@ export default function StockMove(props: StockMoveProps) {
 
     openModal('', '',  '선택한 상품의 재고이동 처리 하시겠습니까?', 
       () => {
-        const formData = {
-          data : data
-        }
+        const formData = { data : data }
         client.post(`${PRO_URL}/saveStockMoveDetailWorkProcOfPc`, formData)
           .then((res) => {
             if(res.data.stsCd && res.data.stsCd !== 200){
@@ -249,67 +228,64 @@ export default function StockMove(props: StockMoveProps) {
     );
   }
 
-  // 추가
   const onClickAdd = () => {
-    // StockMovePop 컴포넌트 필요
-    // openModal('STOCK_MOVE_POP', '재고이동 팝업', <StockMovePop />, handleInboundPlanUpdate, '1200px', '750px');
-    alert("재고이동 팝업 준비 중입니다.");
+    openModal('STOCK_MOVE_POP', '재고이동 팝업', <StockMovePop />, handleInboundPlanUpdate, '1200px', '750px');
   };
 
-  // 삭제 (현재 주석처리됨)
-  /*
-  const onClickDel = () => {
-    if (selRowId === -1) {
-      openModal('', 'A', '삭제할 항목을 선택하세요.');
-      return;
-    }
-    // 실제 삭제 로직 (API 호출 등) 필요
-    const updatedList = dataList.filter((row) => row.id !== selRowId);
-    setDataList(updatedList);
-    setSelRowId(null);
-  };
-  */
-
-  // 팝업 콜백함수
   const handleInboundPlanUpdate = (props: any) => {
     fnSearch();
   };
 
+  useEffect(() => {
+    fnSearch();
+  }, []);
+
   return (
-    <>
-      {props.title ? <PageTitle title={props.title || "재고이동"} /> : <></>}
-      <ComDeGrid
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', p: 2 }}>
+      {props.title ? <PageTitle title={props.title || "재고이동"} /> : <PageTitle title={menuTitle} />}
+      
+      <SearchBar
         onClickAdd={onClickAdd}
-        // onClickDel={onClickDel}
         onClickSelect={fnSearch}
-        searchBarChildren={
-          <FieldRow>
-            <SchTextField id="moveNo" label="재고이동번호" onChange={onChangeSearch} />
-            <SchDateField id="workYmd" label="작업일" selected={schValues.workYmd} onChange={onChangeSearch} />
-          </FieldRow>
-        }
-        
-        height="250px"
-        title="Move List"
-        dataList={dataList}
-        columns={columns}
-        onRowClick={(params) => fnSearchDtl(params.row as StockMoveData)}
         onClickCustom1={onClickStockMoveConfirm}
         onClickCustomNm1="재고이동확정"
-        type={"single"}
-      />
-      <ComDeGrid
-        onClickCustom1={onClickDtlStockMoveProc}
-        onClickCustomNm1={'재고이동 처리'}
+      >
+        <FieldRow>
+          <SchTextField id="moveNo" label="재고이동번호" onChange={onChangeSearch} />
+          <SchDateField id="workYmd" label="작업일" selected={schValues.workYmd} onChange={onChangeSearch} />
+        </FieldRow>
+      </SearchBar>
+      
+      {/* 마스터 그리드 */}
+      <Box sx={{ height: '40%', mt: 2 }}>
+        <ComDeGrid
+          title="Move List"
+          dataList={dataList}
+          columns={columns}
+          onRowClick={(params) => {
+              setSelRowId(params.id);
+              fnSearchDtl(params.row as StockMoveData);
+          }}
+          type={"single"}
+          height="100%"
+        />
+      </Box>
 
-        title="StockMove Detail List"
-        dataList={dataDtlList}
-        columns={columnsDtl}
-        onRowClick={(params) => setSelDtlRowId(params.id)}
-        onCellEditCommit={handleEditCellChangeCommitted}
-        onChangeChks={(chkRows) => setDtlChkRows(chkRows.map(item => item.id))}
-        type="multi"
-      />
-    </>
+      {/* 디테일 그리드 */}
+      <Box sx={{ flex: 1, mt: 2, minHeight: 0 }}>
+        <ComDeGrid
+          title="StockMove Detail List"
+          dataList={dataDtlList}
+          columns={columnsDtl}
+          onRowClick={(params) => setSelDtlRowId(params.id)}
+          onCellEditCommit={handleEditCellChangeCommitted}
+          onChangeChks={(chkRows) => setDtlChkRows(chkRows.map(item => item.id))}
+          onClickCustom1={onClickDtlStockMoveProc}
+          onClickCustomNm1={'재고이동 처리'}
+          type="multi"
+          height="100%"
+        />
+      </Box>
+    </Box>
   );
 }

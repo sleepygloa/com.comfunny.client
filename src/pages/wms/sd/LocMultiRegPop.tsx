@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Box,
   TextField,
   Grid,
   MenuItem,
@@ -14,8 +13,7 @@ import {
 } from '@mui/material';
 
 // Common imports
-// [수정] 오타 수정 및 확장자 제거
-import { client } from '../../../constraints';
+import { client } from '../../../constraints'; // constraints 오타 수정 확인
 import { useModal } from "../../../context/ModalContext";
 import {
   gvSetDropdownData,
@@ -53,7 +51,7 @@ interface LocMultiRegFormData {
 function LocMultiReg() {
   const key = 'LOG_MULTI_REG';
   const PRO_URL = '/wms/sd/loc';
-  const { openModal, closeModal, updateModalData, getModalData } = useModal();
+  const { openModal, closeModal } = useModal();
   
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState<LocMultiRegFormData>({
@@ -88,9 +86,6 @@ function LocMultiReg() {
       ...prev,
       [name]: error
     }));
-
-    // 모달 데이터 업데이트 (필요시)
-    // updateModalData(key, { ...getModalData(key), [name]: value });
   };
 
   useEffect(() => {
@@ -138,8 +133,6 @@ function LocMultiReg() {
     const fromId = `${baseId}From`;
     const toId = `${baseId}To`;
 
-    // From/To 비교 로직
-    // 현재 입력 중인 값이 From이면 기존 To값과 비교, 반대면 반대로 비교
     let fromValue = formData[fromId];
     let toValue = formData[toId];
 
@@ -147,7 +140,7 @@ function LocMultiReg() {
     if (id.includes('To')) toValue = value;
 
     if (fromValue && toValue && fromValue > toValue) {
-      return `${fieldLabels[id]}의 From 값은 To 값보다 작거나 같아야 합니다.`;
+      return `${fieldLabels[baseId]}의 From 값은 To 값보다 작거나 같아야 합니다.`;
     }
 
     return '';
@@ -186,7 +179,7 @@ function LocMultiReg() {
       <DialogContent>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth margin="normal" size="small">
               <InputLabel id="dcCd-label">물류센터</InputLabel>
               <Select
                 labelId="dcCd-label"
@@ -202,7 +195,7 @@ function LocMultiReg() {
                 ))}
               </Select>
             </FormControl>
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth margin="normal" size="small">
               <InputLabel id="areaCd-label">구역코드</InputLabel>
               <Select
                 labelId="areaCd-label"
@@ -219,7 +212,7 @@ function LocMultiReg() {
                 ))}
               </Select>
             </FormControl>
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth margin="normal" size="small">
               <InputLabel id="zoneCd-label">지역코드</InputLabel>
               <Select
                 labelId="zoneCd-label"
@@ -236,13 +229,15 @@ function LocMultiReg() {
                 ))}
               </Select>
             </FormControl>
-            <Grid container spacing={2}>
+            
+            <Grid container spacing={2} sx={{ mt: 1 }}>
               {['linCd', 'rowCd', 'levCd'].map((cd) => (
                 <React.Fragment key={cd}>
                     <Grid item xs={6}>
                     <TextField
                         label={`${fieldLabels[`${cd}From`]}`}
                         variant="outlined"
+                        size="small"
                         value={formData[`${cd}From`]}
                         onChange={handleChange}
                         fullWidth
@@ -255,6 +250,7 @@ function LocMultiReg() {
                     <TextField
                         label={`${fieldLabels[`${cd}To`]}`}
                         variant="outlined"
+                        size="small"
                         value={formData[`${cd}To`]}
                         onChange={handleChange}
                         fullWidth

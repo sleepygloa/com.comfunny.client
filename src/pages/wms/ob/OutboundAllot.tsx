@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Box } from "@mui/material"; // Box import 추가
 import { GridColDef, GridRenderCellParams, GridValueFormatterParams, GridRowId } from '@mui/x-data-grid';
 
 // 컴포넌트 import
 import { ComDeGrid } from "../../../components/Grid/ComDeGrid";
 import { SchTextField, GridDateRenderField, SchDateField, FieldRow } from "../../../components/SearchBar/CmmnTextField";
-import { PageTitle } from '../../../components/SearchBar/SearchBar';
+import { PageTitle, SearchBar } from '../../../components/SearchBar/SearchBar'; // SearchBar import 추가
 
 // 공통 함수 import
-import { client } from '../../../constraints'; // 오타 수정 contraints -> constraints
+import { client } from '../../../constraints'; 
 import { 
   gvGridFieldNumberFormatter, 
   gvGetRowDataListOfChk,
@@ -47,8 +48,8 @@ interface OutboundAllotDetailData {
   planBoxQty: number;
   allotTotQty: number;
   allotBoxQty: number;
-  allotEaQty: number; // 계산 로직에 필요하므로 추가
-  allotQty?: number;  // 계산 로직에 필요할 수 있음
+  allotEaQty: number;
+  allotQty?: number;
   obCost: number;
   obAmt: number;
   makeLot: string;
@@ -65,24 +66,23 @@ interface SearchValues {
 }
 
 export default function OutboundAllot() {
-  const menuTitle = '출고할당'; // 메뉴 타이틀 설정
-  const PRO_URL = '/wms/ob/outboundAllot'; // API URL
-  const { openModal } = useModal(); // 모달 컨텍스트 가져오기
+  const menuTitle = '출고할당';
+  const PRO_URL = '/wms/ob/outboundAllot';
+  const { openModal } = useModal();
   const { cmmnCdData } = useCommonData();
 
   // 상태 관리
-  const [selRowId, setSelRowId] = useState<GridRowId | null>(null); // 선택된 메인 그리드 행 ID
+  const [selRowId, setSelRowId] = useState<GridRowId | null>(null);
   const [selDtlRowId, setSelDtlRowId] = useState<GridRowId | null>(null);
 
-  const [dataList, setDataList] = useState<OutboundAllotData[]>([]); // 메인 그리드 데이터
-  const [dataDtlList, setDataDtlList] = useState<OutboundAllotDetailData[]>([]); // 상세 그리드 데이터
+  const [dataList, setDataList] = useState<OutboundAllotData[]>([]);
+  const [dataDtlList, setDataDtlList] = useState<OutboundAllotDetailData[]>([]);
 
   const [schValues, setSchValues] = useState<SearchValues>({ 
     obNo: "", 
     obPlanYmd: gvGetToday() 
-  }); // 검색 조건
+  });
   
-  // 선택된 상세 데이터 체크 상태
   const [dtlChkRows, setDtlChkRows] = useState<GridRowId[]>([]);
 
   // 메인 그리드 컬럼 정의
@@ -151,14 +151,12 @@ export default function OutboundAllot() {
     { field: "remark",      headerName: "비고", editable: false, align: "left", width: 300 },
   ];
 
-  // 검색 조건 변경 핸들러
   const onChangeSearch = (value: any, id?: string) => {
     if (id) {
         setSchValues((prev) => ({ ...prev, [id]: value }));
     }
   };
 
-  // 검색 실행
   const fnSearch = () => {
     const data = { 
       obNo: schValues.obNo, 
@@ -180,7 +178,6 @@ export default function OutboundAllot() {
       });
   };
 
-  // 상세 조회
   const fnSearchDtl = (rowData: OutboundAllotData) => {
     client.post(`${PRO_URL}/selectOutboundAllotDetailList`, rowData)
       .then((res) => {
@@ -203,7 +200,6 @@ export default function OutboundAllot() {
             openModal('', 'A', res.data.msgTxt);
             return;
           }
-
           openModal('', 'I', '출고할당이 완료되었습니다.');
           fnSearch();
         })
@@ -213,7 +209,7 @@ export default function OutboundAllot() {
     });
   };
 
-  // 출고할당취소 클릭
+  // 출고할당취소
   const onClickAllotComplCncl = () => {
     const rowData = dataList.find(row => row.id === selRowId);
     if (!rowData) return;
@@ -235,7 +231,7 @@ export default function OutboundAllot() {
     );
   }
 
-  // 할당 클릭 (상세)
+  // 할당 (상세)
   const onClickItemAllot = () => {
     const data = gvGetRowDataListOfChk(dataDtlList, dtlChkRows);
     if (data.length === 0) {
@@ -261,7 +257,7 @@ export default function OutboundAllot() {
     );
   }
 
-  // 할당취소 클릭 (상세)
+  // 할당취소 (상세)
   const onClickItemAllotCncl = () => {
     const data = gvGetRowDataListOfChk(dataDtlList, dtlChkRows);
     if (data.length === 0) {
@@ -287,7 +283,7 @@ export default function OutboundAllot() {
     );
   }
 
-  // 셀 수정 커밋 핸들러
+  // 셀 수정 핸들러
   const handleEditCellChangeCommitted = useCallback(
     ({ id, field, value }: { id: GridRowId, field: string, value: any }) => {
       if (['allotBoxQty', 'allotEaQty'].includes(field)) {
@@ -317,48 +313,55 @@ export default function OutboundAllot() {
   );
 
   return (
-    <>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', p: 2 }}>
       <PageTitle title={menuTitle} />
-      {/* 메인 그리드 */}
-      <ComDeGrid
+      
+      <SearchBar
         onClickSelect={fnSearch}
         onClickCustom1={onClickAllotCompl}
         onClickCustomNm1="할당완료"
         onClickCustom2={onClickAllotComplCncl}
         onClickCustomNm2={'할당완료취소'}
-        searchBarChildren={
-          <FieldRow>
-            <SchTextField id="obNo" label="출고번호/명" onChange={onChangeSearch} />
-            <SchDateField id="obPlanYmd" label="출고예정일" selected={schValues.obPlanYmd} onChange={onChangeSearch} />
-          </FieldRow>
-        }
+      >
+        <FieldRow>
+          <SchTextField id="obNo" label="출고번호/명" onChange={onChangeSearch} />
+          <SchDateField id="obPlanYmd" label="출고예정일" selected={schValues.obPlanYmd} onChange={onChangeSearch} />
 
-        height={'250px'}
-        title={"Outbound List"}
-        dataList={dataList}
-        columns={columns}
-        onRowClick={(params) => { 
-            setSelRowId(params.id); 
-            fnSearchDtl(params.row as OutboundAllotData);
-        }}
-        type={"single"}
-      />
+        </FieldRow>
+      </SearchBar>
+
+      {/* 마스터 그리드 */}
+      <Box sx={{ height: '40%', mt: 2 }}>
+        <ComDeGrid
+          title={"Outbound List"}
+          dataList={dataList}
+          columns={columns}
+          onRowClick={(params) => { 
+              setSelRowId(params.id); 
+              fnSearchDtl(params.row as OutboundAllotData);
+          }}
+          type={"single"}
+          height="100%"
+        />
+      </Box>
 
       {/* 상세 그리드 */}
-      <ComDeGrid
-        onClickCustom1={onClickItemAllot}
-        onClickCustomNm1={'할당'}
-        onClickCustom2={onClickItemAllotCncl}
-        onClickCustomNm2={'할당취소'}
-        
-        title={"Outbound Detail List"}
-        dataList={dataDtlList}
-        columns={columnsDtl}
-        onRowClick={(params) => setSelDtlRowId(params.id)}
-        onCellEditCommit={handleEditCellChangeCommitted}
-        type={"multi"}
-        onChangeChks={(chkRows) => setDtlChkRows(chkRows.map(item => item.id))}
-      />
-    </>
+      <Box sx={{ flex: 1, mt: 2, minHeight: 0 }}>
+        <ComDeGrid
+          onClickCustom1={onClickItemAllot}
+          onClickCustomNm1={'할당'}
+          onClickCustom2={onClickItemAllotCncl}
+          onClickCustomNm2={'할당취소'}
+          title={"Outbound Detail List"}
+          dataList={dataDtlList}
+          columns={columnsDtl}
+          onRowClick={(params) => setSelDtlRowId(params.id)}
+          onCellEditCommit={handleEditCellChangeCommitted}
+          type={"multi"}
+          onChangeChks={(chkRows) => setDtlChkRows(chkRows.map(item => item.id))}
+          height="100%"
+        />
+      </Box>
+    </Box>
   );
 }

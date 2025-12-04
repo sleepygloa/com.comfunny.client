@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Box } from "@mui/material"; // Box import 추가
 import { GridColDef, GridRenderCellParams, GridValueFormatterParams, GridRowId } from '@mui/x-data-grid';
 
 // components
+import PageTitle from "../../../components/PageTitle/PageTitle"; // PageTitle import 추가
+import { SearchBar } from "../../../components/SearchBar/SearchBar"; // SearchBar import 추가
 import { ComDeGrid } from "../../../components/Grid/ComDeGrid";
 import { SchTextField, GridDateRenderField, SchDateField, FieldRow } from "../../../components/SearchBar/CmmnTextField";
 
 // Common
-import { client } from '../../../constraints'; // 오타 수정 contraints -> constraints
+import { client } from '../../../constraints';
 import { 
   gvGridDropdownDisLabel, 
   gvGridFieldNumberFormatter, 
@@ -33,7 +36,7 @@ interface InboundExamData {
   supplierNm: string;
   useYnNm: string;
   remark: string;
-  [key: string]: any; // 동적 접근 허용
+  [key: string]: any; 
 }
 
 interface InboundExamDetailData {
@@ -47,10 +50,10 @@ interface InboundExamDetailData {
   planBoxQty: number;
   examBoxQty: number;
   examEaQty: number;
-  examTotQty: number; // 계산 로직에 사용됨
+  examTotQty: number;
   ibAmt: number;
   remark: string;
-  [key: string]: any; // 동적 접근 허용
+  [key: string]: any; 
 }
 
 interface SearchValues {
@@ -60,7 +63,6 @@ interface SearchValues {
 }
 
 export default function InboundExam() {
-  // 화면 제목
   const menuTitle = '입고검수';
   const PRO_URL = '/wms/ib/inboundExam';
   const { openModal } = useModal();
@@ -71,8 +73,8 @@ export default function InboundExam() {
   const [selDtlRowId, setSelDtlRowId] = useState<GridRowId>(-1);
 
   // 데이터 리스트 상태 관리
-  const [dataList, setDataList] = useState<InboundExamData[]>([]); // 메인 데이터 리스트
-  const [dataDtlList, setDataDtlList] = useState<InboundExamDetailData[]>([]); // 상세 데이터 리스트
+  const [dataList, setDataList] = useState<InboundExamData[]>([]);
+  const [dataDtlList, setDataDtlList] = useState<InboundExamDetailData[]>([]);
 
   // 조회 조건 상태 관리
   const [schValues, setSchValues] = useState<SearchValues>({ 
@@ -108,7 +110,6 @@ export default function InboundExam() {
       .then(res => {
         const list: InboundExamData[] = res.data;
         setDataList(list);
-        // 첫 번째 데이터 상세 조회
         if (list.length > 0) {
           setSelRowId(list[0].id);
           fnSearchDtl(list[0]);
@@ -170,7 +171,6 @@ export default function InboundExam() {
 
   // 검수 버튼 클릭 핸들러 (상세)
   const onClickDtlExamCompl = () => {
-    // 체크된 행 데이터 가져오기
     const data = gvGetRowDataListOfChk(dataDtlList, dtlChkRows);
     
     if (data.length === 0) {
@@ -228,7 +228,6 @@ export default function InboundExam() {
             const newRow = {
               ...row,
               [field]: Number(value),
-              // 총 검수 수량 계산: (박스 수량 * 입수) + 낱개 수량
               examTotQty: (field === 'examBoxQty' ? Number(value) : (row.examBoxQty || 0)) * (row.pkqty || 0) 
                           + (field === 'examEaQty' ? Number(value) : (row.examEaQty || 0)),
             };
@@ -250,9 +249,9 @@ export default function InboundExam() {
     { field: "clientNm", headerName: "고객사", width: 120, editable: false, align: "left" },
     { field: "ibGbnNm", headerName: "입고구분", width: 120, editable: false, align: "left" },
     { field: "ibProgStNm", headerName: "입고진행상태", width: 100, editable: false, align: "left" },
-    { field: "ibPlanYmd", headerName: "입고예정일자", width: 150, editable: false, align: "left", 
+    { field: "ibPlanYmd", headerName: "입고예정일자", width: 100, editable: false, align: "left", 
       renderCell: (params: GridRenderCellParams) => <GridDateRenderField params={params} /> },
-    { field: "ibYmd", headerName: "입고일자", width: 150, editable: false, align: "left", 
+    { field: "ibYmd", headerName: "입고일자", width: 100, editable: false, align: "left", 
       renderCell: (params: GridRenderCellParams) => <GridDateRenderField params={params} /> },
     { field: "supplierNm", headerName: "공급처", width: 100, editable: false, align: "left" },
     { field: "useYnNm", headerName: "사용여부", width: 100, editable: false, align: "left" },
@@ -265,15 +264,14 @@ export default function InboundExam() {
     { field: "ibDetailSeq", headerName: "순번", width: 60, editable: false, align: "right" },
     { field: "ibProgStNm", headerName: "진행상태", width: 100, editable: false, align: "left" },
     { field: "itemCd", headerName: "상품코드", width: 100, editable: false, align: "left" },
-    { field: "itemNm", headerName: "상품명", width: 300, editable: false, align: "left" },
+    { field: "itemNm", headerName: "상품명", width: 200, editable: false, align: "left" },
     { field: "itemStNm", headerName: "상품상태", width: 100, editable: false, align: "left" },
     { field: "planBoxQty", headerName: "예정(박스)", width: 100, editable: false, align: "right", 
       valueFormatter: (params: GridValueFormatterParams) => gvGridFieldNumberFormatter(params) },
     { field: "examBoxQty", headerName: "검수(박스)", width: 100, editable: true, align: "right", 
-      // [타입 호환성 해결] any로 캐스팅하여 에러 방지
       preProcessEditCellProps: gvGridFieldNumberPreEdit as any, 
-      valueFormatter: gvGridFieldNumberFormatter, 
-      valueParser: gvGridFieldNumberParser 
+      valueFormatter: (params) => gvGridFieldNumberFormatter(params), 
+      valueParser: (value) => gvGridFieldNumberParser(value) 
     },
     { field: "ibAmt", headerName: "입고금액", width: 100, editable: false, align: "right", 
       valueFormatter: (params: GridValueFormatterParams) => gvGridFieldNumberFormatter(params) },
@@ -281,42 +279,51 @@ export default function InboundExam() {
   ];
 
   return (
-    <>
-      {/* 메인 그리드 */}
-      <ComDeGrid
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', p: 2 }}>
+      <PageTitle title={menuTitle} />
+      
+      <SearchBar
         onClickSelect={fnSearch}
         onClickCustom1={onClickExamCompl}
         onClickCustomNm1={'검수완료'}
         onClickCustom2={onClickExamComplCncl}
         onClickCustomNm2={'검수완료취소'}
-        searchBarChildren={
+      >
           <FieldRow>
             <SchTextField id="ibNo" label='입고번호/명' onChange={onChangeSearch}  />  
             <SchDateField id="ibPlanYmd" label='입고예정일' selected={schValues.ibPlanYmd} onChange={onChangeSearch} />    
           </FieldRow>
-        }
-        title={"Inbound List"}
-        dataList={dataList}
-        columns={columns}
-        height={"250px"}
-        onRowClick={(params) => { setSelRowId(params.id); fnSearchDtl(params.row as InboundExamData) }}
-        type={"single"}
-      />
+      </SearchBar>
+
+      {/* 마스터 그리드 */}
+      <Box sx={{ height: '40%', mt: 2 }}>
+        <ComDeGrid
+          title={"Inbound List"}
+          dataList={dataList}
+          columns={columns}
+          onRowClick={(params) => { setSelRowId(params.id); fnSearchDtl(params.row as InboundExamData) }}
+          type={"single"}
+          height="100%"
+        />
+      </Box>
 
       {/* 상세 그리드 */}
-      <ComDeGrid
-        onClickCustom1={onClickDtlExamCompl}
-        onClickCustomNm1={'검수'}
-        onClickCustom2={onClickDtlExamComplCncl}
-        onClickCustomNm2={'검수취소'}
-        title={"Inbound Detail List"}
-        dataList={dataDtlList}
-        columns={columnsDtl}
-        onRowClick={(params) => setSelDtlRowId(params.id)}
-        onCellEditCommit={handleEditCellChangeCommitted}
-        type={"multi"}
-        onChangeChks={(chkRows) => setDtlChkRows(chkRows.map(item => item.id))}
-      />
-    </>
+      <Box sx={{ flex: 1, mt: 2, minHeight: 0 }}>
+        <ComDeGrid
+          onClickCustom1={onClickDtlExamCompl}
+          onClickCustomNm1={'검수'}
+          onClickCustom2={onClickDtlExamComplCncl}
+          onClickCustomNm2={'검수취소'}
+          title={"Inbound Detail List"}
+          dataList={dataDtlList}
+          columns={columnsDtl}
+          onRowClick={(params) => setSelDtlRowId(params.id)}
+          onCellEditCommit={handleEditCellChangeCommitted}
+          type={"multi"}
+          onChangeChks={(chkRows) => setDtlChkRows(chkRows.map(item => item.id))}
+          height="100%"
+        />
+      </Box>
+    </Box>
   );
 }

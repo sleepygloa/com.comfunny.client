@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { GridColDef, GridValueFormatterParams } from '@mui/x-data-grid';
+import { Box } from "@mui/material";
+import { GridColDef } from '@mui/x-data-grid';
 
 // CommonData와 Modal 관련 Context 사용
 import { useCommonData } from "../../../context/CommonDataContext";
@@ -9,7 +10,7 @@ import { useModal } from "../../../context/ModalContext";
 import PageTitle from "../../../components/PageTitle/PageTitle";
 import { SearchBar } from "../../../components/SearchBar/SearchBar";
 import { SchTextField } from "../../../components/SearchBar/CmmnTextField";
-import { client } from '../../../constraints'; // 오타 수정됨
+import { client } from '../../../constraints';
 import { 
   gvGridDropdownDisLabel,
   gvGetRowData,
@@ -34,22 +35,21 @@ interface AreaData {
   [key: string]: any;
 }
 
-// `Area` 컴포넌트 정의
 export default function Area() {
-  const PRO_URL = '/wms/sd/area'; // API URL
-  const { openModal } = useModal(); // Modal 열기 함수
-  const { getCmbOfGlobalData } = useCommonData(); // 공통 데이터 호출 함수
+  const PRO_URL = '/wms/sd/area'; 
+  const { openModal } = useModal(); 
+  const { getCmbOfGlobalData } = useCommonData(); 
 
-  const [selRowId, setSelRowId] = useState<number>(-1); // 선택된 행 ID
-  const [dataList, setDataList] = useState<AreaData[]>([]); // 데이터 리스트
-  const [useYnCmb, setUseYnCmb] = useState<any[]>([]); // 사용 여부 콤보박스 옵션
-  const [dcCmb, setDcCmb] = useState<any[]>([]); // 물류 센터 콤보박스 옵션
-  const [keepTempGbnCmb, setKeepTempGbnCmb] = useState<any[]>([]); // 보관 온도 구분 콤보박스 옵션
-  const [schValues, setSchValues] = useState({ codeCd: "" }); // 검색 조건 값
+  const [selRowId, setSelRowId] = useState<number>(-1); 
+  const [dataList, setDataList] = useState<AreaData[]>([]); 
+  const [useYnCmb, setUseYnCmb] = useState<any[]>([]); 
+  const [dcCmb, setDcCmb] = useState<any[]>([]); 
+  const [keepTempGbnCmb, setKeepTempGbnCmb] = useState<any[]>([]); 
+  const [schValues, setSchValues] = useState({ codeCd: "" }); 
 
   // 초기 데이터 값 설정
   const initData: AreaData = {
-    id: 0, // 초기값 0, 추가 시 재설정
+    id: 0, 
     bizCd: '',
     dcCd: "",
     areaCd: "",
@@ -59,11 +59,11 @@ export default function Area() {
     useYn: "Y",
   };
 
-  const [values, setValues] = useState<AreaData>(initData); // 현재 선택된 값
+  const [values, setValues] = useState<AreaData>(initData); 
 
   // DataGrid의 컬럼 정의
   const columns: GridColDef[] = [
-    { field: "id", headerName: "ID", align: "center", width: 20 },
+    { field: "id", headerName: "ID", align: "center", width: 60 },
     { 
       field: "dcCd", 
       headerName: "물류창고", 
@@ -104,104 +104,100 @@ export default function Area() {
 
   // 초기 로드 시 데이터 및 콤보박스 옵션 설정
   useEffect(() => {
-    if (selRowId === -1) { // 행이 선택되지 않은 경우
-      if (useYnCmb.length === 0) setUseYnCmb(getCmbOfGlobalData('CMMN_CD', 'USE_YN')); // 사용 여부 콤보박스 설정
-      if (keepTempGbnCmb.length === 0) setKeepTempGbnCmb(getCmbOfGlobalData('CMMN_CD', 'KEEP_TEMPE_GBN_CD')); // 보관 온도 구분 콤보박스 설정
-      if (dcCmb.length === 0) setDcCmb(getCmbOfGlobalData('DC_CD')); // 물류 센터 콤보박스 설정
+    if (selRowId === -1) { 
+      if (useYnCmb.length === 0) setUseYnCmb(getCmbOfGlobalData('CMMN_CD', 'USE_YN')); 
+      if (keepTempGbnCmb.length === 0) setKeepTempGbnCmb(getCmbOfGlobalData('CMMN_CD', 'KEEP_TEMPE_GBN_CD')); 
+      if (dcCmb.length === 0) setDcCmb(getCmbOfGlobalData('DC_CD')); 
     }
-  }, [selRowId, useYnCmb, keepTempGbnCmb, dcCmb]);
+  }, [selRowId, useYnCmb, keepTempGbnCmb, dcCmb, getCmbOfGlobalData]);
 
-  // 검색 조건 변경 시 호출되는 함수
-  const onChangeSearch = (event: any, id?: string) => {
+  const onChangeSearch = (value: string, id?: string) => {
     if (id) {
-      setSchValues({ ...schValues, [id]: event });
+      setSchValues({ ...schValues, [id]: value });
     }
   };
 
-  // 조회 기능 수행
   const fnSearch = () => {
-    const data = { codeCd: schValues.codeCd }; // 검색 조건 설정
+    const data = { codeCd: schValues.codeCd }; 
     client.post(`${PRO_URL}/selectAreaList`, data)
-      .then(res => setDataList(res.data)) // 조회 결과를 데이터 리스트로 설정
-      .catch(error => console.error('Error fetching area list:', error)); // 오류 시 콘솔에 출력
+      .then(res => setDataList(res.data)) 
+      .catch(error => console.error('Error fetching area list:', error)); 
   };
 
-  // 조회 버튼 클릭 시 호출되는 함수
   const onClickSelect = () => fnSearch();
 
-  // 데이터 리스트에 새 항목 추가
   const onClickAdd = () => {
-    // 고유 ID 생성 (기존 max ID + 1)
     const newId = dataList.length > 0 ? Math.max(...dataList.map(d => d.id)) + 1 : 1;
     const newRow = { ...initData, id: newId };
     setDataList(prevDataList => [...prevDataList, newRow]);
   };
 
-  // 선택한 행 저장
   const onClickSave = () => {
-    const rowData = gvGetRowData(dataList, selRowId); // 선택된 행의 데이터 가져오기
-    if (!rowData) return; // 데이터가 없으면 종료
+    const rowData = gvGetRowData(dataList, selRowId); 
+    if (!rowData) return; 
 
     openModal('', '', '저장 하시겠습니까?', () => {
-      client.post(`${PRO_URL}/saveArea`, rowData) // 서버에 데이터 저장 요청
+      client.post(`${PRO_URL}/saveArea`, rowData) 
         .then(() => {
-          alert('저장되었습니다.');
-          fnSearch(); // 저장 후 데이터 다시 조회
+          // alert('저장되었습니다.');
+          fnSearch(); 
         })
-        .catch(error => console.error('Error saving area:', error)); // 오류 시 콘솔에 출력
+        .catch(error => console.error('Error saving area:', error)); 
     });
   };
 
-  // 선택한 행 삭제
   const onClickDel = () => {
-    const rowData = gvGetRowData(dataList, selRowId); // 선택된 행의 데이터 가져오기
-    if (!rowData) return; // 데이터가 없으면 종료
+    const rowData = gvGetRowData(dataList, selRowId); 
+    if (!rowData) return; 
 
     openModal('', '', '삭제 하시겠습니까?', () => {
-      client.post(`${PRO_URL}/deleteArea`, rowData) // 서버에 데이터 삭제 요청
+      client.post(`${PRO_URL}/deleteArea`, rowData) 
         .then(() => {
-          alert('삭제되었습니다.');
-          fnSearch(); // 삭제 후 데이터 다시 조회
+          // alert('삭제되었습니다.');
+          fnSearch(); 
         })
-        .catch(error => console.error('Error deleting area:', error)); // 오류 시 콘솔에 출력
+        .catch(error => console.error('Error deleting area:', error)); 
     });
   };
 
-  // 그리드 셀 클릭 시 호출되는 함수
-  const handleGridCellClick = (e: any) => {
-    setValues(e.row); // 클릭된 행의 데이터를 `values`에 저장
-    setSelRowId(e.row.id); // 선택된 행 ID 설정
+  const handleGridCellClick = (params: any) => {
+    setValues(params.row); 
+    setSelRowId(params.row.id); 
   };
 
-  // 셀 데이터가 변경되었을 때 호출되는 함수
   const handleEditCellChangeCommitted = useCallback(
     ({ id, field, value }: any) => {
       setDataList(prevDataList =>
         prevDataList.map(row => (row.id === id ? { ...row, [field]: value } : row))
-      ); // 해당 행의 데이터 업데이트
+      ); 
     },
     []
   );
 
   return (
-    <>
-      {/* 페이지 타이틀 */}
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', p: 2 }}>
       <PageTitle title="구역 관리" />
       
-      {/* 검색 바 및 버튼 */}
-      <SearchBar onClickSelect={onClickSelect} onClickAdd={onClickAdd} onClickSave={onClickSave} onClickDel={onClickDel}>
+      <SearchBar 
+        onClickSelect={onClickSelect} 
+        onClickAdd={onClickAdd} 
+        onClickSave={onClickSave} 
+        onClickDel={onClickDel}
+      >
         <SchTextField id="codeCd" label="코드/명"  onChange={onChangeSearch}  />
       </SearchBar>
 
-      {/* 데이터 그리드 */}
-      <ComDeGrid
-        title="Area List" // 그리드 타이틀
-        dataList={dataList} // 데이터 리스트
-        columns={columns} // 컬럼 정의
-        type="single" // 단일 선택 타입
-        onCellClick={handleGridCellClick} // 셀 클릭 이벤트 핸들러
-        onCellEditCommit={handleEditCellChangeCommitted} // 셀 수정 완료 이벤트 핸들러
-      />
-    </>
+      <Box sx={{ flex: 1, mt: 2, minHeight: 0 }}>
+        <ComDeGrid
+          title="Area List" 
+          dataList={dataList} 
+          columns={columns} 
+          type="single" 
+          onCellClick={handleGridCellClick} 
+          onCellEditCommit={handleEditCellChangeCommitted} 
+          height="100%"
+        />
+      </Box>
+    </Box>
   );
 }

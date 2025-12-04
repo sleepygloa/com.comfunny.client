@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
+import { Box } from "@mui/material"; // Box 추가
 import { GridColDef, GridValueFormatterParams } from '@mui/x-data-grid';
 
 // components
@@ -18,10 +19,9 @@ import {
 } from "../../../components/Common";
 import { ComDeGrid } from "../../../components/Grid/ComDeGrid";
 import { useModal } from "../../../context/ModalContext";
-import { client } from '../../../constraints';
+import { client } from '../../../constraints'; // constraints 오타 수정 확인
 
-// [참고] LocMultiRegPop 컴포넌트가 실제로 존재해야 합니다. 
-// 만약 없다면 임시로 주석 처리하거나 더미 컴포넌트를 만들어주세요.
+// [참고] LocMultiRegPop 컴포넌트 import
 // import LocMultiReg from "./LocMultiRegPop"; 
 
 // --- 데이터 타입 정의 ---
@@ -48,7 +48,7 @@ interface LocData {
   weight: number;
   remark: string;
   useYn: string;
-  // [에러 해결] 동적 필드 접근을 위한 인덱스 시그니처
+  // 동적 필드 접근을 위한 인덱스 시그니처
   [key: string]: string | number | undefined;
 }
 
@@ -148,7 +148,7 @@ export default function LocationManagement() {
     openModal('', '', '저장 하시겠습니까?', () => {
       client.post(`${PRO_URL}/saveLoc`, rowData)
         .then(() => {
-          alert('저장되었습니다.');
+          // alert('저장되었습니다.');
           fnSearch();
         })
         .catch(error => console.log('error = ' + error));
@@ -162,7 +162,7 @@ export default function LocationManagement() {
     openModal('', '', '삭제 하시겠습니까?', () => {
       client.post(`${PRO_URL}/deleteLoc`, rowData)
         .then(() => {
-          alert('삭제되었습니다.');
+          // alert('삭제되었습니다.');
           fnSearch();
         })
         .catch(error => console.log('error = ' + error));
@@ -170,20 +170,19 @@ export default function LocationManagement() {
   };
 
   const onClickMultiRegister = () => {
-    // LocMultiReg 팝업 컴포넌트가 필요합니다.
+    // LocMultiReg 팝업 연결 필요 (현재는 준비중 메시지)
     // openModal('LOG_MULTI_REG', '로케이션 다중 등록', <LocMultiReg />, fnSearch, '1000px', '600px');
-    alert("준비 중입니다.");
+    openModal('', '알림', "로케이션 다중 등록 팝업 준비 중입니다.");
   };
 
-  const handleGridCellClick = (e: any) => {
-    setSelRowId(e.row.id);
+  const handleGridCellClick = (params: any) => {
+    setSelRowId(params.row.id);
   };
 
   const handleEditCellChangeCommitted = useCallback(({ id, field, value }: any) => {
     setDataList(prevDataList => prevDataList.map(row => {
       if (row.id === id) {
         const numValue = Number(value);
-        // LocData에 인덱스 시그니처가 있으므로 [field] 접근이 안전합니다.
         const updatedRow = { ...row, [field]: value };
         
         // CBM 자동 계산
@@ -193,7 +192,7 @@ export default function LocationManagement() {
              const he = field === 'height' ? numValue : (row.height || 0);
              const cbm = (h * v * he) / 1000000000;
              updatedRow.cbm = Number(cbm.toFixed(9));
-             (updatedRow as any)[field] = numValue; // 숫자형으로 업데이트 보장
+             (updatedRow as any)[field] = numValue; // 숫자형으로 저장
         }
 
         // 계층형 콤보박스 초기화 로직
@@ -221,7 +220,8 @@ export default function LocationManagement() {
       valueGetter: (params) => {
         return dcCmb.find((v: any) => v.value === params.row.dcCd)?.label || params.value || '';
       },
-      valueOptions: dcCmb 
+      valueOptions: dcCmb,
+      width: 120
     },
     { 
       field: "areaCd", 
@@ -233,7 +233,8 @@ export default function LocationManagement() {
          const areas = dcAreaCmb[params.row.dcCd];
          return areas?.find((v: any) => v.value === params.value)?.label || params.value || '';
       },
-      valueOptions: (params) => dcAreaCmb[params.row.dcCd] || [] 
+      valueOptions: (params) => dcAreaCmb[params.row.dcCd] || [],
+      width: 120
     },
     { 
       field: "zoneCd", 
@@ -245,12 +246,13 @@ export default function LocationManagement() {
           const zones = dcAreaZoneCmb[params.row.dcCd]?.[params.row.areaCd];
           return zones?.find((v: any) => v.value === params.value)?.label || params.value || '';
       },
-      valueOptions: (params) => dcAreaZoneCmb[params.row.dcCd]?.[params.row.areaCd] || [] 
+      valueOptions: (params) => dcAreaZoneCmb[params.row.dcCd]?.[params.row.areaCd] || [],
+      width: 120
     },
     { field: "locCd", headerName: "로케이션코드", editable: false, align: "left", width: 120 },
-    { field: "linCd", headerName: "행", editable: true, align: "left", width: 100 },
-    { field: "rowCd", headerName: "열", editable: true, align: "left", width: 100 },
-    { field: "levCd", headerName: "단", editable: true, align: "left", width: 100 },
+    { field: "linCd", headerName: "행", editable: true, align: "left", width: 80 },
+    { field: "rowCd", headerName: "열", editable: true, align: "left", width: 80 },
+    { field: "levCd", headerName: "단", editable: true, align: "left", width: 80 },
     { 
       field: "locTypeCd", 
       headerName: "로케이션유형", 
@@ -258,7 +260,8 @@ export default function LocationManagement() {
       align: "center", 
       type: "singleSelect", 
       valueFormatter: gvGridDropdownDisLabel, 
-      valueOptions: locTypeCdCmb 
+      valueOptions: locTypeCdCmb,
+      width: 120
     },
     { 
       field: "holdStCd", 
@@ -267,24 +270,24 @@ export default function LocationManagement() {
       align: "center", 
       type: "singleSelect", 
       valueFormatter: gvGridDropdownDisLabel, 
-      valueOptions: holdStCdCmb 
+      valueOptions: holdStCdCmb,
+      width: 100
     },
     { 
       field: "locPrioord", 
-      headerName: "로케이션우선순위", 
+      headerName: "우선순위", 
       editable: true, 
       align: "right", 
-      width: 100, 
-      // [에러 해결] 타입 호환성 문제를 위해 as any 사용
+      width: 80, 
       preProcessEditCellProps: gvGridFieldNumberPreEdit as any, 
       valueFormatter: gvGridFieldNumberFormatter, 
       valueParser: gvGridFieldNumberParser 
     },
-    { field: "horizontal", headerName: "가로", editable: true, align: "left", width: 100, valueFormatter: gvGridFieldNumberFormatter, valueParser: gvGridFieldNumberParser },
-    { field: "vertical", headerName: "세로", editable: true, align: "left", width: 100, valueFormatter: gvGridFieldNumberFormatter, valueParser: gvGridFieldNumberParser },
-    { field: "height", headerName: "높이", editable: true, align: "left", width: 100, valueFormatter: gvGridFieldNumberFormatter, valueParser: gvGridFieldNumberParser },
-    { field: "cbm", headerName: "체적", editable: false, align: "left", width: 100, valueFormatter: gvGridFieldNumberFormatter, valueParser: gvGridFieldNumberParser },
-    { field: "weight", headerName: "중량", editable: true, align: "left", width: 100 },
+    { field: "horizontal", headerName: "가로", editable: true, align: "right", width: 80, valueFormatter: gvGridFieldNumberFormatter, valueParser: gvGridFieldNumberParser },
+    { field: "vertical", headerName: "세로", editable: true, align: "right", width: 80, valueFormatter: gvGridFieldNumberFormatter, valueParser: gvGridFieldNumberParser },
+    { field: "height", headerName: "높이", editable: true, align: "right", width: 80, valueFormatter: gvGridFieldNumberFormatter, valueParser: gvGridFieldNumberParser },
+    { field: "cbm", headerName: "체적", editable: false, align: "right", width: 80, valueFormatter: gvGridFieldNumberFormatter },
+    { field: "weight", headerName: "중량", editable: true, align: "right", width: 80, valueFormatter: gvGridFieldNumberFormatter, valueParser: gvGridFieldNumberParser },
     { 
       field: "useYn", 
       headerName: "사용여부", 
@@ -292,31 +295,38 @@ export default function LocationManagement() {
       align: "center", 
       type: "singleSelect", 
       valueFormatter: gvGridDropdownDisLabel, 
-      valueOptions: useYnCmb 
+      valueOptions: useYnCmb,
+      width: 80
     },
-    { field: "remark", headerName: "비고", editable: true, align: "left", width: 300 },
+    { field: "remark", headerName: "비고", editable: true, align: "left", width: 200 },
   ];
 
   return (
-    <>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', p: 2 }}>
       <PageTitle title="로케이션 관리" />
-      <ComDeGrid
-        onClickSelect={onClickSelect}
-        onClickAdd={onClickAdd}
-        onClickSave={onClickSave}
-        onClickDel={onClickDel}
-        onClickCustom1={onClickMultiRegister}
+      
+      <SearchBar 
+        onClickSelect={onClickSelect} 
+        onClickAdd={onClickAdd} 
+        onClickSave={onClickSave} 
+        onClickDel={onClickDel} 
+        onClickCustom1={onClickMultiRegister} 
         onClickCustomNm1="로케이션다중등록"
-        searchBarChildren={
-          <SchTextField id="codeCd" label="코드/명" onChange={onChangeSearch}  />
-        }
-        title="Loc List"
-        dataList={dataList}
-        columns={columns}
-        type="single"
-        onCellClick={handleGridCellClick}
-        onCellEditCommit={handleEditCellChangeCommitted}
-      />
-    </>
+      >
+        <SchTextField id="codeCd" label="코드/명" onChange={onChangeSearch}  />
+      </SearchBar>
+
+      <Box sx={{ flex: 1, mt: 2, minHeight: 0 }}>
+        <ComDeGrid
+          title="Loc List"
+          dataList={dataList}
+          columns={columns}
+          type="single"
+          onCellClick={handleGridCellClick}
+          onCellEditCommit={handleEditCellChangeCommitted}
+          height="100%"
+        />
+      </Box>
+    </Box>
   );
 }

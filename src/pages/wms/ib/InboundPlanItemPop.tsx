@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect, useMemo } from 'react';
-import { DialogActions, DialogContent, Button } from '@mui/material';
+import { DialogActions, DialogContent, Button, Box } from '@mui/material'; // Box 추가
 import { GridColDef, GridValueFormatterParams, GridRowId } from '@mui/x-data-grid';
 
 // Common
@@ -11,11 +11,10 @@ import {
   gvGridFieldNumberFormatter,
   gvGetRowDataListOfChk
 } from "../../../components/Common";
-import { client } from '../../../constraints'; // 오타 수정 contraints -> constraints
+import { client } from '../../../constraints'; // 오타 수정
 
 // --- 인터페이스 정의 ---
 
-// 그리드 행 데이터 인터페이스
 interface InboundItemData {
   id: number;
   itemCd: string;
@@ -34,7 +33,6 @@ interface InboundItemData {
   [key: string]: any;
 }
 
-// Props 인터페이스
 interface InboundPlanItemPopProps {
   formData: {
     clientCd: string;
@@ -49,14 +47,11 @@ export default function InboundPlanItemPop(props: InboundPlanItemPopProps) {
   const { modals, openModal, closeModal, updateModalData, getModalData } = useModal();
   const { getCmbOfGlobalData } = useCommonData();
 
-  // 그리드에서 선택된 행 ID 저장
   const [selRowId, setSelRowId] = useState<GridRowId>(-1); 
-  // 데이터 리스트 상태
   const [dataList, setDataList] = useState<InboundItemData[]>([]);
-  // 선택된 체크박스 행들
   const [dtlChkRows, setDtlChkRows] = useState<InboundItemData[]>([]);
 
-  // 콤보박스 데이터 상태 관리
+  // 콤보박스
   const [clientCdCmb, setClientCdCmb] = useState<any[]>([]); 
   const [keepTempeGbnCdCmb, setKeepTempeGbnCdCmb] = useState<any[]>([]); 
   const [minUomCdCmb, setMinUomCdCmb] = useState<any[]>([]); 
@@ -65,7 +60,7 @@ export default function InboundPlanItemPop(props: InboundPlanItemPopProps) {
   const [useYnCmb, setUseYnCmb] = useState<any[]>([]); 
   const [itemGbnCdCmb, setItemGbnCdCmb] = useState<any[]>([]); 
 
-  // 데이터 그리드 컬럼 설정
+  // 컬럼 정의
   const columns: GridColDef[] = useMemo(() => [
     { field: "id", headerName: "ID", align: "center", width: 20 },
     { field: "itemCd", headerName: "상품코드", editable: false, align: "left", width: 100 },
@@ -107,7 +102,6 @@ export default function InboundPlanItemPop(props: InboundPlanItemPopProps) {
     { field: "remark", headerName: "비고", editable: false, align: "left", width: 300 }
   ], [itemGbnCdCmb, keepTempeGbnCdCmb, minUomCdCmb, setItemYnCmb, vatYnCmb, useYnCmb]);
 
-  // 최초 렌더링 시 콤보박스 데이터 초기화
   useEffect(() => {
     if (clientCdCmb.length === 0) setClientCdCmb(getCmbOfGlobalData("CLIENT_CD"));
     if (keepTempeGbnCdCmb.length === 0) setKeepTempeGbnCdCmb(getCmbOfGlobalData('CMMN_CD', 'KEEP_TEMPE_GBN_CD'));
@@ -118,7 +112,6 @@ export default function InboundPlanItemPop(props: InboundPlanItemPopProps) {
     if (itemGbnCdCmb.length === 0) setItemGbnCdCmb(getCmbOfGlobalData('CMMN_CD', 'ITEM_GBN_CD'));
   }, [clientCdCmb, keepTempeGbnCdCmb, minUomCdCmb, setItemYnCmb, vatYnCmb, useYnCmb, itemGbnCdCmb, getCmbOfGlobalData]);
 
-  // 서버에서 데이터 리스트를 가져오는 함수
   const fetchDataList = useCallback(() => {
     if (!formData.clientCd) return;
     const data = { clientCd: formData.clientCd };
@@ -127,18 +120,15 @@ export default function InboundPlanItemPop(props: InboundPlanItemPopProps) {
       .catch(error => console.error('Error fetching data:', error));
   }, [formData.clientCd]);
 
-  // formData의 clientCd가 변경될 때마다 데이터를 다시 가져옴
   useEffect(() => {
     if (formData.clientCd) fetchDataList();
   }, [formData.clientCd, fetchDataList]);
 
-  // 모달 확인 버튼 클릭 시 데이터 처리
   const handleSubmit = useCallback(() => {
     if (modals && modals[key]) {
         const modalInfo = modals[key];
         const modalData = getModalData(key);
-        
-        // 데이터가 선택되지 않았는데 확인을 눌렀을 경우, 현재 체크된 데이터를 사용
+        // 체크된 데이터가 없으면 현재 상태의 dtlChkRows 사용
         const resultData = (modalData && modalData.data) ? modalData.data : dtlChkRows;
 
         if (modalInfo.callback && typeof modalInfo.callback === 'function') {
@@ -148,7 +138,6 @@ export default function InboundPlanItemPop(props: InboundPlanItemPopProps) {
     }
   }, [modals, closeModal, getModalData, dtlChkRows, key]);
 
-  // 그리드에서 체크박스 선택 시 처리 함수
   const handleSelectionChange = useCallback((selectedRows: any[]) => {
     setDtlChkRows(selectedRows);
     if(updateModalData && getModalData) {
@@ -158,28 +147,24 @@ export default function InboundPlanItemPop(props: InboundPlanItemPopProps) {
 
   return (
     <>
-      <DialogContent>
-        <ComDeGrid
-          onClickSelect={fetchDataList} // 조회 버튼 클릭 시 호출
-          title="Inbound Detail List" // 그리드 제목
-          dataList={dataList} // 데이터 리스트
-          columns={columns} // 컬럼 정의
-          onRowClick={(params) => setSelRowId(params.id)} // 행 클릭 시 선택된 행 ID 업데이트
-          onCellDoubleClick={() => handleSubmit()} // 행 더블클릭 시 handleSubmit 함수 호출
-          // onCellEditCommit은 편집 가능한 컬럼이 있을 때 사용
-          onCellEditCommit={(params) => {
-            const updatedDataList = dataList.map(row =>
-              row.id === params.id ? { ...row, [params.field]: params.value } : row
-            );
-            setDataList(updatedDataList); 
-          }}
-          type="multi"
-          onChangeChks={(chkRows) => handleSelectionChange(chkRows)} // 체크박스 선택 시 처리
-        />
+      <DialogContent sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <Box sx={{ flex: 1, minHeight: 0 }}>
+          <ComDeGrid
+            onClickSelect={fetchDataList}
+            title="Inbound Detail List"
+            dataList={dataList}
+            columns={columns}
+            onRowClick={(params) => setSelRowId(params.id)}
+            onCellDoubleClick={() => handleSubmit()}
+            type="multi"
+            onChangeChks={(chkRows) => handleSelectionChange(chkRows)}
+            height="100%"
+          />
+        </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleSubmit}>확인</Button>
-        <Button onClick={() => closeModal(key)}>닫기</Button>
+        <Button onClick={handleSubmit} variant="contained" color="primary">확인</Button>
+        <Button onClick={() => closeModal(key)} variant="outlined" color="secondary">닫기</Button>
       </DialogActions>
     </>
   );

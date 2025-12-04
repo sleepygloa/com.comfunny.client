@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { Box } from "@mui/material"; // Box import 추가
 import { GridColDef, GridRenderCellParams, GridValueFormatterParams, GridRowId } from '@mui/x-data-grid';
 
 // components
 import { SchTextField, GridDateRenderField, SchDateField, FieldRow } from "../../../components/SearchBar/CmmnTextField";
 import { ComDeGrid } from "../../../components/Grid/ComDeGrid";
-import { PageTitle } from '../../../components/SearchBar/SearchBar';
+import { PageTitle, SearchBar } from '../../../components/SearchBar/SearchBar'; // SearchBar import 추가
 
 // Common
-import { client } from '../../../constraints'; // 오타 수정 contraints -> constraints
+import { client } from '../../../constraints'; 
 import { gvGetToday, gvGridFieldNumberFormatter } from "../../../components/Common";
 
 // CommonData
@@ -15,7 +16,6 @@ import { useCommonData } from "../../../context/CommonDataContext";
 
 // Modal
 import { useModal } from "../../../context/ModalContext";
-// OutboundPlanPop 컴포넌트가 존재한다고 가정 (없다면 주석 처리 필요)
 // import OutboundPlanPop from "./OutboundPlanPop";
 
 // --- 인터페이스 정의 ---
@@ -63,7 +63,7 @@ export default function OutboundPlan() {
   const menuTitle = '출고예정';
   const PRO_URL = '/wms/ob/outboundPlan';
   const { openModal } = useModal();
-  const { cmmnCdData } = useCommonData();
+  useCommonData();
 
   // States
   const [selRowId, setSelRowId] = useState<GridRowId | null>(null);
@@ -91,7 +91,6 @@ export default function OutboundPlan() {
       renderCell: (params: GridRenderCellParams) => <GridDateRenderField params={params} /> 
     },
     { field: "storeNm", headerName: "배송처", editable: false, width: 100, align: "left" },
-    // { field: "carNo", headerName: "차량번호", editable: false, width: 100, align: "left" },
     { field: "useYnNm", headerName: "사용여부", editable: false, width: 100, align: "left" },
     { field: "remark", headerName: "비고", editable: false, width: 300, align: "left" },
   ];
@@ -173,9 +172,9 @@ export default function OutboundPlan() {
 
   // Outbound Plan Popup
   const onClickAdd = () => {
-    // 팝업 컴포넌트(OutboundPlanPop)가 필요합니다.
+    // 팝업 컴포넌트(OutboundPlanPop) 연동 필요
     // openModal('OUTBOUND_PLAN_POP', '출고예정 팝업', <OutboundPlanPop />, handleOutboundPlanUpdate, '1200px', '750px');
-    alert("출고예정 등록 팝업 준비 중입니다.");
+    openModal('', '알림', "출고예정 등록 팝업 준비 중입니다.");
   };
 
   const handleOutboundPlanUpdate = () => {
@@ -183,33 +182,44 @@ export default function OutboundPlan() {
   };
 
   return (
-    <>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', p: 2 }}>
       <PageTitle title={menuTitle} />
-      <ComDeGrid
+      <SearchBar
         onClickSelect={fnSearch}
         onClickAdd={onClickAdd}
-        searchBarChildren={
-          <FieldRow>
-            <SchTextField id="obNo" label="출고번호/명" onChange={onChangeSearch} />
-            <SchDateField id="obPlanYmd" label="출고예정일" selected={schValues.obPlanYmd} onChange={onChangeSearch} />
-          </FieldRow>
-        }
-        title="Outbound List"
-        dataList={dataList}
-        columns={columns}
-        height="250px"
-        onRowClick={(params) => { 
-            setSelRowId(params.id); 
-            fnSearchDtl(params.row as OutboundPlanData); 
-        }}
-        type="single"
-      />
-      <ComDeGrid
-        title="Outbound Detail List"
-        dataList={dataDtlList}
-        columns={columnsDtl}
-        type="single"
-      />
-    </>
+      >
+        <FieldRow>
+          <SchTextField id="obNo" label="출고번호/명" onChange={onChangeSearch}  />
+          <SchDateField id="obPlanYmd" label="출고예정일" selected={schValues.obPlanYmd} onChange={onChangeSearch} />
+
+        </FieldRow>
+      </SearchBar>
+
+      {/* 마스터 그리드 */}
+      <Box sx={{ height: '40%', mt: 2 }}>
+        <ComDeGrid
+          title="Outbound List"
+          dataList={dataList}
+          columns={columns}
+          onRowClick={(params) => { 
+              setSelRowId(params.id); 
+              fnSearchDtl(params.row as OutboundPlanData); 
+          }}
+          type="single"
+          height="100%"
+        />
+      </Box>
+
+      {/* 상세 그리드 */}
+      <Box sx={{ flex: 1, mt: 2, minHeight: 0 }}>
+        <ComDeGrid
+          title="Outbound Detail List"
+          dataList={dataDtlList}
+          columns={columnsDtl}
+          type="single"
+          height="100%"
+        />
+      </Box>
+    </Box>
   );
 }

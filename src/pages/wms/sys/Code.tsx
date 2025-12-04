@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { GridColDef, GridRowParams, GridCellParams, GridRowId } from "@mui/x-data-grid";
+import { Box } from "@mui/material"; // Box 추가
+import { GridColDef, GridRowId } from "@mui/x-data-grid";
 
 // Components
-import { PageTitle } from "../../../components/SearchBar/SearchBar";
+import { PageTitle } from "../../../components/SearchBar/SearchBar"; // Note: PageTitle 위치가 SearchBar 내부인 경우
+// 만약 PageTitle이 별도 컴포넌트라면 import 경로 수정 필요: import PageTitle from "../../../components/PageTitle/PageTitle";
 import { SchTextField, FieldRow } from "../../../components/SearchBar/CmmnTextField";
 import { ComDeGrid } from "../../../components/Grid/ComDeGrid";
 
 // Common
-import { client } from "../../../constraints"; // 오타 수정 contraints -> constraints
+import { client } from "../../../constraints"; 
 import { gvGridDropdownDisLabel } from "../../../components/Common";
 import { useModal } from "../../../context/ModalContext";
 
@@ -44,7 +46,8 @@ interface CodeDetailData {
 }
 
 interface SearchValues {
-  codeCd: string;
+  codeGrpCd: string; // 상단 검색 조건
+  codeCd: string;    // 하단 검색 조건
   [key: string]: any;
 }
 
@@ -59,7 +62,7 @@ export default function Code() {
   const [selRowId, setSelRowId] = useState<GridRowId>(-1);
   const [dataList, setDataList] = useState<CodeGroupData[]>([]);
   const [dataDtlList, setDataDtlList] = useState<CodeDetailData[]>([]);
-  const [schValues, setSchValues] = useState<SearchValues>({ codeCd: "" });
+  const [schValues, setSchValues] = useState<SearchValues>({ codeGrpCd: "", codeCd: "" });
   
   // 선택된 행 데이터 (그룹 코드)
   const [values, setValues] = useState<CodeGroupData>({
@@ -116,18 +119,17 @@ export default function Code() {
 
   const onChangeSearch = (value: any, id?: string) => {
     if (id) {
-        setSchValues({ ...schValues, [id]: value });
+        setSchValues((prev) => ({ ...prev, [id]: value }));
     }
   };
 
   const fnSearch = () => {
-    const data = { codeCd: schValues.codeCd };
+    const data = { codeCd: schValues.codeGrpCd }; // 그룹코드 조회 조건
     client.post(`/wms/sys/code/selectCodeGrpList`, data)
       .then((res) => {
         const list: CodeGroupData[] = res.data;
         setDataList(list);
         if (list.length > 0) {
-          // ID가 1부터 시작한다고 가정하거나 첫 번째 요소의 ID 사용
           const firstRow = list[0];
           setSelRowId(firstRow.id);
           fnSearchDtl(firstRow);
@@ -149,66 +151,77 @@ export default function Code() {
 
   const fnSearchDtl = (rowData: CodeGroupData) => {
     setSelRowId(rowData.id);
-    client.post(`/wms/sys/code/selectCodeList`, rowData)
+    // 상세 조회시 하단 검색 조건(codeCd)도 함께 보낼 수 있음
+    client.post(`/wms/sys/code/selectCodeList`, { ...rowData, codeCd: schValues.codeCd })
       .then((res) => setDataDtlList(res.data))
       .catch((error) => console.log('error = ', error));
   };
 
+  // 하단 상세 조회 버튼 클릭 시 (현재 선택된 그룹 코드 기준 재조회)
+  const onClickSelectDtl = () => {
+    if (values && values.id !== 0) {
+      fnSearchDtl(values);
+    }
+  };
+
   return (
-    <>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', p: 2 }}>
+      
+      {/* --- 상단: 코드 그룹 리스트 --- */}
       <PageTitle title="코드그룹 리스트" />
-      <ComDeGrid
-        onClickSelect={fnSearch}
-        searchBarChildren={
-          <FieldRow>
-            <SchTextField id="codeGrpCd" label="코드그룹코드" onChange={onChangeSearch} />
-          </FieldRow>
-        }
-        title="그룹 코드 리스트"
-        dataList={dataList}
-        columns={columns}
-        type="single"
-        onRowClick={(params) => { 
-            const row = params.row as CodeGroupData;
-            setValues(row); 
-            fnSearchDtl(row); 
-        }}
-        // onCellEditCommit은 v5의 레거시 prop입니다. v6 이상에서는 processRowUpdate를 사용해야 합니다.
-        // 현재 구조 유지를 위해 any 타입 사용 혹은 로직 수정 필요
-        onCellEditCommit={(params: any) => {
-            // params.id는 row id
-            const updatedList = dataList.map(row => 
-                row.id === params.id ? { ...row, [params.field]: params.value } : row
-            );
-            setDataList(updatedList);
-        }}
-      />
+      <Box sx={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+        <ComDeGrid
+          onClickSelect={fnSearch}
+          searchBarChildren={
+            <FieldRow>
+              <SchTextField id="codeGrpCd" label="코드그룹코드" onChange={onChangeSearch} />
+            </FieldRow>
+          }
+          title="그룹 코드 리스트"
+          dataList={dataList}
+          columns={columns}
+          type="single"
+          onRowClick={(params) => { 
+              const row = params.row as CodeGroupData;
+              setValues(row); 
+              fnSearchDtl(row); 
+          }}
+          onCellEditCommit={(params: any) => {
+              const updatedList = dataList.map(row => 
+                  row.id === params.id ? { ...row, [params.field]: params.value } : row
+              );
+              setDataList(updatedList);
+          }}
+          height="100%"
+        />
+      </Box>
 
+      {/* --- 간격 --- */}
+      <Box sx={{ height: 20 }} />
+
+      {/* --- 하단: 코드 리스트 (상세) --- */}
       <PageTitle title="코드 리스트" />
-
-      <ComDeGrid
-        // onClickSelect는 상단 조회 버튼용이므로 하단 그리드엔 보통 연결하지 않음 (상세조회는 상단 행 클릭으로 트리거)
-        // onClickSelect={() => fnSearchDtl(values)} 
-        searchBarChildren={
-          <FieldRow>
-            <SchTextField id="codeCd" label="코드" onChange={onChangeSearch} />
-          </FieldRow>
-        }
-        title="코드 리스트"
-        dataList={dataDtlList}
-        columns={columnsDtl}
-        type="single"
-        onRowClick={(params) => {
-             // 상세 그리드 행 클릭 시 동작 (필요 시 구현)
-             // setValues(params.row as any); 
-        }}
-        onCellEditCommit={(params: any) => {
-            const updatedDtlList = dataDtlList.map(row => 
-                row.id === params.id ? { ...row, [params.field]: params.value } : row
-            );
-            setDataDtlList(updatedDtlList);
-        }}
-      />
-    </>
+      <Box sx={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+        <ComDeGrid
+          onClickSelect={onClickSelectDtl}
+          searchBarChildren={
+            <FieldRow>
+              <SchTextField id="codeCd" label="코드" onChange={onChangeSearch} />
+            </FieldRow>
+          }
+          title="코드 상세 리스트"
+          dataList={dataDtlList}
+          columns={columnsDtl}
+          type="single"
+          onCellEditCommit={(params: any) => {
+              const updatedDtlList = dataDtlList.map(row => 
+                  row.id === params.id ? { ...row, [params.field]: params.value } : row
+              );
+              setDataDtlList(updatedDtlList);
+          }}
+          height="100%"
+        />
+      </Box>
+    </Box>
   );
 }

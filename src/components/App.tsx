@@ -43,7 +43,7 @@ import InboundInq from '../pages/wms/ib/InboundInq';
 //재고
 import StockMove from '../pages/wms/st/StockMove';
 import StockInqByItem from '../pages/wms/st/StockInqByItem';
-import StockInqByLoc from '../pages/wms/st/stockInqByLoc';
+import StockInqByLoc from '../pages/wms/st/StockInqByLoc';
 
 //출고
 import OutboundPlan from '../pages/wms/ob/OutboundPlan';
@@ -151,19 +151,19 @@ const MENU_ITEMS = [
         { name: '배송처 관리', path: '/portal/wms/sd/store' },
       ]},
       { name: '입고관리', subItems: [
-        { name: '입고예정', path: '/portal/wms/inboundPlan' },
-        { name: '입고검수', path: '/portal/wms/inboundExam' },
-        { name: '입고현황', path: '/portal/wms/inboundInq' },
+        { name: '입고예정', path: '/portal/wms/ib/inboundPlan' },
+        { name: '입고검수', path: '/portal/wms/ib/inboundExam' },
+        { name: '입고현황', path: '/portal/wms/ib/inboundInq' },
       ]},
       { name: '재고관리', subItems: [
-        { name: '재고이동', path: '/portal/wms/stock/stockMove' },
-        { name: '로케이션별 재고조회', path: '/portal/wms/stock/stockInqByLoc' },
-        { name: '제품별 재고조회', path: '/portal/wms/stock/stockInqByItem' },
+        { name: '재고이동', path: '/portal/wms/st/stockMove' },
+        { name: '로케이션별 재고조회', path: '/portal/wms/st/stockInqByLoc' },
+        { name: '제품별 재고조회', path: '/portal/wms/st/stockInqByItem' },
       ]},
       { name: '출고관리', subItems: [
-        { name: '출고예정', path: '/portal/wms/outboundPlan' },
-        { name: '출고지시', path: '/portal/wms/outboundAllot' },
-        { name: '출고현황', path: '/portal/wms/outboundInq' },
+        { name: '출고예정', path: '/portal/wms/ob/outboundPlan' },
+        { name: '출고지시', path: '/portal/wms/ob/outboundAllot' },
+        { name: '출고현황', path: '/portal/wms/ob/outboundInq' },
       ] 
       },
     ] 

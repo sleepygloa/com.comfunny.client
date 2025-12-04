@@ -1,11 +1,11 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { Button, DialogActions, DialogContent } from '@mui/material';
+import { Button, DialogActions, DialogContent, Box } from '@mui/material'; // Box 추가
 import { GridColDef, GridRowId } from '@mui/x-data-grid';
 
 // Common
 import { useModal } from "../../../context/ModalContext";
 import { ComDeGrid } from "../../../components/Grid/ComDeGrid";
-import { client } from '../../../constraints'; // 오타 수정: contraints -> constraints
+import { client } from '../../../constraints'; 
 import { gvGetRowData } from "../../../components/Common";
 
 // --- 인터페이스 정의 ---
@@ -28,17 +28,18 @@ interface StockData {
 
 interface StockMoveStockOfItemAndLocPopProps {
   refVal1?: string;
+  formData?: any; // 필요 시 추가
 }
 
 export default function StockMoveStockOfItemAndLocPop(props: StockMoveStockOfItemAndLocPopProps) {
-  const { refVal1 = 'MV' } = props; // 참조 값 (디폴트: 'MV')
+  const { refVal1 = 'MV' } = props; 
   const { modals, closeModal } = useModal();
-  const key = 'FIND_STOCK_LOC_ITEM'; // 모달 키
-  const PRO_URL = '/wms/st/stockMove'; // API URL
+  const key = 'FIND_STOCK_LOC_ITEM'; 
+  const PRO_URL = '/wms/st/stockMove'; 
 
   // 상태 관리
-  const [dataList, setDataList] = useState<StockData[]>([]); // 재고 데이터
-  const [selRowId, setSelRowId] = useState<GridRowId | null>(null); // 선택된 행 ID
+  const [dataList, setDataList] = useState<StockData[]>([]); 
+  const [selRowId, setSelRowId] = useState<GridRowId | null>(null); 
 
   // 컬럼 정의
   const columns: GridColDef[] = [
@@ -64,7 +65,6 @@ export default function StockMoveStockOfItemAndLocPop(props: StockMoveStockOfIte
       .catch((error) => console.error('Error fetching stock data:', error));
   }, [refVal1]);
 
-  // 컴포넌트 마운트 시 데이터 로드
   useEffect(() => {
     fnSearch();
   }, [fnSearch]);
@@ -72,7 +72,7 @@ export default function StockMoveStockOfItemAndLocPop(props: StockMoveStockOfIte
   // 확인 버튼 클릭 핸들러
   const handleSubmit = useCallback(() => {
     if (!selRowId) {
-      alert('선택된 데이터가 없습니다.'); // 실제 구현 시에는 모달 알림 권장
+      alert('선택된 데이터가 없습니다.');
       return;
     }
     
@@ -86,10 +86,7 @@ export default function StockMoveStockOfItemAndLocPop(props: StockMoveStockOfIte
     if (modals && modals[key]) {
         const modalInfo = modals[key];
         if (modalInfo.callback && typeof modalInfo.callback === 'function') {
-            const result = modalInfo.callback(selectedData) as boolean | void;
-            if (result === false) {
-                return;
-            }
+            modalInfo.callback(selectedData);
         }
     }
     closeModal(key);
@@ -97,24 +94,33 @@ export default function StockMoveStockOfItemAndLocPop(props: StockMoveStockOfIte
 
   return (
     <>
-      <DialogContent>
-        {/* 데이터 그리드 */}
-        <ComDeGrid
-          height={400}
-          title="Stock List"
-          dataList={dataList}
-          columns={columns}
-          type="single" // 단일 선택 모드
-          onRowClick={(params) => setSelRowId(params.id)} // 행 클릭 시 ID 설정
-          onCellDoubleClick={() => {
-            handleSubmit(); // 더블 클릭 시 데이터 반환 및 모달 닫기
-          }}
-        />
+      <DialogContent sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <Box sx={{ flex: 1, minHeight: 0 }}>
+          <ComDeGrid
+            title="Stock List"
+            dataList={dataList}
+            columns={columns}
+            type="single"
+            onRowClick={(params) => setSelRowId(params.id)}
+            onCellDoubleClick={() => {
+               // 더블클릭 처리 로직 (handleSubmit과 유사하게 처리 권장)
+               // 여기서는 handleSubmit 호출로 간소화 (state 업데이트 타이밍 주의 필요)
+               // setSelRowId 후 바로 호출 시 이전 state일 수 있으므로 params.row 사용 권장
+                if (modals && modals[key]) {
+                    const modalInfo = modals[key];
+                    if (modalInfo.callback && typeof modalInfo.callback === 'function') {
+                         modalInfo.callback([params.row]);
+                    }
+                }
+                closeModal(key);
+            }}
+            height="100%"
+          />
+        </Box>
       </DialogContent>
       <DialogActions>
-        {/* 액션 버튼 */}
-        <Button onClick={handleSubmit}>확인</Button>
-        <Button onClick={() => closeModal(key)}>닫기</Button>
+        <Button onClick={handleSubmit} variant="contained" color="primary">확인</Button>
+        <Button onClick={() => closeModal(key)} variant="outlined" color="secondary">닫기</Button>
       </DialogActions>
     </>
   );

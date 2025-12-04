@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { GridColDef, GridRenderCellParams, GridValueFormatterParams } from '@mui/x-data-grid';
+import { Box } from "@mui/material"; // Box import 추가
+import { GridColDef } from '@mui/x-data-grid';
 
 // context
 import { useCommonData } from "../../../context/CommonDataContext";
@@ -9,7 +10,6 @@ import { useModal } from "../../../context/ModalContext";
 import PageTitle from "../../../components/PageTitle/PageTitle";
 import { SearchBar } from "../../../components/SearchBar/SearchBar";
 import { SchTextField } from "../../../components/SearchBar/CmmnTextField";
-// [수정] 오타 수정 및 확장자 제거
 import { client } from '../../../constraints';
 import { 
   gvGridDropdownDisLabel, 
@@ -46,7 +46,7 @@ export default function ItemClassManagement() {
 
   // 초기 데이터 값
   const initData: ItemClassData = {
-    id: 0, // 초기값 (추가 시 재설정)
+    id: 0, 
     clientCd: '',
     itemClassCd: '',
     largeClassCd: '',
@@ -68,7 +68,7 @@ export default function ItemClassManagement() {
 
   // 컬럼 정의
   const columns: GridColDef[] = [
-    { field: "id", headerName: "ID", align: "center", width: 20 },
+    { field: "id", headerName: "ID", align: "center", width: 60 },
     { 
       field: "clientCd", 
       headerName: "고객사코드", 
@@ -126,7 +126,7 @@ export default function ItemClassManagement() {
     openModal('', '', '저장 하시겠습니까?', () => {
       client.post(`${PRO_URL}/saveItemClass`, rowData)
         .then(() => {
-          alert('저장되었습니다.');
+          // alert('저장되었습니다.');
           fnSearch();
         })
         .catch((error) => console.log('error = ', error));
@@ -140,7 +140,7 @@ export default function ItemClassManagement() {
     openModal('', '', '삭제 하시겠습니까?', () => {
       client.post(`${PRO_URL}/deleteItemClass`, rowData)
         .then(() => {
-          alert('삭제되었습니다.');
+          // alert('삭제되었습니다.');
           fnSearch();
         })
         .catch((error) => console.log('error = ', error));
@@ -149,21 +149,20 @@ export default function ItemClassManagement() {
 
   const onClickCopy = () => {
     if (selRowId === -1) {
-      alert('복사할 행을 선택해주세요.');
+      openModal('', 'A', '복사할 행을 선택해주세요.');
       return;
     }
     openModal('', '', '선택한 행을 복사 하시겠습니까?', () => {
       const rowData = gvGetRowData(dataList, selRowId);
-      // ID는 새로 생성하고, 상품분류코드는 초기화
       const newId = dataList.length > 0 ? Math.max(...dataList.map(d => d.id)) + 1 : 1;
       const copyData = { ...rowData, id: newId, itemClassCd: '' };
       setDataList((prevDataList) => [...prevDataList, copyData]);
     });
   };
 
-  const handleGridCellClick = (e: any) => {
-    setValues(e.row);
-    setSelRowId(e.row.id);
+  const handleGridCellClick = (params: any) => {
+    setValues(params.row);
+    setSelRowId(params.row.id);
   };
 
   const handleEditCellChangeCommitted = useCallback(
@@ -176,21 +175,31 @@ export default function ItemClassManagement() {
   );
 
   return (
-    <>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', p: 2 }}>
       <PageTitle title="상품분류 관리" />
-      <SearchBar onClickSelect={onClickSelect} onClickAdd={onClickAdd} onClickSave={onClickSave} onClickDel={onClickDel} onClickCustom1={onClickCopy} onClickCustomNm1="복사">
+      
+      <SearchBar 
+        onClickSelect={onClickSelect} 
+        onClickAdd={onClickAdd} 
+        onClickSave={onClickSave} 
+        onClickDel={onClickDel} 
+        onClickCustom1={onClickCopy} 
+        onClickCustomNm1="복사"
+      >
         <SchTextField id="codeCd" label="코드/명" onChange={onChangeSearch} />
       </SearchBar>
 
-      <ComDeGrid
-        title="Item Class List"
-        dataList={dataList}
-        columns={columns}
-        height="750px"
-        type="single"
-        onCellClick={handleGridCellClick}
-        onCellEditCommit={handleEditCellChangeCommitted}
-      />
-    </>
+      <Box sx={{ flex: 1, mt: 2, minHeight: 0 }}>
+        <ComDeGrid
+          title="Item Class List"
+          dataList={dataList}
+          columns={columns}
+          type="single"
+          onCellClick={handleGridCellClick}
+          onCellEditCommit={handleEditCellChangeCommitted}
+          height="100%"
+        />
+      </Box>
+    </Box>
   );
 }

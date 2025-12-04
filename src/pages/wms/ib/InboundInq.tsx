@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { Box } from "@mui/material"; // Box import 추가
 import { GridColDef, GridRenderCellParams, GridValueFormatterParams, GridRowId } from '@mui/x-data-grid';
 
 // components
 import { ComDeGrid } from "../../../components/Grid/ComDeGrid";
 import PageTitle from "../../../components/PageTitle/PageTitle";
+import { SearchBar } from "../../../components/SearchBar/SearchBar"; // SearchBar import 추가
 import { SchTextField, SchDateField, GridDateRenderField, FieldRow } from "../../../components/SearchBar/CmmnTextField";
 
 // Common
-import { client } from '../../../constraints'; // 오타 수정 contraints -> constraints
+import { client } from '../../../constraints';
 import { gvGridFieldNumberFormatter, gvGetToday } from "../../../components/Common";
 
 // Modal
@@ -41,7 +43,6 @@ interface InboundInqDetailData {
   lotId: string;
   useYnNm: string;
   remark: string;
-  // 주석 처리된 수량/금액 필드용 (필요시 활성화)
   planQty?: number;
   examQty?: number;
   instQty?: number;
@@ -81,11 +82,11 @@ export default function InboundInq() {
     { field: "ibGbnNm", headerName: "입고구분", align: "left", width: 120 },
     { field: "ibProgStNm", headerName: "입고진행상태", align: "left", width: 100 },
     { 
-      field: "ibPlanYmd", headerName: "입고예정일자", align: "left", width: 150, 
+      field: "ibPlanYmd", headerName: "입고예정일자", align: "left", width: 100, 
       renderCell: (params: GridRenderCellParams) => <GridDateRenderField params={params} /> 
     },
     { 
-      field: "ibYmd", headerName: "입고일자", align: "left", width: 150, 
+      field: "ibYmd", headerName: "입고일자", align: "left", width: 100, 
       renderCell: (params: GridRenderCellParams) => <GridDateRenderField params={params} /> 
     },
     { field: "supplierNm", headerName: "공급처", align: "left", width: 100 },
@@ -99,27 +100,19 @@ export default function InboundInq() {
     { field: "ibDetailSeq", headerName: "순번", align: "right", width: 60 },
     { field: "ibProgStNm", headerName: "진행상태", align: "left", width: 100 },
     { field: "itemCd", headerName: "상품코드", align: "left", width: 100 },
-    { field: "itemNm", headerName: "상품명", align: "left", width: 300 },
+    { field: "itemNm", headerName: "상품명", align: "left", width: 200 },
     { field: "itemStNm", headerName: "상품상태", align: "left", width: 100 },
-    // 주석 처리된 컬럼들 (필요시 주석 해제 및 타입 확인)
-    // { field: "planQty", headerName: "예정", align: "right", width: 60, valueFormatter: (params) => gvGridFieldNumberFormatter(params) },
-    // { field: "examQty", headerName: "검수", align: "right", width: 60, valueFormatter: (params) => gvGridFieldNumberFormatter(params) },
-    // { field: "instQty", headerName: "지시", align: "right", width: 60, valueFormatter: (params) => gvGridFieldNumberFormatter(params) },
-    // { field: "putwQty", headerName: "적치", align: "right", width: 60, valueFormatter: (params) => gvGridFieldNumberFormatter(params) },
-    // { field: "ibCost", headerName: "입고단가", align: "right", width: 100, valueFormatter: (params) => gvGridFieldNumberFormatter(params) },
-    // { field: "ibVat", headerName: "입고VAT", align: "right", width: 100, valueFormatter: (params) => gvGridFieldNumberFormatter(params) },
-    // { field: "ibAmt", headerName: "입고금액", align: "right", width: 100, valueFormatter: (params) => gvGridFieldNumberFormatter(params) },
     { 
-      field: "makeYmd", headerName: "제조일자", align: "left", width: 150, 
+      field: "makeYmd", headerName: "제조일자", align: "left", width: 100, 
       renderCell: (params: GridRenderCellParams) => <GridDateRenderField params={params} /> 
     },
     { 
-      field: "distExpiryYmd", headerName: "유통기한일자", align: "left", width: 150, 
+      field: "distExpiryYmd", headerName: "유통기한일자", align: "left", width: 100, 
       renderCell: (params: GridRenderCellParams) => <GridDateRenderField params={params} /> 
     },
-    { field: "lotId", headerName: "LOT_ID", align: "left", width: 150 },
+    { field: "lotId", headerName: "LOT_ID", align: "left", width: 100 },
     { field: "useYnNm", headerName: "사용여부", align: "left", width: 100 },
-    { field: "remark", headerName: "비고", align: "left", width: 300 },
+    { field: "remark", headerName: "비고", align: "left", width: 200 },
   ];
 
   // 이벤트 핸들러
@@ -166,34 +159,43 @@ export default function InboundInq() {
   };
 
   return (
-    <>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', p: 2 }}>
       <PageTitle title={menuTitle} />
-      <ComDeGrid
+      
+      <SearchBar
         onClickSelect={fnSearch}
-        searchBarChildren={
-          <FieldRow>
-            <SchTextField id="ibNo" label="입고번호/명" onChange={onChangeSearch}  />
-            <SchDateField id="ibPlanYmd" label="입고예정일" selected={schValues.ibPlanYmd} onChange={onChangeSearch} />
-          </FieldRow>
-        }
-        title="Inbound List"
-        dataList={dataList}
-        columns={columns}
-        height="250px"
-        onRowClick={(params) => { 
-            setSelRowId(params.id); 
-            fnSearchDtl(params.row as InboundInqData); 
-        }}
-        type="single"
-      />
+      >
+        <FieldRow>
+          <SchTextField id="ibNo" label="입고번호/명" onChange={onChangeSearch}  />
+          <SchDateField id="ibPlanYmd" label="입고예정일" selected={schValues.ibPlanYmd} onChange={onChangeSearch} />
+        </FieldRow>
+      </SearchBar>
 
-      <ComDeGrid
-        title="Inbound Detail List"
-        dataList={dataDtlList}
-        columns={columnsDtl}
-        // onRowClick={(params) => setSelDtlRowId(params.id)}
-        type="single"
-      />
-    </>
+      {/* 마스터 그리드 */}
+      <Box sx={{ height: '40%', mt: 2 }}>
+        <ComDeGrid
+          title="Inbound List"
+          dataList={dataList}
+          columns={columns}
+          onRowClick={(params) => { 
+              setSelRowId(params.id); 
+              fnSearchDtl(params.row as InboundInqData); 
+          }}
+          type="single"
+          height="100%"
+        />
+      </Box>
+
+      {/* 상세 그리드 */}
+      <Box sx={{ flex: 1, mt: 2, minHeight: 0 }}>
+        <ComDeGrid
+          title="Inbound Detail List"
+          dataList={dataDtlList}
+          columns={columnsDtl}
+          type="single"
+          height="100%"
+        />
+      </Box>
+    </Box>
   );
 }

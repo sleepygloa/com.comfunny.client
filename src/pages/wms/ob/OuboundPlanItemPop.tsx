@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect, useMemo } from 'react';
-import { DialogActions, DialogContent, Button } from '@mui/material';
+import { DialogActions, DialogContent, Button, Box } from '@mui/material'; // Box 추가
 import { GridColDef, GridValueFormatterParams, GridRowId } from '@mui/x-data-grid';
 
 // Common
@@ -11,7 +11,7 @@ import {
   gvGridFieldNumberFormatter,
   gvGetRowDataListOfChk
 } from "../../../components/Common";
-import { client } from '../../../constraints'; // 오타 수정 contraints -> constraints
+import { client } from '../../../constraints'; 
 
 // --- 인터페이스 정의 ---
 
@@ -44,7 +44,7 @@ interface OutboundPlanItemPopProps {
 
 export default function OutboundPlanItemPop(props: OutboundPlanItemPopProps) {
   const { formData } = props;
-  const key = 'FIND_OUTBOUND_ITEM'; // 키값 수정 (Inbound -> Outbound)
+  const key = 'FIND_OUTBOUND_ITEM'; 
   const PRO_URL = '/wms/ob/outboundPlan';
   const { modals, openModal, closeModal, updateModalData, getModalData } = useModal();
   const { getCmbOfGlobalData } = useCommonData();
@@ -158,28 +158,24 @@ export default function OutboundPlanItemPop(props: OutboundPlanItemPopProps) {
 
   return (
     <>
-      <DialogContent>
-        <ComDeGrid
-          onClickSelect={fetchDataList} // 조회 버튼 클릭 시 호출
-          title="Outbound Detail List" // 그리드 제목
-          dataList={dataList} // 데이터 리스트
-          columns={columns} // 컬럼 정의
-          onRowClick={(params) => setSelRowId(params.id)} // 행 클릭 시 선택된 행 ID 업데이트
-          onCellDoubleClick={() => handleSubmit()} // 행 더블클릭 시 handleSubmit 함수 호출
-          // onCellEditCommit은 편집 가능한 컬럼이 있을 때 사용
-          onCellEditCommit={(params) => {
-            const updatedDataList = dataList.map(row =>
-              row.id === params.id ? { ...row, [params.field]: params.value } : row
-            );
-            setDataList(updatedDataList); 
-          }}
-          type="multi"
-          onChangeChks={(chkRows) => handleSelectionChange(chkRows)} // 체크박스 선택 시 처리
-        />
+      <DialogContent sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <Box sx={{ flex: 1, minHeight: 0 }}>
+          <ComDeGrid
+            onClickSelect={fetchDataList} // 조회 버튼 클릭 시 호출
+            title="Outbound Detail List" // 그리드 제목
+            dataList={dataList} // 데이터 리스트
+            columns={columns} // 컬럼 정의
+            onRowClick={(params) => setSelRowId(params.id)} // 행 클릭 시 선택된 행 ID 업데이트
+            onCellDoubleClick={() => handleSubmit()} // 행 더블클릭 시 handleSubmit 함수 호출
+            type="multi"
+            onChangeChks={(chkRows) => handleSelectionChange(chkRows)} // 체크박스 선택 시 처리
+            height="100%"
+          />
+        </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleSubmit}>확인</Button>
-        <Button onClick={() => closeModal(key)}>닫기</Button>
+        <Button onClick={handleSubmit} variant="contained" color="primary">확인</Button>
+        <Button onClick={() => closeModal(key)} variant="outlined" color="secondary">닫기</Button>
       </DialogActions>
     </>
   );

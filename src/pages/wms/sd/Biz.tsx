@@ -10,7 +10,6 @@ import { useModal } from "../../../context/ModalContext";
 import PageTitle from "../../../components/PageTitle/PageTitle";
 import { SearchBar } from "../../../components/SearchBar/SearchBar";
 import { SchTextField } from "../../../components/SearchBar/CmmnTextField";
-// [수정] 오타 수정 및 확장자 제거
 import { client } from '../../../constraints'; 
 import {
   gvGridDropdownDisLabel,
@@ -47,7 +46,7 @@ interface BizData {
   userCol5: string;
   remark: string;
   useYn: string;
-  deliveryNm?: string; // 주소 찾기에서 추가될 수 있음
+  deliveryNm?: string;
   zip?: string;
   jibunAddr?: string;
   roadAddr?: string;
@@ -76,7 +75,7 @@ const columns: GridColDef[] = [
     renderCell: (params: GridRenderCellParams) => (
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
         <Typography variant="body2">{params.value}</Typography>
-        <IconButton size="small"><SearchIcon /></IconButton>
+        <IconButton size="small"><SearchIcon fontSize="small" /></IconButton>
       </Box>
     ),
   },
@@ -84,8 +83,6 @@ const columns: GridColDef[] = [
   { field: "jibunAddr", headerName: "지번주소", editable: false, align: "left", width: 250 },
   { field: "roadAddr", headerName: "도로명주소", editable: false, align: "left", width: 250 },
   { field: "detailAddr", headerName: "상세주소", editable: false, align: "left", width: 250 },
-  { field: "lat", headerName: "위도", editable: false, align: "left", width: 150 },
-  { field: "lon", headerName: "경도", editable: false, align: "left", width: 150 },
   /* 주소 끝 */
   {
     field: "telNo",
@@ -113,16 +110,12 @@ const columns: GridColDef[] = [
     valueOptions: [{ value: "Y", label: "사용" }, { value: "N", label: "미사용" }],
     valueFormatter: gvGridDropdownDisLabel,
   },
-  { field: "etcNo1", headerName: "기타번호1", editable: true, align: "left", width: 80 },
-  { field: "etcNo2", headerName: "기타번호2", editable: true, align: "left", width: 80 },
-  { field: "etcTp1", headerName: "기타유형1", editable: true, align: "left", width: 80 },
-  { field: "etcTp2", headerName: "기타유형2", editable: true, align: "left", width: 80 },
+  { field: "remark", headerName: "비고", editable: true, align: "left", width: 200 },
 ];
 
 export default function Biz() {
   const PRO_URL = '/wms/sd/biz';
   const { openModal } = useModal();
-  // const { getCmbOfGlobalData } = useCommonData(); // 미사용 시 주석
 
   const [dataList, setDataList] = useState<BizData[]>([]);
   const [selRowId, setSelRowId] = useState<number>(-1);
@@ -131,7 +124,7 @@ export default function Biz() {
   
   // 초기값 설정
   const initValues: BizData = {
-    id: 0, // 초기값 (추가 시 재설정됨)
+    id: 0, 
     bizCd: '',
     bizNo: "",
     bizNm: "",
@@ -172,9 +165,10 @@ export default function Biz() {
     }
   }, [callbackDelivery, dataList, selRowId]);
 
-  const onChangeSearch = (event: any, id?: string) => {
-    if (!id) return;
-    setSchValues({ ...schValues, [id]: event });
+  const onChangeSearch = (value: string, id?: string) => {
+    if (id) {
+      setSchValues({ ...schValues, [id]: value });
+    }
   };
 
   const fnSearch = () => {
@@ -199,7 +193,7 @@ export default function Biz() {
     openModal('', '', '저장 하시겠습니까?', () => {
       client.post(`${PRO_URL}/save`, rowData)
         .then(() => {
-          alert('저장되었습니다.');
+          // alert('저장되었습니다.');
           fnSearch();
         })
         .catch((error) => console.log('error = ', error));
@@ -213,17 +207,17 @@ export default function Biz() {
     openModal('', '', '삭제 하시겠습니까?', () => {
       client.post(`${PRO_URL}/delete`, rowData)
         .then(() => {
-          alert('삭제되었습니다.');
+          // alert('삭제되었습니다.');
           fnSearch();
         })
         .catch((error) => console.log('error = ', error));
     });
   };
 
-  const handleGridCellClick = (e: any) => {
-    setValues(e.row);
-    setSelRowId(e.row.id);
-    if (e.field === 'deliveryNm') {
+  const handleGridCellClick = (params: any) => {
+    setValues(params.row);
+    setSelRowId(params.row.id);
+    if (params.field === 'deliveryNm') {
       openPopupFindAddress();
     }
   };
@@ -242,20 +236,28 @@ export default function Biz() {
   );
 
   return (
-    <>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', p: 2 }}>
       <PageTitle title="사업자 관리" />
-      <SearchBar onClickSelect={fnSearch} onClickAdd={onClickAdd} onClickSave={onClickSave} onClickDel={onClickDel}>
+      <SearchBar 
+        onClickSelect={fnSearch} 
+        onClickAdd={onClickAdd} 
+        onClickSave={onClickSave} 
+        onClickDel={onClickDel}
+      >
         <SchTextField id="codeCd" label="코드/명" onChange={onChangeSearch} />
       </SearchBar>
 
-      <ComDeGrid
-        title="Biz List"
-        dataList={dataList}
-        columns={columns}
-        type="single"
-        onCellClick={handleGridCellClick}
-        onCellEditCommit={handleEditCellChangeCommitted}
-      />
-    </>
+      <Box sx={{ flex: 1, mt: 2, minHeight: 0 }}>
+        <ComDeGrid
+          title="Biz List"
+          dataList={dataList}
+          columns={columns}
+          type="single"
+          onCellClick={handleGridCellClick}
+          onCellEditCommit={handleEditCellChangeCommitted}
+          height="100%"
+        />
+      </Box>
+    </Box>
   );
 }

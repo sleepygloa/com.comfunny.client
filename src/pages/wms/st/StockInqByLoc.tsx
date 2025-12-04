@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { Box } from "@mui/material"; // Box import 추가
 import { GridColDef, GridValueFormatterParams, GridRowId } from '@mui/x-data-grid';
 
 // components
 import PageTitle from "../../../components/PageTitle/PageTitle";
+import { SearchBar } from "../../../components/SearchBar/SearchBar"; // SearchBar import 추가
 import { SchTextField, FieldRow } from "../../../components/SearchBar/CmmnTextField";
 import { ComDeGrid } from "../../../components/Grid/ComDeGrid";
 
 // Common
-import { client } from '../../../constraints'; // 오타 수정 contraints -> constraints
+import { client } from '../../../constraints'; 
 import { gvGridFieldNumberFormatter } from "../../../components/Common";
 import { useCommonData } from "../../../context/CommonDataContext";
 import { useModal } from "../../../context/ModalContext";
@@ -40,19 +42,16 @@ interface SearchValues {
 
 export default function StockInqByLoc() {
   const menuTitle = '로케이션별 재고조회';
-  const PRO_URL = '/wms/st/stockInqByLoc';
+  const PRO_URL = '/wms/st/stockInqueryByLoc'; // URL 확인 필요
   const { openModal } = useModal();
   const { getCmbOfGlobalData } = useCommonData();
 
-  // 상태 관리
   const [dataList, setDataList] = useState<StockInqueryData[]>([]);
   const [selRowId, setSelRowId] = useState<GridRowId | null>(null);
   
-  // 콤보박스 데이터 (현재는 초기화 로직만 있고 실제 사용은 안 됨 - 추후 Select로 변경 가능성 있음)
   const [dcCdCmb, setDcCdCmb] = useState<any[]>([]);
   const [clientCdCmb, setClientCdCmb] = useState<any[]>([]);
 
-  // 조회 조건 상태
   const [schValues, setSchValues] = useState<SearchValues>({
     dcCd: "",
     clientCd: "",
@@ -60,7 +59,6 @@ export default function StockInqByLoc() {
     locCd: ""
   });
 
-  // 그리드 컬럼 정의
   const columns: GridColDef[] = [
     { field: "id", headerName: "ID", align: "center", width: 20 },
     { field: "dcNm", headerName: "물류창고", align: "left", width: 120 },
@@ -91,7 +89,6 @@ export default function StockInqByLoc() {
     },
   ];
 
-  // 조회 조건 변경 핸들러
   const onChangeSearch = (value: any, id?: string) => {
     if (id) {
       setSchValues((prev) => ({ ...prev, [id]: value }));
@@ -105,23 +102,17 @@ export default function StockInqByLoc() {
     }
   };
 
-  // 초기 콤보박스 데이터 로드
   useEffect(() => {
     if (dcCdCmb.length === 0) setDcCdCmb(getCmbOfGlobalData("DC_CD", ''));
     if (clientCdCmb.length === 0) setClientCdCmb(getCmbOfGlobalData("CLIENT_CD", ''));
   }, [dcCdCmb, clientCdCmb, getCmbOfGlobalData]);
 
-  // 조회 함수
   const fnSearch = () => {
     const data = { ...schValues };
     client.post(`${PRO_URL}/selectList`, data)
       .then((res) => {
         const list: StockInqueryData[] = res.data;
         setDataList(list);
-        if (list.length > 0) {
-            // 첫 번째 행 선택 (필요 시 주석 해제)
-            // setSelRowId(list[0].id);
-        }
       })
       .catch((error) => console.log('error = ', error));
   };
@@ -129,25 +120,29 @@ export default function StockInqByLoc() {
   const onClickSelect = () => fnSearch();
 
   return (
-    <>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', p: 2 }}>
       <PageTitle title={menuTitle} />
-      <ComDeGrid
-        onClickSelect={onClickSelect}
-        searchBarChildren={
-          <FieldRow>
-            <SchTextField id="dcCd" label="물류센터" onChange={onChangeSearch}  />
-            <SchTextField id="clientCd" label="고객사" onChange={onChangeSearch}  />
-            <SchTextField id="itemCd" label="상품" onChange={onChangeSearch} />
-            <SchTextField id="locCd" label="로케이션" onChange={onChangeSearch} />
-          </FieldRow>
-        }
-        title={"Stock Inquiry by Location List"}
-        dataList={dataList}
-        columns={columns}
-        height="500px"
-        onRowClick={(params) => setSelRowId(params.id)}
-        type="single"
-      />
-    </>
+      
+      <SearchBar onClickSelect={onClickSelect}>
+        <FieldRow>
+          <SchTextField id="dcCd" label="물류센터" onChange={onChangeSearch}  />
+          <SchTextField id="clientCd" label="고객사" onChange={onChangeSearch} />
+          <SchTextField id="itemCd" label="상품" onChange={onChangeSearch} />
+          <SchTextField id="locCd" label="로케이션" onChange={onChangeSearch} />
+          
+        </FieldRow>
+      </SearchBar>
+
+      <Box sx={{ flex: 1, mt: 2, minHeight: 0 }}>
+        <ComDeGrid
+          title={"Stock Inquiry by Location List"}
+          dataList={dataList}
+          columns={columns}
+          height="100%"
+          onRowClick={(params) => setSelRowId(params.id)}
+          type="single"
+        />
+      </Box>
+    </Box>
   );
 }
